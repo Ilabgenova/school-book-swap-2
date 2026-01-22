@@ -1,0 +1,83 @@
+import { useLanguage } from "@/i18n/LanguageContext";
+import { Button } from "@/components/ui/button";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { Link } from "react-router-dom";
+import { BookOpen, Menu, X } from "lucide-react";
+import { useState } from "react";
+
+export const Header = () => {
+  const { t } = useLanguage();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  return (
+    <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/80 backdrop-blur-md">
+      <div className="container flex h-16 items-center justify-between">
+        {/* Logo */}
+        <Link to="/" className="flex items-center gap-2 group">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-md group-hover:shadow-glow transition-shadow">
+            <BookOpen className="h-5 w-5" />
+          </div>
+          <span className="font-display text-xl font-bold text-foreground hidden sm:inline">
+            BookCircle
+          </span>
+        </Link>
+
+        {/* Desktop Navigation */}
+        <nav className="hidden md:flex items-center gap-1">
+          <Link to="/browse">
+            <Button variant="ghost" size="sm">
+              {t.nav.browse}
+            </Button>
+          </Link>
+          <LanguageSwitcher />
+          <Link to="/login">
+            <Button variant="outline" size="sm">
+              {t.nav.login}
+            </Button>
+          </Link>
+          <Link to="/register">
+            <Button variant="default" size="sm">
+              {t.nav.register}
+            </Button>
+          </Link>
+        </nav>
+
+        {/* Mobile Menu Button */}
+        <div className="flex items-center gap-2 md:hidden">
+          <LanguageSwitcher />
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle menu"
+          >
+            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </Button>
+        </div>
+      </div>
+
+      {/* Mobile Menu */}
+      {mobileMenuOpen && (
+        <div className="md:hidden border-t border-border/50 bg-background animate-slide-up">
+          <nav className="container flex flex-col gap-2 py-4">
+            <Link to="/browse" onClick={() => setMobileMenuOpen(false)}>
+              <Button variant="ghost" className="w-full justify-start">
+                {t.nav.browse}
+              </Button>
+            </Link>
+            <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
+              <Button variant="outline" className="w-full">
+                {t.nav.login}
+              </Button>
+            </Link>
+            <Link to="/register" onClick={() => setMobileMenuOpen(false)}>
+              <Button variant="default" className="w-full">
+                {t.nav.register}
+              </Button>
+            </Link>
+          </nav>
+        </div>
+      )}
+    </header>
+  );
+};
