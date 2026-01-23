@@ -15,7 +15,7 @@ import {
   MessageCircle,
   CheckCircle2,
 } from "lucide-react";
-import { OfficialBook, BookListing } from "./BookListItem";
+import { OfficialBook, BookListing } from "@/data/officialBooks";
 
 interface ListingsModalProps {
   book: OfficialBook;
