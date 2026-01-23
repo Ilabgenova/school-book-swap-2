@@ -70,9 +70,9 @@ export const translations = {
     browse: {
       selectGrade: "Seleziona la Classe",
       selectGradeDescription: "Scegli la classe per vedere l'elenco dei libri richiesti",
-      primaryYears: "Anni Primari",
-      middleYears: "Anni Medi",
-      diplomaProgramme: "Programma Diploma",
+      primaryYears: "Primary Years Programme",
+      middleYears: "Middle Years Programme",
+      diplomaProgramme: "Diploma Programme",
       officialBookList: "Elenco Libri Ufficiale",
       totalBooks: "libri totali",
       markedFound: "trovati",
@@ -92,6 +92,19 @@ export const translations = {
       buyNew: "Compra nuovo",
       contactSeller: "Contatta venditore",
       exchanges: "scambi",
+      // New buying mode translations
+      chooseHowToBuy: "Come vuoi acquistare i libri?",
+      buyAllNew: "Compra Tutto Nuovo",
+      buyAllNewDescription: "Vai alla lista Amazon con tutti i libri nuovi per questa classe",
+      seeUsedOptions: "Cerca Usato",
+      seeUsedOptionsDescription: "Sfoglia annunci di libri usati dalla nostra comunità scolastica",
+      affiliateLink: "Link affiliato",
+      saveMoney: "Risparmia",
+      ecoFriendly: "Ecosostenibile",
+      // Summer reading
+      summerReading: "Letture Estive",
+      recommendedReading: "Libri consigliati per l'estate",
+      schoolYear: "Anno Scolastico",
     },
     // Common
     common: {
@@ -217,8 +230,8 @@ export const translations = {
     browse: {
       selectGrade: "Select Your Class",
       selectGradeDescription: "Choose your class to see the required book list",
-      primaryYears: "Primary Years",
-      middleYears: "Middle Years",
+      primaryYears: "Primary Years Programme",
+      middleYears: "Middle Years Programme",
       diplomaProgramme: "Diploma Programme",
       officialBookList: "Official Book List",
       totalBooks: "total books",
@@ -239,6 +252,19 @@ export const translations = {
       buyNew: "Buy new",
       contactSeller: "Contact seller",
       exchanges: "exchanges",
+      // New buying mode translations
+      chooseHowToBuy: "How do you want to buy your books?",
+      buyAllNew: "Buy All New",
+      buyAllNewDescription: "Go to the Amazon list with all new books for this class",
+      seeUsedOptions: "See Used Options",
+      seeUsedOptionsDescription: "Browse used book listings from our school community",
+      affiliateLink: "Affiliate link",
+      saveMoney: "Save Money",
+      ecoFriendly: "Eco-friendly",
+      // Summer reading
+      summerReading: "Summer Reading",
+      recommendedReading: "Recommended books for summer",
+      schoolYear: "School Year",
     },
     // Common
     common: {

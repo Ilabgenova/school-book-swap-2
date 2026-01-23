@@ -8,29 +8,9 @@ import {
   ShoppingBag,
   Heart,
   Tag,
-  Star,
   Check,
 } from "lucide-react";
-
-export interface OfficialBook {
-  id: string;
-  title: string;
-  subject: string;
-  publisher: string;
-  isbn?: string;
-  availableFromPreviousYear: boolean;
-  externalPurchaseUrl?: string;
-}
-
-export interface BookListing {
-  id: string;
-  type: "sale" | "exchange" | "donation";
-  price?: number;
-  condition: "new" | "asNew" | "used";
-  sellerRating: number;
-  sellerName: string;
-  sellerCompletedExchanges: number;
-}
+import { OfficialBook, BookListing } from "@/data/officialBooks";
 
 interface BookListItemProps {
   book: OfficialBook;
