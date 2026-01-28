@@ -13,17 +13,19 @@ import {
 import { BookListItem } from "./BookListItem";
 import { ListingsModal } from "./ListingsModal";
 import { SummerReadingSection } from "./SummerReadingSection";
-import { officialBooks, mockListings, OfficialBook } from "@/data/officialBooks";
+import { officialBooks, mockListings, OfficialBook, getPriceRange } from "@/data/officialBooks";
 
 interface BookListProps {
   selectedGrade: string;
   selectedProgram: string;
+  selectedSubjects?: string[] | null;
   onBack: () => void;
 }
 
 export const BookList = ({
   selectedGrade,
   selectedProgram,
+  selectedSubjects,
   onBack,
 }: BookListProps) => {
   const { t } = useLanguage();
@@ -31,10 +33,15 @@ export const BookList = ({
   const [toBuyBooks, setToBuyBooks] = useState<Set<string>>(new Set());
   const [selectedBook, setSelectedBook] = useState<OfficialBook | null>(null);
 
-  // Filter books by selected grade
-  const books = officialBooks.filter(
-    (book) => book.grade === selectedGrade && !book.isSummerReading
-  );
+  // Filter books by selected grade and subjects (for DP)
+  const books = officialBooks.filter((book) => {
+    if (book.grade !== selectedGrade || book.isSummerReading) return false;
+    // For DP program with selected subjects, filter by subject
+    if (selectedProgram === "DP" && selectedSubjects && selectedSubjects.length > 0) {
+      return selectedSubjects.includes(book.subject);
+    }
+    return true;
+  });
 
   const toggleFound = (bookId: string) => {
     setFoundBooks((prev) => {

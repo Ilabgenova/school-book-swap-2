@@ -20,7 +20,7 @@ export const BuyingModeSelector = ({
   const { t } = useLanguage();
 
   const handleBuyAllNew = () => {
-    window.open(getAmazonListUrl(selectedGrade), "_blank");
+    window.open(getAmazonListUrl(selectedGrade, selectedProgram), "_blank");
   };
 
   return (

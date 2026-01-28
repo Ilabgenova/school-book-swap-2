@@ -105,6 +105,25 @@ export const translations = {
       summerReading: "Letture Estive",
       recommendedReading: "Libri consigliati per l'estate",
       schoolYear: "Anno Scolastico",
+      // DP Subject Selection
+      selectDPSubjects: "Seleziona le tue materie",
+      dpSubjectInfo: "Seleziona le materie del tuo programma DP",
+      dpSubjectInfoDetail: "Scegli fino a 6 materie principali. Puoi aggiungere materie extra se necessario.",
+      selectedSubjects: "Materie selezionate",
+      addMoreSubjects: "Aggiungi altre materie",
+      otherSubjects: "Altre Materie",
+      continueToBooks: "Continua ai Libri",
+      // Price range
+      usedPriceRange: "Prezzo usato",
+      // Login school origin
+      fromDISSchool: "Vengo già da DIS",
+      newToDIS: "Sono nuovo a DIS",
+      schoolOriginQuestion: "Fai già parte della scuola DIS?",
+      // Books to sell
+      booksToSell: "Libri che potresti vendere",
+      booksToSellDescription: "In base alla tua classe precedente, questi libri potrebbero non servirti più",
+      keepForNextYear: "Tieni per l'anno prossimo",
+      bookNeededNextYear: "Questo libro ti servirà l'anno prossimo",
     },
     // Common
     common: {
@@ -265,6 +284,25 @@ export const translations = {
       summerReading: "Summer Reading",
       recommendedReading: "Recommended books for summer",
       schoolYear: "School Year",
+      // DP Subject Selection
+      selectDPSubjects: "Select your subjects",
+      dpSubjectInfo: "Select your DP program subjects",
+      dpSubjectInfoDetail: "Choose up to 6 main subjects. You can add extra subjects if needed.",
+      selectedSubjects: "Selected subjects",
+      addMoreSubjects: "Add more subjects",
+      otherSubjects: "Other Subjects",
+      continueToBooks: "Continue to Books",
+      // Price range
+      usedPriceRange: "Used price",
+      // Login school origin
+      fromDISSchool: "I'm already from DIS",
+      newToDIS: "I'm new to DIS",
+      schoolOriginQuestion: "Are you already part of DIS school?",
+      // Books to sell
+      booksToSell: "Books you might sell",
+      booksToSellDescription: "Based on your previous grade, you might not need these books anymore",
+      keepForNextYear: "Keep for next year",
+      bookNeededNextYear: "This book will be needed next year",
     },
     // Common
     common: {
