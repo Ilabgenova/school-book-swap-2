@@ -1,9 +1,11 @@
 export interface OfficialBook {
   id: string;
   title: string;
+  author?: string;
   subject: string;
   publisher: string;
   isbn?: string;
+  price?: number;
   availableFromPreviousYear: boolean;
   externalPurchaseUrl?: string;
   grade: string;
@@ -21,93 +23,189 @@ export interface BookListing {
   sellerCompletedExchanges: number;
 }
 
-// School Year 2025-2026 Official Book List
+// DP Subject Groups for subject selection
+export const dpSubjectGroups = {
+  group1: {
+    name: "Studies in Language and Literature",
+    subjects: ["English A: Language and Literature", "English A: Literature", "Italian A: Language and Literature"]
+  },
+  group2: {
+    name: "Language Acquisition",
+    subjects: ["Italian B", "Spanish B", "French B", "German B", "Italian ab initio"]
+  },
+  group3: {
+    name: "Individuals and Societies",
+    subjects: ["History", "Geography", "Economics", "Business Management", "Psychology"]
+  },
+  group4: {
+    name: "Sciences",
+    subjects: ["Physics", "Chemistry", "Biology", "Computer Science", "Environmental Systems and Societies"]
+  },
+  group5: {
+    name: "Mathematics",
+    subjects: ["Mathematics: Analysis and Approaches HL", "Mathematics: Analysis and Approaches SL", "Mathematics: Applications and Interpretation HL", "Mathematics: Applications and Interpretation SL"]
+  },
+  group6: {
+    name: "The Arts",
+    subjects: ["Visual Arts", "Music", "Theatre", "Film"]
+  },
+  core: {
+    name: "DP Core",
+    subjects: ["Theory of Knowledge (TOK)", "Extended Essay", "CAS"]
+  }
+};
+
+// School Year 2025-2026 Official Book List - Real Data
 export const officialBooks: OfficialBook[] = [
-  // PYP 1
-  { id: "pyp1-1", title: "Mathematics - Primary 1", subject: "Mathematics", publisher: "Cambridge", isbn: "978-1-108-74621-0", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/1108746210", grade: "PYP 1", program: "PYP" },
-  { id: "pyp1-2", title: "English Language Arts - Grade 1", subject: "English", publisher: "Oxford", isbn: "978-0-19-836472-1", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/0198364721", grade: "PYP 1", program: "PYP" },
-  { id: "pyp1-3", title: "Science Discovery - Level 1", subject: "Science", publisher: "Pearson", isbn: "978-0-13-469852-3", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/0134698523", grade: "PYP 1", program: "PYP" },
-  { id: "pyp1-4", title: "Amici Italiani 1", subject: "Italian", publisher: "Loescher", isbn: "978-88-201-6845-2", availableFromPreviousYear: false, externalPurchaseUrl: "https://amazon.it/dp/8820168452", grade: "PYP 1", program: "PYP" },
-  { id: "pyp1-5", title: "Art Adventures - Primary", subject: "Art", publisher: "McGraw Hill", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/0078962501", grade: "PYP 1", program: "PYP" },
+  // ==================== MYP 1 ====================
+  { id: "myp1-1", title: "Pearson MYP English Language Acquisition (Proficient) 2nd", author: "Irina Birajdar, Ingrid Perera, Rebecca Grieve, Danielle Steyn", subject: "English", publisher: "Pearson", isbn: "9781292958514", price: 37.47, availableFromPreviousYear: false, externalPurchaseUrl: "https://amazon.com/s?k=9781292958514", grade: "MYP 1", program: "MYP" },
+  { id: "myp1-2", title: "Pearson MYP English Language Acquisition (Capable) 2nd Edition", author: "Saranya Srinivasan, Ingrid Perera, Rebecca Greive", subject: "English", publisher: "Pearson", isbn: "9781292958521", price: 37.47, availableFromPreviousYear: false, externalPurchaseUrl: "https://amazon.com/s?k=9781292958521", grade: "MYP 1", program: "MYP" },
+  { id: "myp1-3", title: "MYP Geography for years 1-3, Hodder", author: "A Dharani, R Zeller", subject: "Geography", publisher: "Hodder", isbn: "9781510425804", price: 51.28, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781510425804", grade: "MYP 1", program: "MYP" },
+  { id: "myp1-4", title: "MYP History: a concept-based approach years 1-3, Hodder", author: "Jo Thomas", subject: "History", publisher: "Hodder", isbn: "9781471841521", price: 49.50, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781471841521", grade: "MYP 1", program: "MYP" },
+  { id: "myp1-5", title: "Mathematics for MYP 1, Hodder", author: "Marlene Torres-Skoumal, Rose Harrison, Clara Huizing, Aidan Sproat-Clements, Talei Kunkel", subject: "Mathematics", publisher: "Hodder", isbn: "9781471880919", price: 46.68, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781471880919", grade: "MYP 1", program: "MYP" },
+  { id: "myp1-6", title: "MYP Biology years 1-3, Hodder", author: "Andrew Davis, Patricia Deo", subject: "Science", publisher: "Hodder", isbn: "9781510425781", price: 51.28, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781510425781", grade: "MYP 1", program: "MYP" },
+  { id: "myp1-7", title: "MYP Chemistry years 1-3, Hodder", author: "Annie Termaat & Gary Horner", subject: "Science", publisher: "Hodder", isbn: "9781510425750", price: 51.28, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781510425750", grade: "MYP 1", program: "MYP" },
+  { id: "myp1-8", title: "MYP Physics years 1-3, Hodder", author: "William Heathcote", subject: "Science", publisher: "Hodder", isbn: "9781510425798", price: 51.28, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781510425798", grade: "MYP 1", program: "MYP" },
+  { id: "myp1-9", title: "Forte! 1 – Italian for school students", author: "L. Maddii, M.C. Borgogni", subject: "Italian", publisher: "Edilingua", isbn: "9788899358570", price: 28.50, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9788899358570", grade: "MYP 1", program: "MYP" },
+  { id: "myp1-10", title: "Forte! 2 – Italian for school students", author: "L. Maddii, M.C. Borgogni", subject: "Italian", publisher: "Edilingua", isbn: "9788899358624", price: 28.50, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9788899358624", grade: "MYP 1", program: "MYP" },
+  { id: "myp1-11", title: "Letture in gioco 2", author: "A Anelli, D Viola", subject: "Italian", publisher: "La Spiga Edizioni", isbn: "9788846838766", price: 8.10, availableFromPreviousYear: false, externalPurchaseUrl: "https://amazon.com/s?k=9788846838766", grade: "MYP 1", program: "MYP" },
+  { id: "myp1-12", title: "Parola chiave A2", author: "F. Ferraris", subject: "Italian", publisher: "Mondadori Education", isbn: "9788800357128", price: 12.50, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9788800357128", grade: "MYP 1", program: "MYP" },
+  { id: "myp1-13", title: "Forte! 3 – Italian for school students", author: "L. Maddii, M.C. Borgogni, S.Servetti", subject: "Italian", publisher: "Edilingua", isbn: "9789606632570", price: 28.50, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9789606632570", grade: "MYP 1", program: "MYP" },
+  { id: "myp1-14", title: "Promessi sposi", author: "A. Manzoni adapted by E. Lovato", subject: "Italian", publisher: "Eli", isbn: "9788853628206", price: 11.20, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9788853628206", grade: "MYP 1", program: "MYP" },
+  { id: "myp1-15", title: "Letture in gioco 1", author: "A Anelli, D Viola", subject: "Italian", publisher: "La Spiga Edizioni", isbn: "9788846838759", price: 8.10, availableFromPreviousYear: false, externalPurchaseUrl: "https://amazon.com/s?k=9788846838759", grade: "MYP 1", program: "MYP" },
+  { id: "myp1-16", title: "NUOVO CONTATTO A1/A2", author: "BOZZONE COSTA R., GHEZZI C., PIANTONI M.", subject: "Italian", publisher: "Loescher", isbn: "9788820136901", price: 26.90, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9788820136901", grade: "MYP 1", program: "MYP" },
+  { id: "myp1-17", title: "IB MYP Global contexts 1-3", author: "SECOND EDITION Talei Kunkel, Danielle Trynoski et al.", subject: "Multi-subject", publisher: "Hodder", isbn: "9781398393677", price: 35.75, availableFromPreviousYear: false, externalPurchaseUrl: "https://amazon.com/s?k=9781398393677", grade: "MYP 1", program: "MYP" },
+  
+  // ==================== MYP 2 ====================
+  { id: "myp2-1", title: "MYP Geography for years 1-3, Hodder", author: "A Dharani, R Zeller", subject: "Geography", publisher: "Hodder", isbn: "9781510425804", price: 51.28, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781510425804", grade: "MYP 2", program: "MYP" },
+  { id: "myp2-2", title: "MYP History: a concept-based approach years 1-3, Hodder", author: "Jo Thomas", subject: "History", publisher: "Hodder", isbn: "9781471841521", price: 49.50, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781471841521", grade: "MYP 2", program: "MYP" },
+  { id: "myp2-3", title: "Mathematics for MYP 2, Hodder", author: "Marlene Torres-Skoumal, Rose Harrison, Clara Huizing, Aidan Sproat-Clements, Talei Kunkel", subject: "Mathematics", publisher: "Hodder", isbn: "9781471880957", price: 46.68, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781471880957", grade: "MYP 2", program: "MYP" },
+  { id: "myp2-4", title: "MYP Biology years 1-3, Hodder", author: "Andrew Davis, Patricia Deo", subject: "Science", publisher: "Hodder", isbn: "9781510425781", price: 51.28, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781510425781", grade: "MYP 2", program: "MYP" },
+  { id: "myp2-5", title: "MYP Chemistry years 1-3, Hodder", author: "Annie Termaat & Gary Horner", subject: "Science", publisher: "Hodder", isbn: "9781510425750", price: 51.28, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781510425750", grade: "MYP 2", program: "MYP" },
+  { id: "myp2-6", title: "MYP Physics years 1-3, Hodder", author: "William Heathcote", subject: "Science", publisher: "Hodder", isbn: "9781510425798", price: 51.28, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781510425798", grade: "MYP 2", program: "MYP" },
+  { id: "myp2-7", title: "Pearson MYP English Language Acquisition (Proficient) 2nd", author: "Irina Birajdar, Ingrid Perera, Rebecca Grieve, Danielle Steyn", subject: "English", publisher: "Pearson", isbn: "9781292958514", price: 37.47, availableFromPreviousYear: false, externalPurchaseUrl: "https://amazon.com/s?k=9781292958514", grade: "MYP 2", program: "MYP" },
+  { id: "myp2-8", title: "Pearson MYP English Language Acquisition (Capable) 2nd Edition", author: "Saranya Srinivasan, Ingrid Perera, Rebecca Greive", subject: "English", publisher: "Pearson", isbn: "9781292958521", price: 37.47, availableFromPreviousYear: false, externalPurchaseUrl: "https://amazon.com/s?k=9781292958521", grade: "MYP 2", program: "MYP" },
+  { id: "myp2-9", title: "Forte! 2 – Italian for school students", author: "L. Maddii, M.C. Borgogni", subject: "Italian", publisher: "Edilingua", isbn: "9788899358624", price: 28.50, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9788899358624", grade: "MYP 2", program: "MYP" },
+  { id: "myp2-10", title: "Forte! 3 – Italian for school students", author: "L. Maddii, M.C. Borgogni, S.Servetti", subject: "Italian", publisher: "Edilingua", isbn: "9789606632570", price: 28.50, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9789606632570", grade: "MYP 2", program: "MYP" },
+  { id: "myp2-11", title: "Parola chiave A2", author: "F. Ferraris", subject: "Italian", publisher: "Mondadori Education", isbn: "9788800357128", price: 12.50, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9788800357128", grade: "MYP 2", program: "MYP" },
+  { id: "myp2-12", title: "Letture in gioco 2", author: "A Anelli, D Viola", subject: "Italian", publisher: "La Spiga Edizioni", isbn: "9788846838766", price: 8.10, availableFromPreviousYear: false, externalPurchaseUrl: "https://amazon.com/s?k=9788846838766", grade: "MYP 2", program: "MYP" },
+  { id: "myp2-13", title: "NUOVO CONTATTO A1/A2", author: "BOZZONE COSTA R., GHEZZI C., PIANTONI M.", subject: "Italian", publisher: "Loescher", isbn: "9788820136901", price: 26.90, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9788820136901", grade: "MYP 2", program: "MYP" },
+  { id: "myp2-14", title: "Promessi sposi", author: "A. Manzoni adapted by E. Lovato", subject: "Italian", publisher: "Eli", isbn: "9788853628206", price: 11.20, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9788853628206", grade: "MYP 2", program: "MYP" },
+  { id: "myp2-15", title: "Letture in gioco 3", author: "A Anelli, D Viola", subject: "Italian", publisher: "La Spiga Edizioni", isbn: "9788846838773", price: 8.10, availableFromPreviousYear: false, externalPurchaseUrl: "https://amazon.com/s?k=9788846838773", grade: "MYP 2", program: "MYP" },
+  { id: "myp2-16", title: "NUOVO Contatto B1", author: "BOZZONE COSTA R, GHEZZI C, PIANTONI M", subject: "Italian", publisher: "Loescher", isbn: "9788820136925", price: 29.50, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9788820136925", grade: "MYP 2", program: "MYP" },
+  { id: "myp2-17", title: "IB MYP Global contexts 1-3", author: "SECOND EDITION Talei Kunkel, Danielle Trynoski et al.", subject: "Multi-subject", publisher: "Hodder", isbn: "9781398393677", price: 35.75, availableFromPreviousYear: false, externalPurchaseUrl: "https://amazon.com/s?k=9781398393677", grade: "MYP 2", program: "MYP" },
 
-  // PYP 2
-  { id: "pyp2-1", title: "Mathematics - Primary 2", subject: "Mathematics", publisher: "Cambridge", isbn: "978-1-108-74622-7", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/1108746227", grade: "PYP 2", program: "PYP" },
-  { id: "pyp2-2", title: "English Language Arts - Grade 2", subject: "English", publisher: "Oxford", isbn: "978-0-19-836473-8", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/0198364738", grade: "PYP 2", program: "PYP" },
-  { id: "pyp2-3", title: "Science Discovery - Level 2", subject: "Science", publisher: "Pearson", isbn: "978-0-13-469853-0", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/0134698530", grade: "PYP 2", program: "PYP" },
-  { id: "pyp2-4", title: "Amici Italiani 2", subject: "Italian", publisher: "Loescher", isbn: "978-88-201-6846-9", availableFromPreviousYear: false, externalPurchaseUrl: "https://amazon.it/dp/8820168469", grade: "PYP 2", program: "PYP" },
-  { id: "pyp2-5", title: "Music Makers - Level 2", subject: "Music", publisher: "ABRSM", isbn: "978-1-84849-215-4", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/1848492154", grade: "PYP 2", program: "PYP" },
+  // ==================== MYP 3 ====================
+  { id: "myp3-1", title: "MYP Geography for years 1-3, Hodder", author: "A Dharani, R Zeller", subject: "Geography", publisher: "Hodder", isbn: "9781510425804", price: 51.28, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781510425804", grade: "MYP 3", program: "MYP" },
+  { id: "myp3-2", title: "MYP History: a concept-based approach years 1-3, Hodder", author: "Jo Thomas", subject: "History", publisher: "Hodder", isbn: "9781471841521", price: 49.50, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781471841521", grade: "MYP 3", program: "MYP" },
+  { id: "myp3-3", title: "Mathematics for MYP 3, Hodder", author: "Marlene Torres-Skoumal, Rose Harrison, Clara Huizing, Aidan Sproat-Clements, Talei Kunkel", subject: "Mathematics", publisher: "Hodder", isbn: "9781471880995", price: 46.68, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781471880995", grade: "MYP 3", program: "MYP" },
+  { id: "myp3-4", title: "MYP Biology years 1-3, Hodder", author: "Andrew Davis, Patricia Deo", subject: "Science", publisher: "Hodder", isbn: "9781510425781", price: 51.28, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781510425781", grade: "MYP 3", program: "MYP" },
+  { id: "myp3-5", title: "MYP Chemistry years 1-3, Hodder", author: "Annie Termaat & Gary Horner", subject: "Science", publisher: "Hodder", isbn: "9781510425750", price: 51.28, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781510425750", grade: "MYP 3", program: "MYP" },
+  { id: "myp3-6", title: "MYP Physics years 1-3, Hodder", author: "William Heathcote", subject: "Science", publisher: "Hodder", isbn: "9781510425798", price: 51.28, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781510425798", grade: "MYP 3", program: "MYP" },
+  { id: "myp3-7", title: "Pearson MYP English Language Acquisition (Proficient) 2nd", author: "Irina Birajdar, Ingrid Perera, Rebecca Grieve, Danielle Steyn", subject: "English", publisher: "Pearson", isbn: "9781292958514", price: 37.47, availableFromPreviousYear: false, externalPurchaseUrl: "https://amazon.com/s?k=9781292958514", grade: "MYP 3", program: "MYP" },
+  { id: "myp3-8", title: "Pearson MYP English Language Acquisition (Capable) 2nd Edition", author: "Saranya Srinivasan, Ingrid Perera, Rebecca Greive", subject: "English", publisher: "Pearson", isbn: "9781292958521", price: 37.47, availableFromPreviousYear: false, externalPurchaseUrl: "https://amazon.com/s?k=9781292958521", grade: "MYP 3", program: "MYP" },
+  { id: "myp3-9", title: "Letture in gioco 3", author: "A Anelli, D Viola", subject: "Italian", publisher: "La Spiga Edizioni", isbn: "9788846838773", price: 8.10, availableFromPreviousYear: false, externalPurchaseUrl: "https://amazon.com/s?k=9788846838773", grade: "MYP 3", program: "MYP" },
+  { id: "myp3-10", title: "NUOVO Contatto B1", author: "BOZZONE COSTA R, GHEZZI C, PIANTONI M", subject: "Italian", publisher: "Loescher", isbn: "9788820136925", price: 29.50, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9788820136925", grade: "MYP 3", program: "MYP" },
+  { id: "myp3-11", title: "Forte! 3 – Italian for school students", author: "L. Maddii, M.C. Borgogni, S.Servetti", subject: "Italian", publisher: "Edilingua", isbn: "9789606632570", price: 28.50, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9789606632570", grade: "MYP 3", program: "MYP" },
+  { id: "myp3-12", title: "Promessi sposi", author: "A. Manzoni adapted by E. Lovato", subject: "Italian", publisher: "Eli", isbn: "9788853628206", price: 11.20, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9788853628206", grade: "MYP 3", program: "MYP" },
+  { id: "myp3-13", title: "NUOVO Contatto B2", author: "BOZZONE COSTA R, GHEZZI C, PIANTONI M", subject: "Italian", publisher: "Loescher", isbn: "9788820136949", price: 29.50, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9788820136949", grade: "MYP 3", program: "MYP" },
+  { id: "myp3-14", title: "IB MYP Global contexts 1-3", author: "SECOND EDITION Talei Kunkel, Danielle Trynoski et al.", subject: "Multi-subject", publisher: "Hodder", isbn: "9781398393677", price: 35.75, availableFromPreviousYear: false, externalPurchaseUrl: "https://amazon.com/s?k=9781398393677", grade: "MYP 3", program: "MYP" },
 
-  // PYP 3
-  { id: "pyp3-1", title: "Mathematics - Primary 3", subject: "Mathematics", publisher: "Cambridge", isbn: "978-1-108-74623-4", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/1108746234", grade: "PYP 3", program: "PYP" },
-  { id: "pyp3-2", title: "English Language Arts - Grade 3", subject: "English", publisher: "Oxford", isbn: "978-0-19-836474-5", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/0198364745", grade: "PYP 3", program: "PYP" },
-  { id: "pyp3-3", title: "Science Discovery - Level 3", subject: "Science", publisher: "Pearson", isbn: "978-0-13-469854-7", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/0134698547", grade: "PYP 3", program: "PYP" },
-  { id: "pyp3-4", title: "Amici Italiani 3", subject: "Italian", publisher: "Loescher", isbn: "978-88-201-6847-6", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.it/dp/8820168476", grade: "PYP 3", program: "PYP" },
-  { id: "pyp3-5", title: "Geography Explorer 3", subject: "Geography", publisher: "Collins", isbn: "978-0-00-827456-2", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/0008274562", grade: "PYP 3", program: "PYP" },
+  // ==================== MYP 4 ====================
+  { id: "myp4-1", title: "MYP Geography years 4&5, Hodder", author: "A Dharani, R Zeller", subject: "Geography", publisher: "Hodder", isbn: "9781510425828", price: 51.28, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781510425828", grade: "MYP 4", program: "MYP" },
+  { id: "myp4-2", title: "MYP History years 4 & 5: a concept-based approach, Hodder", author: "Jo Thomas", subject: "History", publisher: "Hodder", isbn: "9781471841538", price: 49.50, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781471841538", grade: "MYP 4", program: "MYP" },
+  { id: "myp4-3", title: "Mathematics for MYP 4&5 standard, Hodder", author: "Marlene Torres-Skoumal, Rose Harrison, Clara Huizing", subject: "Mathematics", publisher: "Hodder", isbn: "9781471841538", price: 49.63, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781471841538", grade: "MYP 4", program: "MYP" },
+  { id: "myp4-4", title: "Mathematics for MYP 4&5 extended, Hodder", author: "Marlene Torres-Skoumal, Rose Harrison, Clara Huizing", subject: "Mathematics", publisher: "Hodder", isbn: "9781510425880", price: 49.63, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781510425880", grade: "MYP 4", program: "MYP" },
+  { id: "myp4-5", title: "MYP Biology years 4&5, Hodder", author: "Andrew Davis, Patricia Deo", subject: "Science", publisher: "Hodder", isbn: "9781510425811", price: 51.28, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781510425811", grade: "MYP 4", program: "MYP" },
+  { id: "myp4-6", title: "MYP Chemistry years 4&5, Hodder", author: "Annie Termaat & Gary Horner", subject: "Science", publisher: "Hodder", isbn: "9781510425774", price: 51.28, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781510425774", grade: "MYP 4", program: "MYP" },
+  { id: "myp4-7", title: "MYP Physics years 4&5, Hodder", author: "William Heathcote", subject: "Science", publisher: "Hodder", isbn: "9781510425835", price: 51.28, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781510425835", grade: "MYP 4", program: "MYP" },
+  { id: "myp4-8", title: "Pearson MYP English Language Acquisition (Proficient) 2nd", author: "Irina Birajdar, Ingrid Perera, Rebecca Grieve, Danielle Steyn", subject: "English", publisher: "Pearson", isbn: "9781292958514", price: 37.47, availableFromPreviousYear: false, externalPurchaseUrl: "https://amazon.com/s?k=9781292958514", grade: "MYP 4", program: "MYP" },
+  { id: "myp4-9", title: "Pearson MYP English Language Acquisition (Capable) 2nd Edition", author: "Saranya Srinivasan, Ingrid Perera, Rebecca Greive", subject: "English", publisher: "Pearson", isbn: "9781292958521", price: 37.47, availableFromPreviousYear: false, externalPurchaseUrl: "https://amazon.com/s?k=9781292958521", grade: "MYP 4", program: "MYP" },
+  { id: "myp4-10", title: "NUOVO Contatto B2", author: "BOZZONE COSTA R, GHEZZI C, PIANTONI M", subject: "Italian", publisher: "Loescher", isbn: "9788820136949", price: 29.50, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9788820136949", grade: "MYP 4", program: "MYP" },
+  { id: "myp4-11", title: "NUOVO Contatto C1", author: "BOZZONE COSTA R, GHEZZI C, PIANTONI M", subject: "Italian", publisher: "Loescher", isbn: "9788858308530", price: 30.50, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9788858308530", grade: "MYP 4", program: "MYP" },
+  { id: "myp4-12", title: "Promessi sposi", author: "A. Manzoni adapted by E. Lovato", subject: "Italian", publisher: "Eli", isbn: "9788853628206", price: 11.20, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9788853628206", grade: "MYP 4", program: "MYP" },
+  { id: "myp4-13", title: "IB MYP Global contexts 4-5", author: "SECOND EDITION Talei Kunkel, Danielle Trynoski et al.", subject: "Multi-subject", publisher: "Hodder", isbn: "9781398393707", price: 35.75, availableFromPreviousYear: false, externalPurchaseUrl: "https://amazon.com/s?k=9781398393707", grade: "MYP 4", program: "MYP" },
 
-  // PYP 4
-  { id: "pyp4-1", title: "Mathematics - Primary 4", subject: "Mathematics", publisher: "Cambridge", isbn: "978-1-108-74624-1", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/1108746241", grade: "PYP 4", program: "PYP" },
-  { id: "pyp4-2", title: "English Language Arts - Grade 4", subject: "English", publisher: "Oxford", isbn: "978-0-19-836475-2", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/0198364752", grade: "PYP 4", program: "PYP" },
-  { id: "pyp4-3", title: "Science Discovery - Level 4", subject: "Science", publisher: "Pearson", isbn: "978-0-13-469855-4", availableFromPreviousYear: false, externalPurchaseUrl: "https://amazon.com/dp/0134698554", grade: "PYP 4", program: "PYP" },
-  { id: "pyp4-4", title: "Italiano per Crescere 4", subject: "Italian", publisher: "Loescher", isbn: "978-88-201-6848-3", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.it/dp/8820168483", grade: "PYP 4", program: "PYP" },
-  { id: "pyp4-5", title: "History Through Time 4", subject: "History", publisher: "Hodder", isbn: "978-1-47185-621-7", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/1471856217", grade: "PYP 4", program: "PYP" },
+  // ==================== MYP 5 ====================
+  { id: "myp5-1", title: "MYP Geography years 4&5, Hodder", author: "A Dharani, R Zeller", subject: "Geography", publisher: "Hodder", isbn: "9781510425828", price: 51.28, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781510425828", grade: "MYP 5", program: "MYP" },
+  { id: "myp5-2", title: "MYP History years 4 & 5: a concept-based approach, Hodder", author: "Jo Thomas", subject: "History", publisher: "Hodder", isbn: "9781471841538", price: 49.50, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781471841538", grade: "MYP 5", program: "MYP" },
+  { id: "myp5-3", title: "Mathematics for MYP 4&5 standard, Hodder", author: "Marlene Torres-Skoumal, Rose Harrison, Clara Huizing", subject: "Mathematics", publisher: "Hodder", isbn: "9781471841538", price: 49.63, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781471841538", grade: "MYP 5", program: "MYP" },
+  { id: "myp5-4", title: "Mathematics for MYP 4&5 extended, Hodder", author: "Marlene Torres-Skoumal, Rose Harrison, Clara Huizing", subject: "Mathematics", publisher: "Hodder", isbn: "9781510425880", price: 49.63, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781510425880", grade: "MYP 5", program: "MYP" },
+  { id: "myp5-5", title: "MYP Biology years 4&5, Hodder", author: "Andrew Davis, Patricia Deo", subject: "Science", publisher: "Hodder", isbn: "9781510425811", price: 51.28, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781510425811", grade: "MYP 5", program: "MYP" },
+  { id: "myp5-6", title: "MYP Chemistry years 4&5, Hodder", author: "Annie Termaat & Gary Horner", subject: "Science", publisher: "Hodder", isbn: "9781510425774", price: 51.28, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781510425774", grade: "MYP 5", program: "MYP" },
+  { id: "myp5-7", title: "MYP Physics years 4&5, Hodder", author: "William Heathcote", subject: "Science", publisher: "Hodder", isbn: "9781510425835", price: 51.28, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781510425835", grade: "MYP 5", program: "MYP" },
+  { id: "myp5-8", title: "Pearson MYP English Language Acquisition (Proficient) 2nd", author: "Irina Birajdar, Ingrid Perera, Rebecca Grieve, Danielle Steyn", subject: "English", publisher: "Pearson", isbn: "9781292958514", price: 37.47, availableFromPreviousYear: false, externalPurchaseUrl: "https://amazon.com/s?k=9781292958514", grade: "MYP 5", program: "MYP" },
+  { id: "myp5-9", title: "Pearson MYP English Language Acquisition (Capable) 2nd Edition", author: "Saranya Srinivasan, Ingrid Perera, Rebecca Greive", subject: "English", publisher: "Pearson", isbn: "9781292958521", price: 37.47, availableFromPreviousYear: false, externalPurchaseUrl: "https://amazon.com/s?k=9781292958521", grade: "MYP 5", program: "MYP" },
+  { id: "myp5-10", title: "NUOVO Contatto C1", author: "BOZZONE COSTA R, GHEZZI C, PIANTONI M", subject: "Italian", publisher: "Loescher", isbn: "9788858308530", price: 30.50, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9788858308530", grade: "MYP 5", program: "MYP" },
+  { id: "myp5-11", title: "Promessi sposi", author: "A. Manzoni adapted by E. Lovato", subject: "Italian", publisher: "Eli", isbn: "9788853628206", price: 11.20, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9788853628206", grade: "MYP 5", program: "MYP" },
+  { id: "myp5-12", title: "IB MYP Global contexts 4-5", author: "SECOND EDITION Talei Kunkel, Danielle Trynoski et al.", subject: "Multi-subject", publisher: "Hodder", isbn: "9781398393707", price: 35.75, availableFromPreviousYear: false, externalPurchaseUrl: "https://amazon.com/s?k=9781398393707", grade: "MYP 5", program: "MYP" },
 
-  // PYP 5
-  { id: "pyp5-1", title: "Mathematics - Primary 5", subject: "Mathematics", publisher: "Cambridge", isbn: "978-1-108-74625-8", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/1108746258", grade: "PYP 5", program: "PYP" },
-  { id: "pyp5-2", title: "English Language Arts - Grade 5", subject: "English", publisher: "Oxford", isbn: "978-0-19-836476-9", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/0198364769", grade: "PYP 5", program: "PYP" },
-  { id: "pyp5-3", title: "Science Discovery - Level 5", subject: "Science", publisher: "Pearson", isbn: "978-0-13-469856-1", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/0134698561", grade: "PYP 5", program: "PYP" },
-  { id: "pyp5-4", title: "Italiano per Crescere 5", subject: "Italian", publisher: "Loescher", isbn: "978-88-201-6849-0", availableFromPreviousYear: false, externalPurchaseUrl: "https://amazon.it/dp/8820168490", grade: "PYP 5", program: "PYP" },
-  { id: "pyp5-5", title: "World Cultures 5", subject: "Social Studies", publisher: "Pearson", isbn: "978-0-13-445612-8", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/0134456128", grade: "PYP 5", program: "PYP" },
-
-  // MYP 1
-  { id: "myp1-1", title: "MYP Mathematics 1", subject: "Mathematics", publisher: "Hodder", isbn: "978-1-47185-701-6", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/1471857016", grade: "MYP 1", program: "MYP" },
-  { id: "myp1-2", title: "MYP English Language & Literature 1", subject: "English", publisher: "Cambridge", isbn: "978-1-108-72654-0", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/1108726540", grade: "MYP 1", program: "MYP" },
-  { id: "myp1-3", title: "MYP Sciences 1", subject: "Science", publisher: "Pearson", isbn: "978-0-13-598741-2", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/0135987412", grade: "MYP 1", program: "MYP" },
-  { id: "myp1-4", title: "Nuovo Contatto A1", subject: "Italian", publisher: "Loescher", isbn: "978-88-201-7012-7", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.it/dp/8820170127", grade: "MYP 1", program: "MYP" },
-  { id: "myp1-5", title: "MYP Individuals & Societies 1", subject: "Humanities", publisher: "Oxford", isbn: "978-0-19-839561-9", availableFromPreviousYear: false, externalPurchaseUrl: "https://amazon.com/dp/0198395619", grade: "MYP 1", program: "MYP" },
-  { id: "myp1-6", title: "MYP Design 1", subject: "Design", publisher: "Hodder", isbn: "978-1-47185-721-4", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/1471857214", grade: "MYP 1", program: "MYP" },
-
-  // MYP 2
-  { id: "myp2-1", title: "MYP Mathematics 2", subject: "Mathematics", publisher: "Hodder", isbn: "978-1-47185-702-3", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/1471857023", grade: "MYP 2", program: "MYP" },
-  { id: "myp2-2", title: "MYP English Language & Literature 2", subject: "English", publisher: "Cambridge", isbn: "978-1-108-72655-7", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/1108726557", grade: "MYP 2", program: "MYP" },
-  { id: "myp2-3", title: "MYP Sciences 2", subject: "Science", publisher: "Pearson", isbn: "978-0-13-598742-9", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/0135987429", grade: "MYP 2", program: "MYP" },
-  { id: "myp2-4", title: "Nuovo Contatto A2", subject: "Italian", publisher: "Loescher", isbn: "978-88-201-7013-4", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.it/dp/8820170134", grade: "MYP 2", program: "MYP" },
-  { id: "myp2-5", title: "MYP Individuals & Societies 2", subject: "Humanities", publisher: "Oxford", isbn: "978-0-19-839562-6", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/0198395626", grade: "MYP 2", program: "MYP" },
-
-  // MYP 3
-  { id: "myp3-1", title: "MYP Mathematics 3", subject: "Mathematics", publisher: "Hodder", isbn: "978-1-47185-703-0", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/1471857030", grade: "MYP 3", program: "MYP" },
-  { id: "myp3-2", title: "MYP English Language & Literature 3", subject: "English", publisher: "Cambridge", isbn: "978-1-108-72656-4", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/1108726564", grade: "MYP 3", program: "MYP" },
-  { id: "myp3-3", title: "MYP Biology 3", subject: "Biology", publisher: "Pearson", isbn: "978-0-13-598743-6", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/0135987436", grade: "MYP 3", program: "MYP" },
-  { id: "myp3-4", title: "MYP Chemistry 3", subject: "Chemistry", publisher: "Pearson", isbn: "978-0-13-598753-5", availableFromPreviousYear: false, externalPurchaseUrl: "https://amazon.com/dp/0135987535", grade: "MYP 3", program: "MYP" },
-  { id: "myp3-5", title: "Nuovo Contatto B1", subject: "Italian", publisher: "Loescher", isbn: "978-88-201-7014-1", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.it/dp/8820170141", grade: "MYP 3", program: "MYP" },
-
-  // MYP 4
-  { id: "myp4-1", title: "MYP Mathematics 4&5 Standard", subject: "Mathematics", publisher: "Hodder", isbn: "978-1-47185-704-7", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/1471857047", grade: "MYP 4", program: "MYP" },
-  { id: "myp4-2", title: "MYP English Language & Literature 4&5", subject: "English", publisher: "Cambridge", isbn: "978-1-108-72657-1", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/1108726571", grade: "MYP 4", program: "MYP" },
-  { id: "myp4-3", title: "MYP Physics 4&5", subject: "Physics", publisher: "Pearson", isbn: "978-0-13-598763-4", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/0135987634", grade: "MYP 4", program: "MYP" },
-  { id: "myp4-4", title: "MYP Biology 4&5", subject: "Biology", publisher: "Pearson", isbn: "978-0-13-598744-3", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/0135987443", grade: "MYP 4", program: "MYP" },
-  { id: "myp4-5", title: "Nuovo Contatto B2", subject: "Italian", publisher: "Loescher", isbn: "978-88-201-7015-8", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.it/dp/8820170158", grade: "MYP 4", program: "MYP" },
-
-  // MYP 5
-  { id: "myp5-1", title: "MYP Mathematics 4&5 Extended", subject: "Mathematics", publisher: "Hodder", isbn: "978-1-47185-705-4", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/1471857054", grade: "MYP 5", program: "MYP" },
-  { id: "myp5-2", title: "MYP English Language & Literature 4&5", subject: "English", publisher: "Cambridge", isbn: "978-1-108-72657-1", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/1108726571", grade: "MYP 5", program: "MYP" },
-  { id: "myp5-3", title: "MYP Chemistry 4&5", subject: "Chemistry", publisher: "Pearson", isbn: "978-0-13-598754-2", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/0135987542", grade: "MYP 5", program: "MYP" },
-  { id: "myp5-4", title: "MYP Global Politics", subject: "Politics", publisher: "Oxford", isbn: "978-0-19-839570-1", availableFromPreviousYear: false, externalPurchaseUrl: "https://amazon.com/dp/0198395701", grade: "MYP 5", program: "MYP" },
-  { id: "myp5-5", title: "Nuovo Contatto C1", subject: "Italian", publisher: "Loescher", isbn: "978-88-201-7016-5", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.it/dp/8820170165", grade: "MYP 5", program: "MYP" },
-
-  // DP 1
-  { id: "dp1-1", title: "IB Mathematics: Analysis & Approaches HL", subject: "Mathematics", publisher: "Oxford", isbn: "978-0-19-842711-1", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/0198427111", grade: "DP 1", program: "DP" },
-  { id: "dp1-2", title: "IB English A: Language & Literature", subject: "English", publisher: "Cambridge", isbn: "978-1-108-70494-4", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/1108704944", grade: "DP 1", program: "DP" },
-  { id: "dp1-3", title: "IB Physics Course Book", subject: "Physics", publisher: "Oxford", isbn: "978-0-19-839210-6", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/0198392106", grade: "DP 1", program: "DP" },
-  { id: "dp1-4", title: "IB Chemistry Course Book", subject: "Chemistry", publisher: "Oxford", isbn: "978-0-19-839213-7", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/0198392137", grade: "DP 1", program: "DP" },
-  { id: "dp1-5", title: "IB Biology Course Book", subject: "Biology", publisher: "Oxford", isbn: "978-0-19-839215-1", availableFromPreviousYear: false, externalPurchaseUrl: "https://amazon.com/dp/0198392151", grade: "DP 1", program: "DP" },
-  { id: "dp1-6", title: "IB Italian B", subject: "Italian", publisher: "Cambridge", isbn: "978-1-108-44062-5", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/1108440625", grade: "DP 1", program: "DP" },
-
-  // DP 2
-  { id: "dp2-1", title: "IB Mathematics: Analysis & Approaches HL", subject: "Mathematics", publisher: "Oxford", isbn: "978-0-19-842711-1", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/0198427111", grade: "DP 2", program: "DP" },
-  { id: "dp2-2", title: "IB English A: Language & Literature", subject: "English", publisher: "Cambridge", isbn: "978-1-108-70494-4", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/1108704944", grade: "DP 2", program: "DP" },
-  { id: "dp2-3", title: "IB History Course Book", subject: "History", publisher: "Oxford", isbn: "978-0-19-839240-3", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/0198392403", grade: "DP 2", program: "DP" },
-  { id: "dp2-4", title: "IB Economics Course Book", subject: "Economics", publisher: "Oxford", isbn: "978-0-19-842718-0", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/0198427180", grade: "DP 2", program: "DP" },
-  { id: "dp2-5", title: "IB TOK Course Book", subject: "TOK", publisher: "Oxford", isbn: "978-0-19-849782-4", availableFromPreviousYear: false, externalPurchaseUrl: "https://amazon.com/dp/0198497824", grade: "DP 2", program: "DP" },
+  // ==================== DP 1 ====================
+  { id: "dp1-1", title: "IB Biology Course Book, 2023", author: "Andrew Allot, David Mindorff", subject: "Biology", publisher: "Oxford", isbn: "9781382016339", price: 69.99, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781382016339", grade: "DP 1", program: "DP" },
+  { id: "dp1-2", title: "IB Chemistry Course Book 2023", author: "Bylikin, Horner, Murphy, Tarcy", subject: "Chemistry", publisher: "Oxford", isbn: "9781382016353", price: 69.99, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781382016353", grade: "DP 1", program: "DP" },
+  { id: "dp1-3", title: "IB Computer Science SL/HL", author: "Kostas Dimitriou, Markos Hatzitaskos", subject: "Computer Science", publisher: "Express Publishing", isbn: "9781471552335", price: 61.80, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781471552335", grade: "DP 1", program: "DP" },
+  { id: "dp1-4", title: "IB Economics Course Book 3rd edition 2020", author: "J. Blink and D. Dorton", subject: "Economics", publisher: "Oxford", isbn: "9781382004961", price: 59.50, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781382004961", grade: "DP 1", program: "DP" },
+  { id: "dp1-5", title: "Language A: language and literature for the IB Diploma", author: "Brad Philpot", subject: "English A: Language and Literature", publisher: "Cambridge", isbn: "9781107658424", price: 42.95, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781107658424", grade: "DP 1", program: "DP" },
+  { id: "dp1-6", title: "IB English B Course Companion 2ND Edition", author: "Kevin Morley, Kawther Saad Aldin", subject: "English B", publisher: "Oxford", isbn: "9780198422327", price: 60.62, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9780198422327", grade: "DP 1", program: "DP" },
+  { id: "dp1-7", title: "Environmental Systems and Societies Course Companion, 2nd edition", author: "J. Rutherford and G. Williams", subject: "Environmental Systems and Societies", publisher: "Oxford", isbn: "9780198332565", price: 57.00, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9780198332565", grade: "DP 1", program: "DP" },
+  { id: "dp1-8", title: "Geography Course Companion", author: "G. Nagle and B. Cooke", subject: "Geography", publisher: "Oxford", isbn: "9780198396031", price: 58.17, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9780198396031", grade: "DP 1", program: "DP" },
+  { id: "dp1-9", title: "IB History - Paper 3: Italy (1815-1871) and Germany (1815-1890)", author: "Mike Wells", subject: "History", publisher: "Cambridge", isbn: "9781316503652", price: 28.00, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781316503652", grade: "DP 1", program: "DP" },
+  { id: "dp1-10", title: "Access to History for the IB Diploma: Causes and effects of 20th-century wars Study and Revision Guide: Paper 2", author: "Andy Dailey, Price, Thomas", subject: "History", publisher: "Hodder", isbn: "9781510432369", price: 22.00, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781510432369", grade: "DP 1", program: "DP" },
+  { id: "dp1-11", title: "IB History - Paper 2: Authoritarian States", author: "B. Habibi et al.", subject: "History", publisher: "Cambridge", isbn: "9781107558892", price: 36.00, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781107558892", grade: "DP 1", program: "DP" },
+  { id: "dp1-12", title: "History for the IB Diploma Paper 2 Causes and Effects of 20th Century Wars", author: "WELLS", subject: "History", publisher: "Cambridge", isbn: "9781107560864", price: 36.00, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781107560864", grade: "DP 1", program: "DP" },
+  { id: "dp1-13", title: "Access to History: The Cold War 1941-95", author: "David Williamson", subject: "History", publisher: "Hodder", isbn: "9781510459144", price: 23.10, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781510459144", grade: "DP 1", program: "DP" },
+  { id: "dp1-14", title: "NUOVO Contatto C1", author: "BOZZONE COSTA R, GHEZZI C, PIANTONI M", subject: "Italian B", publisher: "Loescher", isbn: "9788858308530", price: 30.50, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9788858308530", grade: "DP 1", program: "DP" },
+  { id: "dp1-15", title: "IB Mathematics: applications and interpretation SL", author: "P. Fannon et al.", subject: "Mathematics: Applications and Interpretation SL", publisher: "Hodder", isbn: "9781510462380", price: 58.10, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781510462380", grade: "DP 1", program: "DP" },
+  { id: "dp1-16", title: "IB Mathematics: applications and interpretation HL", author: "P. Fannon et al.", subject: "Mathematics: Applications and Interpretation HL", publisher: "Hodder", isbn: "9781510462359", price: 58.10, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781510462359", grade: "DP 1", program: "DP" },
+  { id: "dp1-17", title: "IB Mathematics: analysis and approaches SL", author: "Fannon et al.", subject: "Mathematics: Analysis and Approaches SL", publisher: "Hodder", isbn: "9781510462366", price: 58.10, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781510462366", grade: "DP 1", program: "DP" },
+  { id: "dp1-18", title: "IB Mathematics: analysis and approaches HL", author: "Fannon et al.", subject: "Mathematics: Analysis and Approaches HL", publisher: "Hodder", isbn: "9781510462373", price: 58.10, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781510462373", grade: "DP 1", program: "DP" },
+  { id: "dp1-19", title: "IB Physics Course Book 2023 Edition", author: "Homer, Bowen-Jones", subject: "Physics", publisher: "Oxford", isbn: "9781382016421", price: 64.50, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781382016421", grade: "DP 1", program: "DP" },
+  { id: "dp1-20", title: "Psychology for the IB Diploma 2nd", author: "J. Popov and L. Parker", subject: "Psychology", publisher: "Cambridge", isbn: "9781009190534", price: 53.00, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781009190534", grade: "DP 1", program: "DP" },
+  { id: "dp1-21", title: "Español B for the IB diploma Teacher's Resource Book", author: "Sebastian Bianchi, Mike Thacker", subject: "Spanish B", publisher: "Hodder", isbn: "9781510447622", price: 135.00, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781510447622", grade: "DP 1", program: "DP" },
+  { id: "dp1-22", title: "Theory of Knowledge 3rd edition", author: "Nicholas Alchin and Carolyn P. Henly", subject: "Theory of Knowledge", publisher: "Hodder", isbn: "9781471804168", price: 52.50, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781471804168", grade: "DP 1", program: "DP" },
+  { id: "dp1-23", title: "Visual Arts for the IB Diploma", author: "H. Glanville and J. Gray", subject: "Visual Arts", publisher: "Cambridge", isbn: "9781316638361", price: 38.00, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781316638361", grade: "DP 1", program: "DP" },
+  { id: "dp1-24", title: "Letture in corso 2 – Una storia italiana", author: "Silvana Cantini, Alessandro De Giuli", subject: "Italian A", publisher: "Alma Edizioni", isbn: "9788889237151", price: 14.90, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9788889237151", grade: "DP 1", program: "DP" },
+  { id: "dp1-25", title: "Qualcosa di scritto", author: "Emanuele Trevi", subject: "Italian A", publisher: "Ponte alle Grazie", isbn: "9788833311555", price: 12.00, availableFromPreviousYear: false, externalPurchaseUrl: "https://amazon.com/s?k=9788833311555", grade: "DP 1", program: "DP" },
+  { id: "dp1-26", title: "Goffredo Parise, Sillabari", subject: "Italian A", publisher: "Adelphi", isbn: "9788845904387", price: 15.00, availableFromPreviousYear: false, externalPurchaseUrl: "https://amazon.com/s?k=9788845904387", grade: "DP 1", program: "DP" },
+  { id: "dp1-27", title: "La lunga vita di Marianna Ucrìa", author: "Dacia Maraini", subject: "Italian A", publisher: "BUR", isbn: "9788817103077", price: 12.50, availableFromPreviousYear: false, externalPurchaseUrl: "https://amazon.com/s?k=9788817103077", grade: "DP 1", program: "DP" },
+  { id: "dp1-28", title: "IB DIPLOMA Business Management Course Book", author: "Martin Mwenda Muchena, Loykie Lomine et. al", subject: "Business Management", publisher: "Oxford", isbn: "9781382016773", price: 62.00, availableFromPreviousYear: false, externalPurchaseUrl: "https://amazon.com/s?k=9781382016773", grade: "DP 1", program: "DP" },
+  { id: "dp1-29", title: "French B for the IB Diploma 2nd Edition", author: "TRUMPER / ISRAEL", subject: "French B", publisher: "Hodder", isbn: "9781510446564", price: 50.85, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781510446564", grade: "DP 1", program: "DP" },
+  { id: "dp1-30", title: "IB Global Politics", author: "Murphy, Gleek, Katsaounis", subject: "Global Politics", publisher: "Oxford", isbn: "9780198310150", price: 53.65, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9780198310150", grade: "DP 1", program: "DP" },
+  { id: "dp1-31", title: "Mandarin B", author: "Liu, Cai, Liu, Yan", subject: "Mandarin B", publisher: "Oxford", isbn: "9780198395362", price: 52.55, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9780198395362", grade: "DP 1", program: "DP" },
+  
+  // ==================== DP 2 ====================
+  { id: "dp2-1", title: "IB Biology Course Book, 2023", author: "Andrew Allot, David Mindorff", subject: "Biology", publisher: "Oxford", isbn: "9781382016339", price: 69.99, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781382016339", grade: "DP 2", program: "DP" },
+  { id: "dp2-2", title: "IB Chemistry Course Book 2023", author: "Bylikin, Horner, Murphy, Tarcy", subject: "Chemistry", publisher: "Oxford", isbn: "9781382016353", price: 69.99, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781382016353", grade: "DP 2", program: "DP" },
+  { id: "dp2-3", title: "IB Computer Science SL/HL", author: "Kostas Dimitriou, Markos Hatzitaskos", subject: "Computer Science", publisher: "Express Publishing", isbn: "9781471552335", price: 61.80, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781471552335", grade: "DP 2", program: "DP" },
+  { id: "dp2-4", title: "IB Economics Course Book 3rd edition 2020", author: "J. Blink and D. Dorton", subject: "Economics", publisher: "Oxford", isbn: "9781382004961", price: 59.50, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781382004961", grade: "DP 2", program: "DP" },
+  { id: "dp2-5", title: "Language A: language and literature for the IB Diploma", author: "Brad Philpot", subject: "English A: Language and Literature", publisher: "Cambridge", isbn: "9781107658424", price: 42.95, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781107658424", grade: "DP 2", program: "DP" },
+  { id: "dp2-6", title: "IB English B Course Companion 2ND Edition", author: "Kevin Morley, Kawther Saad Aldin", subject: "English B", publisher: "Oxford", isbn: "9780198422327", price: 60.62, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9780198422327", grade: "DP 2", program: "DP" },
+  { id: "dp2-7", title: "Environmental Systems and Societies Course Companion, 2nd edition", author: "J. Rutherford and G. Williams", subject: "Environmental Systems and Societies", publisher: "Oxford", isbn: "9780198332565", price: 57.00, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9780198332565", grade: "DP 2", program: "DP" },
+  { id: "dp2-8", title: "Geography Course Companion", author: "G. Nagle and B. Cooke", subject: "Geography", publisher: "Oxford", isbn: "9780198396031", price: 58.17, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9780198396031", grade: "DP 2", program: "DP" },
+  { id: "dp2-9", title: "IB History - Paper 3: Italy (1815-1871) and Germany (1815-1890)", author: "Mike Wells", subject: "History", publisher: "Cambridge", isbn: "9781316503652", price: 28.00, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781316503652", grade: "DP 2", program: "DP" },
+  { id: "dp2-10", title: "Access to History for the IB Diploma: Causes and effects of 20th-century wars Study and Revision Guide: Paper 2", author: "Andy Dailey, Price, Thomas", subject: "History", publisher: "Hodder", isbn: "9781510432369", price: 22.00, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781510432369", grade: "DP 2", program: "DP" },
+  { id: "dp2-11", title: "IB History - Paper 2: Authoritarian States", author: "B. Habibi et al.", subject: "History", publisher: "Cambridge", isbn: "9781107558892", price: 36.00, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781107558892", grade: "DP 2", program: "DP" },
+  { id: "dp2-12", title: "History for the IB Diploma Paper 2 Causes and Effects of 20th Century Wars", author: "WELLS", subject: "History", publisher: "Cambridge", isbn: "9781107560864", price: 36.00, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781107560864", grade: "DP 2", program: "DP" },
+  { id: "dp2-13", title: "Access to History: The Cold War 1941-95", author: "David Williamson", subject: "History", publisher: "Hodder", isbn: "9781510459144", price: 23.10, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781510459144", grade: "DP 2", program: "DP" },
+  { id: "dp2-14", title: "NUOVO Contatto C1", author: "BOZZONE COSTA R, GHEZZI C, PIANTONI M", subject: "Italian B", publisher: "Loescher", isbn: "9788858308530", price: 30.50, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9788858308530", grade: "DP 2", program: "DP" },
+  { id: "dp2-15", title: "IB Mathematics: applications and interpretation SL", author: "P. Fannon et al.", subject: "Mathematics: Applications and Interpretation SL", publisher: "Hodder", isbn: "9781510462380", price: 58.10, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781510462380", grade: "DP 2", program: "DP" },
+  { id: "dp2-16", title: "IB Mathematics: applications and interpretation HL", author: "P. Fannon et al.", subject: "Mathematics: Applications and Interpretation HL", publisher: "Hodder", isbn: "9781510462359", price: 58.10, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781510462359", grade: "DP 2", program: "DP" },
+  { id: "dp2-17", title: "IB Mathematics: analysis and approaches SL", author: "Fannon et al.", subject: "Mathematics: Analysis and Approaches SL", publisher: "Hodder", isbn: "9781510462366", price: 58.10, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781510462366", grade: "DP 2", program: "DP" },
+  { id: "dp2-18", title: "IB Mathematics: analysis and approaches HL", author: "Fannon et al.", subject: "Mathematics: Analysis and Approaches HL", publisher: "Hodder", isbn: "9781510462373", price: 58.10, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781510462373", grade: "DP 2", program: "DP" },
+  { id: "dp2-19", title: "IB Physics Course Book 2023 Edition", author: "Homer, Bowen-Jones", subject: "Physics", publisher: "Oxford", isbn: "9781382016421", price: 64.50, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781382016421", grade: "DP 2", program: "DP" },
+  { id: "dp2-20", title: "Psychology for the IB Diploma 2nd", author: "J. Popov and L. Parker", subject: "Psychology", publisher: "Cambridge", isbn: "9781009190534", price: 53.00, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781009190534", grade: "DP 2", program: "DP" },
+  { id: "dp2-21", title: "Español B for the IB diploma Teacher's Resource Book", author: "Sebastian Bianchi, Mike Thacker", subject: "Spanish B", publisher: "Hodder", isbn: "9781510447622", price: 135.00, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781510447622", grade: "DP 2", program: "DP" },
+  { id: "dp2-22", title: "Theory of Knowledge 3rd edition", author: "Nicholas Alchin and Carolyn P. Henly", subject: "Theory of Knowledge", publisher: "Hodder", isbn: "9781471804168", price: 52.50, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781471804168", grade: "DP 2", program: "DP" },
+  { id: "dp2-23", title: "Visual Arts for the IB Diploma", author: "H. Glanville and J. Gray", subject: "Visual Arts", publisher: "Cambridge", isbn: "9781316638361", price: 38.00, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781316638361", grade: "DP 2", program: "DP" },
+  { id: "dp2-24", title: "Letture in corso 2 – Una storia italiana", author: "Silvana Cantini, Alessandro De Giuli", subject: "Italian A", publisher: "Alma Edizioni", isbn: "9788889237151", price: 14.90, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9788889237151", grade: "DP 2", program: "DP" },
+  { id: "dp2-25", title: "La casa in collina", author: "Cesare Pavese", subject: "Italian A", publisher: "Einaudi", isbn: "9788806219352", price: 11.50, availableFromPreviousYear: false, externalPurchaseUrl: "https://amazon.com/s?k=9788806219352", grade: "DP 2", program: "DP" },
+  { id: "dp2-26", title: "La Storia", author: "Elsa Morante", subject: "Italian A", publisher: "Einaudi", isbn: "9788806219369", price: 16.00, availableFromPreviousYear: false, externalPurchaseUrl: "https://amazon.com/s?k=9788806219369", grade: "DP 2", program: "DP" },
+  { id: "dp2-27", title: "Mio padre", author: "E. De Luca", subject: "Italian A", publisher: "Feltrinelli", isbn: "9788807886324", price: 9.50, availableFromPreviousYear: false, externalPurchaseUrl: "https://amazon.com/s?k=9788807886324", grade: "DP 2", program: "DP" },
+  { id: "dp2-28", title: "Se questo è un uomo", author: "Primo Levi", subject: "Italian A", publisher: "Einaudi", isbn: "9788806219314", price: 12.50, availableFromPreviousYear: false, externalPurchaseUrl: "https://amazon.com/s?k=9788806219314", grade: "DP 2", program: "DP" },
+  { id: "dp2-29", title: "IB DIPLOMA Business Management Course Book", author: "Martin Mwenda Muchena, Loykie Lomine et. al", subject: "Business Management", publisher: "Oxford", isbn: "9781382016773", price: 62.00, availableFromPreviousYear: false, externalPurchaseUrl: "https://amazon.com/s?k=9781382016773", grade: "DP 2", program: "DP" },
+  { id: "dp2-30", title: "French B for the IB Diploma 2nd Edition", author: "TRUMPER / ISRAEL", subject: "French B", publisher: "Hodder", isbn: "9781510446564", price: 50.85, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9781510446564", grade: "DP 2", program: "DP" },
+  { id: "dp2-31", title: "IB Global Politics", author: "Murphy, Gleek, Katsaounis", subject: "Global Politics", publisher: "Oxford", isbn: "9780198310150", price: 53.65, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9780198310150", grade: "DP 2", program: "DP" },
+  { id: "dp2-32", title: "Mandarin B", author: "Liu, Cai, Liu, Yan", subject: "Mandarin B", publisher: "Oxford", isbn: "9780198395362", price: 52.55, availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/s?k=9780198395362", grade: "DP 2", program: "DP" },
 ];
 
 // Summer Reading / Recommended Books
@@ -130,45 +228,99 @@ export const summerReadingBooks: OfficialBook[] = [
   { id: "sr-dp-3", title: "Crime and Punishment", subject: "Summer Reading", publisher: "Penguin", isbn: "978-0-14-044913-6", availableFromPreviousYear: true, externalPurchaseUrl: "https://amazon.com/dp/0140449132", grade: "DP 1-2", program: "DP", isSummerReading: true },
 ];
 
-// Mock listings data
+// Mock listings data for demonstration
 export const mockListings: Record<string, BookListing[]> = {
-  "pyp1-1": [
-    { id: "l1", type: "sale", price: 15, condition: "asNew", sellerRating: 4.8, sellerName: "Maria R.", sellerCompletedExchanges: 12 },
-    { id: "l2", type: "sale", price: 12, condition: "used", sellerRating: 4.5, sellerName: "Giovanni P.", sellerCompletedExchanges: 8 },
+  "myp1-5": [
+    { id: "l1", type: "sale", price: 30, condition: "asNew", sellerRating: 4.8, sellerName: "Marco R.", sellerCompletedExchanges: 12 },
+    { id: "l2", type: "sale", price: 25, condition: "used", sellerRating: 4.5, sellerName: "Sofia B.", sellerCompletedExchanges: 8 },
   ],
-  "pyp1-2": [
-    { id: "l3", type: "donation", condition: "used", sellerRating: 5.0, sellerName: "Laura B.", sellerCompletedExchanges: 15 },
+  "myp1-6": [
+    { id: "l3", type: "donation", condition: "used", sellerRating: 5.0, sellerName: "Elena G.", sellerCompletedExchanges: 15 },
   ],
-  "pyp1-3": [
-    { id: "l4", type: "exchange", condition: "asNew", sellerRating: 4.2, sellerName: "Marco T.", sellerCompletedExchanges: 5 },
-  ],
-  "pyp2-1": [
-    { id: "l5", type: "sale", price: 18, condition: "new", sellerRating: 4.9, sellerName: "Sofia L.", sellerCompletedExchanges: 20 },
-  ],
-  "pyp3-2": [
-    { id: "l6", type: "sale", price: 10, condition: "used", sellerRating: 4.0, sellerName: "Andrea M.", sellerCompletedExchanges: 3 },
-    { id: "l7", type: "donation", condition: "used", sellerRating: 4.7, sellerName: "Elena F.", sellerCompletedExchanges: 9 },
-  ],
-  "myp1-1": [
-    { id: "l8", type: "sale", price: 25, condition: "asNew", sellerRating: 4.6, sellerName: "Roberto C.", sellerCompletedExchanges: 7 },
-  ],
-  "myp2-2": [
-    { id: "l9", type: "exchange", condition: "used", sellerRating: 4.3, sellerName: "Giulia V.", sellerCompletedExchanges: 4 },
+  "myp2-3": [
+    { id: "l4", type: "sale", price: 35, condition: "asNew", sellerRating: 4.9, sellerName: "Luca M.", sellerCompletedExchanges: 20 },
+    { id: "l5", type: "sale", price: 28, condition: "used", sellerRating: 4.2, sellerName: "Anna P.", sellerCompletedExchanges: 5 },
+    { id: "l6", type: "exchange", condition: "asNew", sellerRating: 4.7, sellerName: "Pietro S.", sellerCompletedExchanges: 9 },
   ],
   "dp1-1": [
-    { id: "l10", type: "sale", price: 35, condition: "asNew", sellerRating: 5.0, sellerName: "Alessandro B.", sellerCompletedExchanges: 18 },
-    { id: "l11", type: "sale", price: 30, condition: "used", sellerRating: 4.4, sellerName: "Chiara N.", sellerCompletedExchanges: 6 },
+    { id: "l7", type: "sale", price: 50, condition: "asNew", sellerRating: 4.9, sellerName: "Francesco L.", sellerCompletedExchanges: 18 },
+    { id: "l8", type: "sale", price: 45, condition: "used", sellerRating: 4.6, sellerName: "Giulia T.", sellerCompletedExchanges: 11 },
   ],
-  "sr-pyp-1": [
-    { id: "l12", type: "donation", condition: "used", sellerRating: 4.8, sellerName: "Francesca D.", sellerCompletedExchanges: 11 },
-  ],
-  "sr-myp-3": [
-    { id: "l13", type: "sale", price: 8, condition: "used", sellerRating: 4.1, sellerName: "Luca P.", sellerCompletedExchanges: 2 },
+  "dp1-19": [
+    { id: "l9", type: "sale", price: 48, condition: "asNew", sellerRating: 4.8, sellerName: "Alessandro V.", sellerCompletedExchanges: 14 },
   ],
 };
 
-// Helper to get Amazon list URL for a grade
-export const getAmazonListUrl = (grade: string): string => {
-  // In a real app, this would return actual Amazon affiliate list URLs
-  return `https://amazon.com/hz/wishlist/school-books-${grade.toLowerCase().replace(' ', '-')}`;
+// Helper function to get unique subjects for a specific grade
+export const getSubjectsForGrade = (grade: string): string[] => {
+  const books = officialBooks.filter(book => book.grade === grade);
+  const subjects = [...new Set(books.map(book => book.subject))];
+  return subjects.sort();
+};
+
+// Helper function to get books for specific subjects
+export const getBooksForSubjects = (grade: string, subjects: string[]): OfficialBook[] => {
+  return officialBooks.filter(
+    book => book.grade === grade && subjects.includes(book.subject)
+  );
+};
+
+// Helper function to calculate price range for used books
+export const getPriceRange = (bookId: string): { min: number; max: number } | null => {
+  const listings = mockListings[bookId];
+  if (!listings || listings.length === 0) return null;
+  
+  const prices = listings
+    .filter(l => l.type === "sale" && l.price !== undefined)
+    .map(l => l.price as number);
+  
+  if (prices.length === 0) return null;
+  
+  return {
+    min: Math.min(...prices),
+    max: Math.max(...prices)
+  };
+};
+
+// Helper function to get Amazon list URL for a specific grade
+export const getAmazonListUrl = (grade: string, program: string): string => {
+  // Base Amazon affiliate URL - would be customized with actual affiliate links
+  return `https://amazon.com/hz/wishlist/ls/SCHOOL_BOOKS_${program}_${grade.replace(" ", "_")}`;
+};
+
+// Helper to check if a book should be kept for next year
+export const shouldKeepForNextYear = (
+  bookIsbn: string, 
+  currentGrade: string, 
+  program: string
+): boolean => {
+  // Get the next grade
+  const gradeNum = parseInt(currentGrade.split(" ")[1]);
+  const nextGrade = `${program} ${gradeNum + 1}`;
+  
+  // Check if the same book (by ISBN) is needed in the next grade
+  const nextYearBooks = officialBooks.filter(b => b.grade === nextGrade);
+  return nextYearBooks.some(b => b.isbn === bookIsbn);
+};
+
+// Get books that can be sold (not needed next year)
+export const getSellableBooks = (currentGrade: string, program: string): OfficialBook[] => {
+  const currentBooks = officialBooks.filter(
+    b => b.grade === currentGrade && b.program === program
+  );
+  
+  return currentBooks.filter(book => 
+    book.isbn && !shouldKeepForNextYear(book.isbn, currentGrade, program)
+  );
+};
+
+// Get books that should be kept for next year
+export const getBooksToKeep = (currentGrade: string, program: string): OfficialBook[] => {
+  const currentBooks = officialBooks.filter(
+    b => b.grade === currentGrade && b.program === program
+  );
+  
+  return currentBooks.filter(book => 
+    book.isbn && shouldKeepForNextYear(book.isbn, currentGrade, program)
+  );
 };

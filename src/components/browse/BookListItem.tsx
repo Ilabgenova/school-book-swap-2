@@ -10,7 +10,7 @@ import {
   Tag,
   Check,
 } from "lucide-react";
-import { OfficialBook, BookListing } from "@/data/officialBooks";
+import { OfficialBook, BookListing, getPriceRange } from "@/data/officialBooks";
 
 interface BookListItemProps {
   book: OfficialBook;
@@ -34,9 +34,7 @@ export const BookListItem = ({
   const { t } = useLanguage();
   const availableCount = listings.length;
   const hasDonations = listings.some((l) => l.type === "donation");
-  const lowestPrice = listings
-    .filter((l) => l.type === "sale" && l.price)
-    .reduce((min, l) => (l.price && l.price < min ? l.price : min), Infinity);
+  const priceRange = getPriceRange(book.id);
 
   return (
     <div
@@ -130,9 +128,9 @@ export const BookListItem = ({
                     {t.browse.donationAvailable}
                   </Badge>
                 )}
-                {lowestPrice !== Infinity && (
+                {priceRange && (
                   <span className="text-sm text-primary font-medium">
-                    {t.browse.from} €{lowestPrice}
+                    {t.browse.usedPriceRange}: €{priceRange.min}{priceRange.min !== priceRange.max && ` - €${priceRange.max}`}
                   </span>
                 )}
               </>

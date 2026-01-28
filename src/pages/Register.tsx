@@ -1,13 +1,47 @@
+import { useState } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { LanguageProvider, useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "react-router-dom";
-import { BookOpen, ArrowRight, Ticket } from "lucide-react";
+import { BookOpen, ArrowRight, Ticket, School, UserPlus } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { BooksToSellSuggestion } from "@/components/browse/BooksToSellSuggestion";
+
+const grades = {
+  PYP: ["PYP 1", "PYP 2", "PYP 3", "PYP 4", "PYP 5"],
+  MYP: ["MYP 1", "MYP 2", "MYP 3", "MYP 4", "MYP 5"],
+  DP: ["DP 1", "DP 2"],
+};
 
 const RegisterContent = () => {
   const { t } = useLanguage();
+  const [isFromDIS, setIsFromDIS] = useState<boolean | null>(null);
+  const [previousGrade, setPreviousGrade] = useState<string>("");
+  const [previousProgram, setPreviousProgram] = useState<string>("");
+
+  const handleSchoolOrigin = (fromDIS: boolean) => {
+    setIsFromDIS(fromDIS);
+    if (!fromDIS) {
+      setPreviousGrade("");
+      setPreviousProgram("");
+    }
+  };
+
+  const handleGradeSelect = (grade: string) => {
+    setPreviousGrade(grade);
+    // Determine program from grade
+    if (grade.startsWith("PYP")) setPreviousProgram("PYP");
+    else if (grade.startsWith("MYP")) setPreviousProgram("MYP");
+    else if (grade.startsWith("DP")) setPreviousProgram("DP");
+  };
 
   return (
     <MainLayout showFooter={false}>
@@ -42,6 +76,61 @@ const RegisterContent = () => {
                   You need an invite code from your school to register.
                 </p>
               </div>
+
+              {/* School Origin Question */}
+              <div className="space-y-3">
+                <Label className="flex items-center gap-2">
+                  <School className="h-4 w-4 text-primary" />
+                  {t.browse.schoolOriginQuestion}
+                </Label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => handleSchoolOrigin(true)}
+                    className={`p-4 rounded-xl border-2 text-center transition-all ${
+                      isFromDIS === true
+                        ? "border-primary bg-primary/5"
+                        : "border-border hover:border-primary/50"
+                    }`}
+                  >
+                    <School className="h-6 w-6 mx-auto mb-2 text-primary" />
+                    <span className="text-sm font-medium">{t.browse.fromDISSchool}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleSchoolOrigin(false)}
+                    className={`p-4 rounded-xl border-2 text-center transition-all ${
+                      isFromDIS === false
+                        ? "border-primary bg-primary/5"
+                        : "border-border hover:border-primary/50"
+                    }`}
+                  >
+                    <UserPlus className="h-6 w-6 mx-auto mb-2 text-accent" />
+                    <span className="text-sm font-medium">{t.browse.newToDIS}</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Previous Grade Selection - shown only if from DIS */}
+              {isFromDIS && (
+                <div className="space-y-2">
+                  <Label>Previous Grade (Last Year)</Label>
+                  <Select onValueChange={handleGradeSelect} value={previousGrade}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select your previous grade" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.entries(grades).map(([program, programGrades]) => (
+                        programGrades.map((grade) => (
+                          <SelectItem key={grade} value={grade}>
+                            {grade}
+                          </SelectItem>
+                        ))
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -116,6 +205,14 @@ const RegisterContent = () => {
               </p>
             </div>
           </div>
+
+          {/* Books to Sell Suggestion - shown if from DIS and grade selected */}
+          {isFromDIS && previousGrade && previousProgram && (
+            <BooksToSellSuggestion
+              previousGrade={previousGrade}
+              previousProgram={previousProgram}
+            />
+          )}
         </div>
       </div>
     </MainLayout>
