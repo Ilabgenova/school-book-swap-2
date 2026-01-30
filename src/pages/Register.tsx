@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "react-router-dom";
-import { BookOpen, ArrowRight, Ticket, School, UserPlus } from "lucide-react";
+import { BookOpen, ArrowRight, School, UserPlus, Euro } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -61,21 +61,6 @@ const RegisterContent = () => {
 
           <div className="bg-card rounded-2xl border border-border p-6 shadow-lg">
             <form className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="inviteCode" className="flex items-center gap-2">
-                  <Ticket className="h-4 w-4 text-primary" />
-                  Invite Code
-                </Label>
-                <Input
-                  id="inviteCode"
-                  type="text"
-                  placeholder="Enter your school invite code"
-                  required
-                />
-                <p className="text-xs text-muted-foreground">
-                  You need an invite code from your school to register.
-                </p>
-              </div>
 
               {/* School Origin Question */}
               <div className="space-y-3">
@@ -191,7 +176,7 @@ const RegisterContent = () => {
 
             <div className="mt-4 p-3 bg-accent/10 rounded-lg border border-accent/20">
               <p className="text-xs text-accent flex items-center gap-2">
-                <Ticket className="h-4 w-4" />
+                <Euro className="h-4 w-4" />
                 <span>€5 {t.common.perYear} - charged only on first transaction</span>
               </p>
             </div>
