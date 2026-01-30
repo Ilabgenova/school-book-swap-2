@@ -101,9 +101,15 @@ export const translations = {
       affiliateLink: "Link affiliato",
       saveMoney: "Risparmia",
       ecoFriendly: "Ecosostenibile",
-      // Summer reading
+      // Additional recommended books
       summerReading: "Letture Estive",
       recommendedReading: "Libri consigliati per l'estate",
+      additionalRecommendedBooks: "Libri Consigliati Aggiuntivi",
+      additionalRecommendedBooksDesc: "Letture consigliate per il tuo livello",
+      // Other schools market
+      checkOtherSchools: "Cerca in altre scuole",
+      checkOtherSchoolsDesc: "Libro non disponibile? Cerca nei mercati di altre scuole IB",
+      otherSchoolsMarket: "Mercato Altre Scuole",
       schoolYear: "Anno Scolastico",
       // DP Subject Selection
       selectDPSubjects: "Seleziona le tue materie",
@@ -280,9 +286,15 @@ export const translations = {
       affiliateLink: "Affiliate link",
       saveMoney: "Save Money",
       ecoFriendly: "Eco-friendly",
-      // Summer reading
+      // Additional recommended books
       summerReading: "Summer Reading",
       recommendedReading: "Recommended books for summer",
+      additionalRecommendedBooks: "Additional Recommended Books",
+      additionalRecommendedBooksDesc: "Recommended reading for your level",
+      // Other schools market
+      checkOtherSchools: "Check other schools",
+      checkOtherSchoolsDesc: "Book not available? Search in other IB school markets",
+      otherSchoolsMarket: "Other Schools Market",
       schoolYear: "School Year",
       // DP Subject Selection
       selectDPSubjects: "Select your subjects",

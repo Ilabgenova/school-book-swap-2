@@ -2,7 +2,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
-import { ArrowRight, Users, BookOpen, Recycle, Heart, Shield, Leaf, HandHeart, CheckCircle2 } from "lucide-react";
+import { ArrowRight, Users, BookOpen, Recycle, Heart, Leaf, HandHeart, CheckCircle2 } from "lucide-react";
 import heroImage from "@/assets/hero-books.jpg";
 
 export const HeroSection = () => {
@@ -53,10 +53,6 @@ export const HeroSection = () => {
 
             {/* Trust indicators */}
             <div className="flex flex-wrap gap-4 justify-center lg:justify-start pt-4 animate-fade-in" style={{ animationDelay: "0.3s" }}>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Shield className="h-4 w-4 text-primary" />
-                <span>Invite-only</span>
-              </div>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Leaf className="h-4 w-4 text-primary" />
                 <span>Eco-friendly</span>

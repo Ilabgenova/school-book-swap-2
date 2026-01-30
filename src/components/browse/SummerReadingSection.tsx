@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Sun, BookOpen, ExternalLink, ChevronDown, ChevronUp } from "lucide-react";
+import { BookOpenCheck, BookOpen, ExternalLink, ChevronDown, ChevronUp } from "lucide-react";
 import { summerReadingBooks, mockListings, OfficialBook } from "@/data/officialBooks";
 import { ListingsModal } from "./ListingsModal";
 
@@ -37,22 +37,22 @@ export const SummerReadingSection = ({
   if (relevantBooks.length === 0) return null;
 
   return (
-    <div className="rounded-2xl border-2 border-amber-200 bg-amber-50/50 dark:bg-amber-950/20 dark:border-amber-800 overflow-hidden">
+    <div className="rounded-2xl border-2 border-primary/20 bg-primary/5 dark:bg-primary/10 overflow-hidden">
       {/* Header */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-between p-4 hover:bg-amber-100/50 dark:hover:bg-amber-900/20 transition-colors"
+        className="w-full flex items-center justify-between p-4 hover:bg-primary/10 transition-colors"
       >
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-amber-500/20 flex items-center justify-center">
-            <Sun className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+          <div className="h-10 w-10 rounded-xl bg-primary/20 flex items-center justify-center">
+            <BookOpenCheck className="h-5 w-5 text-primary" />
           </div>
           <div className="text-left">
             <h3 className="font-display font-bold text-foreground">
-              {t.browse.summerReading}
+              {t.browse.additionalRecommendedBooks}
             </h3>
             <p className="text-sm text-muted-foreground">
-              {t.browse.recommendedReading}
+              {t.browse.additionalRecommendedBooksDesc}
             </p>
           </div>
         </div>
