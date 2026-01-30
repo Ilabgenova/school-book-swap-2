@@ -130,6 +130,15 @@ export const translations = {
       booksToSellDescription: "In base alla tua classe precedente, questi libri potrebbero non servirti più",
       keepForNextYear: "Tieni per l'anno prossimo",
       bookNeededNextYear: "Questo libro ti servirà l'anno prossimo",
+      // Payment
+      paymentBreakdown: "Riepilogo Pagamento",
+      bookPrice: "Prezzo libro (al venditore)",
+      serviceFee: "Commissione servizio",
+      total: "Totale",
+      paymentNote: "Il prezzo del libro va direttamente al venditore. La commissione di €0.50 supporta la piattaforma.",
+      selectPaymentMethod: "Seleziona metodo di pagamento",
+      payNow: "Paga ora",
+      reserveBook: "Prenota Libro",
     },
     // Common
     common: {
@@ -315,6 +324,15 @@ export const translations = {
       booksToSellDescription: "Based on your previous grade, you might not need these books anymore",
       keepForNextYear: "Keep for next year",
       bookNeededNextYear: "This book will be needed next year",
+      // Payment
+      paymentBreakdown: "Payment Breakdown",
+      bookPrice: "Book price (to seller)",
+      serviceFee: "Service fee",
+      total: "Total",
+      paymentNote: "The book price goes directly to the seller. The €0.50 fee supports the platform.",
+      selectPaymentMethod: "Select payment method",
+      payNow: "Pay now",
+      reserveBook: "Reserve Book",
     },
     // Common
     common: {
