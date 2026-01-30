@@ -4,7 +4,6 @@ import { Badge } from "@/components/ui/badge";
 import { GraduationCap, ChevronRight } from "lucide-react";
 
 const grades = {
-  PYP: ["PYP 1", "PYP 2", "PYP 3", "PYP 4", "PYP 5"],
   MYP: ["MYP 1", "MYP 2", "MYP 3", "MYP 4", "MYP 5"],
   DP: ["DP 1", "DP 2"],
 };
@@ -36,7 +35,6 @@ export const GradeSelector = ({ onSelectGrade }: GradeSelectorProps) => {
                 {program}
               </Badge>
               <span className="text-sm text-muted-foreground">
-                {program === "PYP" && t.browse.primaryYears}
                 {program === "MYP" && t.browse.middleYears}
                 {program === "DP" && t.browse.diplomaProgramme}
               </span>

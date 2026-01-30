@@ -9,6 +9,7 @@ import {
   Heart,
   Tag,
   Check,
+  Globe,
 } from "lucide-react";
 import { OfficialBook, BookListing, getPriceRange } from "@/data/officialBooks";
 
@@ -153,23 +154,37 @@ export const BookListItem = ({
                 <Tag className="h-3 w-3" />
                 {t.browse.viewListings} ({availableCount})
               </Button>
-            ) : book.externalPurchaseUrl ? (
-              <Button
-                size="sm"
-                variant="outline"
-                asChild
-                className="gap-1"
-              >
-                <a
-                  href={book.externalPurchaseUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
+            ) : (
+              <>
+                {book.externalPurchaseUrl && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    asChild
+                    className="gap-1"
+                  >
+                    <a
+                      href={book.externalPurchaseUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <ExternalLink className="h-3 w-3" />
+                      {t.browse.buyNew}
+                    </a>
+                  </Button>
+                )}
+                {/* Check other schools option */}
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="gap-1 text-muted-foreground hover:text-foreground"
+                  onClick={() => window.open(`https://www.google.com/search?q=IB+school+used+books+${encodeURIComponent(book.isbn || book.title)}`, '_blank')}
                 >
-                  <ExternalLink className="h-3 w-3" />
-                  {t.browse.buyNew}
-                </a>
-              </Button>
-            ) : null}
+                  <Globe className="h-3 w-3" />
+                  {t.browse.checkOtherSchools}
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </div>
