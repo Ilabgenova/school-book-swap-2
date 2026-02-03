@@ -18,6 +18,7 @@ export interface BookListing {
   type: "sale" | "exchange" | "donation";
   price?: number;
   condition: "new" | "asNew" | "used";
+  sellerId: string;
   sellerRating: number;
   sellerName: string;
   sellerCompletedExchanges: number;
@@ -231,23 +232,23 @@ export const summerReadingBooks: OfficialBook[] = [
 // Mock listings data for demonstration
 export const mockListings: Record<string, BookListing[]> = {
   "myp1-5": [
-    { id: "l1", type: "sale", price: 30, condition: "asNew", sellerRating: 4.8, sellerName: "Marco R.", sellerCompletedExchanges: 12 },
-    { id: "l2", type: "sale", price: 25, condition: "used", sellerRating: 4.5, sellerName: "Sofia B.", sellerCompletedExchanges: 8 },
+    { id: "l1", type: "sale", price: 30, condition: "asNew", sellerId: "user1", sellerRating: 4.8, sellerName: "Marco R.", sellerCompletedExchanges: 12 },
+    { id: "l2", type: "sale", price: 25, condition: "used", sellerId: "user2", sellerRating: 4.5, sellerName: "Sofia B.", sellerCompletedExchanges: 8 },
   ],
   "myp1-6": [
-    { id: "l3", type: "donation", condition: "used", sellerRating: 5.0, sellerName: "Elena G.", sellerCompletedExchanges: 15 },
+    { id: "l3", type: "donation", condition: "used", sellerId: "user3", sellerRating: 5.0, sellerName: "Elena G.", sellerCompletedExchanges: 15 },
   ],
   "myp2-3": [
-    { id: "l4", type: "sale", price: 35, condition: "asNew", sellerRating: 4.9, sellerName: "Luca M.", sellerCompletedExchanges: 20 },
-    { id: "l5", type: "sale", price: 28, condition: "used", sellerRating: 4.2, sellerName: "Anna P.", sellerCompletedExchanges: 5 },
-    { id: "l6", type: "exchange", condition: "asNew", sellerRating: 4.7, sellerName: "Pietro S.", sellerCompletedExchanges: 9 },
+    { id: "l4", type: "sale", price: 35, condition: "asNew", sellerId: "user4", sellerRating: 4.9, sellerName: "Luca M.", sellerCompletedExchanges: 20 },
+    { id: "l5", type: "sale", price: 28, condition: "used", sellerId: "user5", sellerRating: 4.2, sellerName: "Anna P.", sellerCompletedExchanges: 5 },
+    { id: "l6", type: "exchange", condition: "asNew", sellerId: "user6", sellerRating: 4.7, sellerName: "Pietro S.", sellerCompletedExchanges: 9 },
   ],
   "dp1-1": [
-    { id: "l7", type: "sale", price: 50, condition: "asNew", sellerRating: 4.9, sellerName: "Francesco L.", sellerCompletedExchanges: 18 },
-    { id: "l8", type: "sale", price: 45, condition: "used", sellerRating: 4.6, sellerName: "Giulia T.", sellerCompletedExchanges: 11 },
+    { id: "l7", type: "sale", price: 50, condition: "asNew", sellerId: "user7", sellerRating: 4.9, sellerName: "Francesco L.", sellerCompletedExchanges: 18 },
+    { id: "l8", type: "sale", price: 45, condition: "used", sellerId: "user8", sellerRating: 4.6, sellerName: "Giulia T.", sellerCompletedExchanges: 11 },
   ],
   "dp1-19": [
-    { id: "l9", type: "sale", price: 48, condition: "asNew", sellerRating: 4.8, sellerName: "Alessandro V.", sellerCompletedExchanges: 14 },
+    { id: "l9", type: "sale", price: 48, condition: "asNew", sellerId: "user9", sellerRating: 4.8, sellerName: "Alessandro V.", sellerCompletedExchanges: 14 },
   ],
 };
 

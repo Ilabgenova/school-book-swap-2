@@ -19,6 +19,8 @@ import {
 } from "lucide-react";
 import { OfficialBook, BookListing } from "@/data/officialBooks";
 import { PaymentOptions } from "./PaymentOptions";
+import { TransactionConfirmation } from "./TransactionConfirmation";
+import { useTransactions, Transaction } from "@/hooks/useTransactions";
 
 interface ListingsModalProps {
   book: OfficialBook;
@@ -26,13 +28,18 @@ interface ListingsModalProps {
   onClose: () => void;
 }
 
+type ModalView = "listings" | "payment" | "confirmation";
+
 export const ListingsModal = ({
   book,
   listings,
   onClose,
 }: ListingsModalProps) => {
   const { t } = useLanguage();
+  const { createTransaction, confirmDelivery } = useTransactions();
   const [selectedListing, setSelectedListing] = useState<BookListing | null>(null);
+  const [currentTransaction, setCurrentTransaction] = useState<Transaction | null>(null);
+  const [view, setView] = useState<ModalView>("listings");
 
   const getConditionLabel = (condition: string) => {
     switch (condition) {
@@ -63,14 +70,51 @@ export const ListingsModal = ({
   const handleReserve = (listing: BookListing) => {
     if (listing.type === "sale" && listing.price) {
       setSelectedListing(listing);
+      setView("payment");
     }
   };
 
+  const APP_FEE = 0.50;
+
   const handlePayment = (method: string) => {
-    console.log("Payment confirmed with:", method, "for listing:", selectedListing);
-    // Here you would integrate with payment providers
-    setSelectedListing(null);
-    onClose();
+    if (!selectedListing || !selectedListing.price) return;
+
+    // Create transaction with escrow status
+    const transaction = createTransaction({
+      listingId: selectedListing.id,
+      bookTitle: book.title,
+      buyerId: "current_user", // In real app, get from auth
+      sellerId: selectedListing.sellerId,
+      sellerName: selectedListing.sellerName,
+      bookPrice: selectedListing.price,
+      appFee: APP_FEE,
+      totalPaid: selectedListing.price + APP_FEE,
+      paymentMethod: method,
+    });
+
+    setCurrentTransaction(transaction);
+    setView("confirmation");
+  };
+
+  const handleConfirmDelivery = () => {
+    if (currentTransaction) {
+      confirmDelivery(currentTransaction.id);
+      // Update local state to reflect the change
+      setCurrentTransaction({
+        ...currentTransaction,
+        status: "delivery_confirmed",
+        deliveryConfirmedAt: new Date(),
+      });
+    }
+  };
+
+  const handleBack = () => {
+    if (view === "payment") {
+      setSelectedListing(null);
+      setView("listings");
+    } else if (view === "confirmation") {
+      onClose();
+    }
   };
 
   return (
@@ -78,19 +122,30 @@ export const ListingsModal = ({
       <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="font-display text-lg">
-            {book.title}
+            {view === "confirmation" ? t.browse.escrow.paymentSuccess : book.title}
           </DialogTitle>
-          <p className="text-sm text-muted-foreground">
-            {book.subject} • {book.publisher}
-          </p>
+          {view !== "confirmation" && (
+            <p className="text-sm text-muted-foreground">
+              {book.subject} • {book.publisher}
+            </p>
+          )}
         </DialogHeader>
 
-        {selectedListing ? (
+        {view === "confirmation" && currentTransaction ? (
+          <div className="mt-4">
+            <TransactionConfirmation
+              transaction={currentTransaction}
+              onConfirmDelivery={handleConfirmDelivery}
+              onClose={onClose}
+              userRole="buyer"
+            />
+          </div>
+        ) : view === "payment" && selectedListing ? (
           <div className="mt-4">
             <PaymentOptions
               bookPrice={selectedListing.price || 0}
               onConfirmPayment={handlePayment}
-              onCancel={() => setSelectedListing(null)}
+              onCancel={handleBack}
             />
           </div>
         ) : (
