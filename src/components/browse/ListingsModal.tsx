@@ -15,10 +15,9 @@ import {
   Tag,
   MessageCircle,
   CheckCircle2,
-  CreditCard,
+  BookOpen,
 } from "lucide-react";
 import { OfficialBook, BookListing } from "@/data/officialBooks";
-import { PaymentOptions } from "./PaymentOptions";
 import { TransactionConfirmation } from "./TransactionConfirmation";
 import { useTransactions, Transaction } from "@/hooks/useTransactions";
 
@@ -28,7 +27,7 @@ interface ListingsModalProps {
   onClose: () => void;
 }
 
-type ModalView = "listings" | "payment" | "confirmation";
+type ModalView = "listings" | "confirmation";
 
 export const ListingsModal = ({
   book,
@@ -36,8 +35,7 @@ export const ListingsModal = ({
   onClose,
 }: ListingsModalProps) => {
   const { t } = useLanguage();
-  const { createTransaction, confirmDelivery } = useTransactions();
-  const [selectedListing, setSelectedListing] = useState<BookListing | null>(null);
+  const { createTransaction, confirmByBuyer, confirmBySeller } = useTransactions();
   const [currentTransaction, setCurrentTransaction] = useState<Transaction | null>(null);
   const [view, setView] = useState<ModalView>("listings");
 
@@ -68,52 +66,42 @@ export const ListingsModal = ({
   };
 
   const handleReserve = (listing: BookListing) => {
-    if (listing.type === "sale" && listing.price) {
-      setSelectedListing(listing);
-      setView("payment");
-    }
-  };
-
-  const APP_FEE = 0.50;
-
-  const handlePayment = (method: string) => {
-    if (!selectedListing || !selectedListing.price) return;
-
-    // Create transaction with escrow status
+    // Create transaction - all free for now
     const transaction = createTransaction({
-      listingId: selectedListing.id,
+      listingId: listing.id,
       bookTitle: book.title,
       buyerId: "current_user", // In real app, get from auth
-      sellerId: selectedListing.sellerId,
-      sellerName: selectedListing.sellerName,
-      bookPrice: selectedListing.price,
-      appFee: APP_FEE,
-      totalPaid: selectedListing.price + APP_FEE,
-      paymentMethod: method,
+      buyerName: "Current User", // In real app, get from auth
+      sellerId: listing.sellerId,
+      sellerName: listing.sellerName,
+      bookPrice: listing.price || 0,
     });
 
     setCurrentTransaction(transaction);
     setView("confirmation");
   };
 
-  const handleConfirmDelivery = () => {
+  const handleConfirmByBuyer = () => {
     if (currentTransaction) {
-      confirmDelivery(currentTransaction.id);
-      // Update local state to reflect the change
+      confirmByBuyer(currentTransaction.id);
       setCurrentTransaction({
         ...currentTransaction,
-        status: "delivery_confirmed",
-        deliveryConfirmedAt: new Date(),
+        status: currentTransaction.sellerConfirmedAt ? "completed" : "buyer_confirmed",
+        buyerConfirmedAt: new Date(),
+        completedAt: currentTransaction.sellerConfirmedAt ? new Date() : undefined,
       });
     }
   };
 
-  const handleBack = () => {
-    if (view === "payment") {
-      setSelectedListing(null);
-      setView("listings");
-    } else if (view === "confirmation") {
-      onClose();
+  const handleConfirmBySeller = () => {
+    if (currentTransaction) {
+      confirmBySeller(currentTransaction.id);
+      setCurrentTransaction({
+        ...currentTransaction,
+        status: currentTransaction.buyerConfirmedAt ? "completed" : "seller_confirmed",
+        sellerConfirmedAt: new Date(),
+        completedAt: currentTransaction.buyerConfirmedAt ? new Date() : undefined,
+      });
     }
   };
 
@@ -122,7 +110,7 @@ export const ListingsModal = ({
       <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="font-display text-lg">
-            {view === "confirmation" ? t.browse.escrow.paymentSuccess : book.title}
+            {view === "confirmation" ? t.browse.reservation.bookReserved : book.title}
           </DialogTitle>
           {view !== "confirmation" && (
             <p className="text-sm text-muted-foreground">
@@ -135,17 +123,10 @@ export const ListingsModal = ({
           <div className="mt-4">
             <TransactionConfirmation
               transaction={currentTransaction}
-              onConfirmDelivery={handleConfirmDelivery}
+              onConfirmByBuyer={handleConfirmByBuyer}
+              onConfirmBySeller={handleConfirmBySeller}
               onClose={onClose}
               userRole="buyer"
-            />
-          </div>
-        ) : view === "payment" && selectedListing ? (
-          <div className="mt-4">
-            <PaymentOptions
-              bookPrice={selectedListing.price || 0}
-              onConfirmPayment={handlePayment}
-              onCancel={handleBack}
             />
           </div>
         ) : (
@@ -207,13 +188,18 @@ export const ListingsModal = ({
                       </div>
                     </div>
 
-                    {/* Price */}
+                    {/* Price - now showing "Free" for test release */}
                     <div className="text-right">
                       {listing.type === "sale" && listing.price ? (
-                        <span className="font-display font-bold text-xl text-primary flex items-center">
-                          <Euro className="h-5 w-5" />
-                          {listing.price}
-                        </span>
+                        <div>
+                          <span className="font-display font-bold text-xl text-primary flex items-center">
+                            <Euro className="h-5 w-5" />
+                            {listing.price}
+                          </span>
+                          <span className="text-xs text-muted-foreground block">
+                            {t.browse.reservation.freeForNow}
+                          </span>
+                        </div>
                       ) : listing.type === "donation" ? (
                         <span className="font-medium text-donation">
                           {t.common.free}
@@ -227,21 +213,14 @@ export const ListingsModal = ({
                   </div>
 
                   {/* Action */}
-                  {listing.type === "sale" && listing.price ? (
-                    <Button 
-                      className="w-full mt-3 gap-2" 
-                      size="sm"
-                      onClick={() => handleReserve(listing)}
-                    >
-                      <CreditCard className="h-4 w-4" />
-                      {t.browse.reserveBook}
-                    </Button>
-                  ) : (
-                    <Button className="w-full mt-3 gap-2" size="sm">
-                      <MessageCircle className="h-4 w-4" />
-                      {t.browse.contactSeller}
-                    </Button>
-                  )}
+                  <Button 
+                    className="w-full mt-3 gap-2" 
+                    size="sm"
+                    onClick={() => handleReserve(listing)}
+                  >
+                    <BookOpen className="h-4 w-4" />
+                    {t.browse.reservation.reserveNow}
+                  </Button>
                 </div>
               ))
             )}
