@@ -1,9 +1,10 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 
 export type TransactionStatus = 
-  | "payment_held"      // Buyer paid, funds held by platform
-  | "delivery_confirmed" // Buyer confirmed receipt
-  | "payment_released"   // Funds released to seller
+  | "reserved"           // Book reserved, awaiting handover
+  | "buyer_confirmed"    // Buyer confirmed receipt
+  | "seller_confirmed"   // Seller confirmed handover
+  | "completed"          // Both parties confirmed
   | "cancelled";         // Transaction cancelled
 
 export interface Transaction {
@@ -13,21 +14,20 @@ export interface Transaction {
   buyerId: string;
   sellerId: string;
   sellerName: string;
+  buyerName: string;
   bookPrice: number;
-  appFee: number;
-  totalPaid: number;
-  paymentMethod: string;
   status: TransactionStatus;
   createdAt: Date;
-  deliveryConfirmedAt?: Date;
-  paymentReleasedAt?: Date;
+  buyerConfirmedAt?: Date;
+  sellerConfirmedAt?: Date;
+  completedAt?: Date;
 }
 
 interface TransactionsContextType {
   transactions: Transaction[];
   createTransaction: (data: Omit<Transaction, "id" | "status" | "createdAt">) => Transaction;
-  confirmDelivery: (transactionId: string) => void;
-  releasePayment: (transactionId: string) => void;
+  confirmByBuyer: (transactionId: string) => void;
+  confirmBySeller: (transactionId: string) => void;
   cancelTransaction: (transactionId: string) => void;
   getTransactionsByBuyer: (buyerId: string) => Transaction[];
   getTransactionsBySeller: (sellerId: string) => Transaction[];
@@ -42,30 +42,45 @@ export const TransactionsProvider = ({ children }: { children: ReactNode }) => {
     const newTransaction: Transaction = {
       ...data,
       id: `txn_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      status: "payment_held",
+      status: "reserved",
       createdAt: new Date(),
     };
     setTransactions((prev) => [...prev, newTransaction]);
     return newTransaction;
   };
 
-  const confirmDelivery = (transactionId: string) => {
+  const checkAndCompleteTransaction = (txn: Transaction): Transaction => {
+    if (txn.buyerConfirmedAt && txn.sellerConfirmedAt) {
+      return { ...txn, status: "completed", completedAt: new Date() };
+    }
+    return txn;
+  };
+
+  const confirmByBuyer = (transactionId: string) => {
     setTransactions((prev) =>
-      prev.map((txn) =>
-        txn.id === transactionId
-          ? { ...txn, status: "delivery_confirmed" as TransactionStatus, deliveryConfirmedAt: new Date() }
-          : txn
-      )
+      prev.map((txn) => {
+        if (txn.id !== transactionId) return txn;
+        const updated = { 
+          ...txn, 
+          status: "buyer_confirmed" as TransactionStatus, 
+          buyerConfirmedAt: new Date() 
+        };
+        return checkAndCompleteTransaction(updated);
+      })
     );
   };
 
-  const releasePayment = (transactionId: string) => {
+  const confirmBySeller = (transactionId: string) => {
     setTransactions((prev) =>
-      prev.map((txn) =>
-        txn.id === transactionId
-          ? { ...txn, status: "payment_released" as TransactionStatus, paymentReleasedAt: new Date() }
-          : txn
-      )
+      prev.map((txn) => {
+        if (txn.id !== transactionId) return txn;
+        const updated = { 
+          ...txn, 
+          status: "seller_confirmed" as TransactionStatus, 
+          sellerConfirmedAt: new Date() 
+        };
+        return checkAndCompleteTransaction(updated);
+      })
     );
   };
 
@@ -90,8 +105,8 @@ export const TransactionsProvider = ({ children }: { children: ReactNode }) => {
       value={{
         transactions,
         createTransaction,
-        confirmDelivery,
-        releasePayment,
+        confirmByBuyer,
+        confirmBySeller,
         cancelTransaction,
         getTransactionsByBuyer,
         getTransactionsBySeller,
