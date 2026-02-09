@@ -17,7 +17,7 @@ export const Footer = () => {
                 <BookOpen className="h-5 w-5" />
               </div>
               <span className="font-display text-xl font-bold text-foreground">
-                BookCircle
+                DISbook
               </span>
             </Link>
             <p className="text-muted-foreground text-sm max-w-sm">
@@ -77,7 +77,7 @@ export const Footer = () => {
         {/* Bottom Bar */}
         <div className="mt-8 pt-8 border-t border-border/50 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-sm text-muted-foreground">
-            © {currentYear} BookCircle. {t.footer.rights}.
+            © {currentYear} DISbook. {t.footer.rights}.
           </p>
           <p className="text-sm text-muted-foreground flex items-center gap-1">
             Made with <Heart className="h-3 w-3 text-donation fill-donation" /> for our school community

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "react-router-dom";
-import { BookOpen, ArrowRight, School, UserPlus, Euro } from "lucide-react";
+import { BookOpen, ArrowRight, School, UserPlus } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -174,12 +174,6 @@ const RegisterContent = () => {
               </Button>
             </form>
 
-            <div className="mt-4 p-3 bg-accent/10 rounded-lg border border-accent/20">
-              <p className="text-xs text-accent flex items-center gap-2">
-                <Euro className="h-4 w-4" />
-                <span>€5 {t.common.perYear} - charged only on first transaction</span>
-              </p>
-            </div>
 
             <div className="mt-6 text-center text-sm">
               <p className="text-muted-foreground">

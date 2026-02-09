@@ -1,7 +1,7 @@
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { ArrowRight, Ticket } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 export const CTASection = () => {
   const { t } = useLanguage();
@@ -17,10 +17,6 @@ export const CTASection = () => {
       />
 
       <div className="container relative text-center">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-foreground/10 border border-primary-foreground/20 mb-6">
-          <Ticket className="h-4 w-4 text-primary-foreground" />
-          <span className="text-sm font-medium text-primary-foreground">€5 {t.common.perYear}</span>
-        </div>
 
         <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground mb-4">
           {t.landing.cta.title}

@@ -36,6 +36,9 @@ export const BookListItem = ({
   const availableCount = listings.length;
   const hasDonations = listings.some((l) => l.type === "donation");
   const priceRange = getPriceRange(book.id);
+  const coverUrl = book.isbn
+    ? `https://covers.openlibrary.org/b/isbn/${book.isbn}-M.jpg`
+    : null;
 
   return (
     <div
@@ -82,6 +85,20 @@ export const BookListItem = ({
             </label>
           </div>
         </div>
+
+        {/* Book cover */}
+        {coverUrl && (
+          <div className="shrink-0 w-16 h-20 rounded-lg overflow-hidden bg-muted">
+            <img
+              src={coverUrl}
+              alt={book.title}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                (e.currentTarget.parentElement as HTMLElement).style.display = 'none';
+              }}
+            />
+          </div>
+        )}
 
         {/* Book info */}
         <div className="flex-1 min-w-0">
