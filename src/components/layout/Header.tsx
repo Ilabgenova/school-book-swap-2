@@ -18,7 +18,7 @@ export const Header = () => {
             <BookOpen className="h-5 w-5" />
           </div>
           <span className="font-display text-xl font-bold text-foreground hidden sm:inline">
-            BookCircle
+            DISbook
           </span>
         </Link>
 

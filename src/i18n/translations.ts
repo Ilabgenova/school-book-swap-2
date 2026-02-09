@@ -24,7 +24,7 @@ export const translations = {
         title: "Come Funziona",
         trust: {
           title: "Comunità Fidata",
-          description: "Accesso solo su invito per le famiglie della scuola. Scambi sicuri e verificati.",
+          description: "Accesso riservato alle famiglie della scuola. Scambi sicuri e verificati.",
         },
         sustainable: {
           title: "Economia Circolare",
@@ -32,18 +32,18 @@ export const translations = {
         },
         simple: {
           title: "Semplice & Locale",
-          description: "Incontra a scuola per lo scambio. Nessun pagamento online per i libri.",
+          description: "Incontra a scuola per lo scambio. Tutto gratuito per il primo lancio.",
         },
         free: {
-          title: "Donazioni Gratuite",
-          description: "Dona libri gratuitamente. Nessun costo per le donazioni.",
+          title: "Dona Libri",
+          description: "Dona i tuoi libri usati alle famiglie che ne hanno bisogno.",
         },
       },
       howItWorks: {
         title: "Inizia in 3 Passi",
         step1: {
           title: "Registrati",
-          description: "Usa il codice invito della scuola per unirti alla comunità.",
+          description: "Crea il tuo account per unirti alla comunità scolastica.",
         },
         step2: {
           title: "Sfoglia o Pubblica",
@@ -62,7 +62,7 @@ export const translations = {
       },
       cta: {
         title: "Unisciti alla Nostra Comunità",
-        description: "Hai un codice invito? Registrati ora e inizia a risparmiare sui libri scolastici.",
+        description: "Registrati ora e inizia a risparmiare sui libri scolastici. Tutto gratuito!",
         button: "Registrati Ora",
       },
     },
@@ -130,14 +130,7 @@ export const translations = {
       booksToSellDescription: "In base alla tua classe precedente, questi libri potrebbero non servirti più",
       keepForNextYear: "Tieni per l'anno prossimo",
       bookNeededNextYear: "Questo libro ti servirà l'anno prossimo",
-      // Payment
-      paymentBreakdown: "Riepilogo Pagamento",
-      bookPrice: "Prezzo libro (al venditore)",
-      serviceFee: "Commissione servizio",
-      total: "Totale",
-      paymentNote: "Il prezzo del libro va direttamente al venditore. La commissione di €0.50 supporta la piattaforma.",
-      selectPaymentMethod: "Seleziona metodo di pagamento",
-      payNow: "Paga ora",
+      // Reservation
       reserveBook: "Prenota Libro",
       // Reservation system (free for test release)
       reservation: {
@@ -201,7 +194,7 @@ export const translations = {
       type: "Tipo",
       photos: "Foto",
       notes: "Note",
-      perYear: "all'anno",
+      perYear: "",
       free: "Gratis",
     },
     // Programs
@@ -250,7 +243,7 @@ export const translations = {
         title: "How It Works",
         trust: {
           title: "Trusted Community",
-          description: "Invite-only access for school families. Safe and verified exchanges.",
+          description: "Access reserved for school families. Safe and verified exchanges.",
         },
         sustainable: {
           title: "Circular Economy",
@@ -258,18 +251,18 @@ export const translations = {
         },
         simple: {
           title: "Simple & Local",
-          description: "Meet at school for exchange. No online payments for books.",
+          description: "Meet at school for exchange. Everything free for the initial launch.",
         },
         free: {
-          title: "Free Donations",
-          description: "Donate books for free. No fees for donations.",
+          title: "Donate Books",
+          description: "Donate your used books to families who need them.",
         },
       },
       howItWorks: {
         title: "Get Started in 3 Steps",
         step1: {
           title: "Register",
-          description: "Use your school invite code to join the community.",
+          description: "Create your account to join the school community.",
         },
         step2: {
           title: "Browse or List",
@@ -288,7 +281,7 @@ export const translations = {
       },
       cta: {
         title: "Join Our Community",
-        description: "Have an invite code? Register now and start saving on school books.",
+        description: "Register now and start saving on school books. Everything is free!",
         button: "Register Now",
       },
     },
@@ -356,14 +349,7 @@ export const translations = {
       booksToSellDescription: "Based on your previous grade, you might not need these books anymore",
       keepForNextYear: "Keep for next year",
       bookNeededNextYear: "This book will be needed next year",
-      // Payment
-      paymentBreakdown: "Payment Breakdown",
-      bookPrice: "Book price (to seller)",
-      serviceFee: "Service fee",
-      total: "Total",
-      paymentNote: "The book price goes directly to the seller. The €0.50 fee supports the platform.",
-      selectPaymentMethod: "Select payment method",
-      payNow: "Pay now",
+      // Reservation
       reserveBook: "Reserve Book",
       // Reservation system (free for test release)
       reservation: {
@@ -427,7 +413,7 @@ export const translations = {
       type: "Type",
       photos: "Photos",
       notes: "Notes",
-      perYear: "per year",
+      perYear: "",
       free: "Free",
     },
     // Programs

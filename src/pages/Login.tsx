@@ -20,8 +20,8 @@ const LoginContent = () => {
             <h1 className="font-display text-2xl font-bold text-foreground">
               {t.nav.login}
             </h1>
-            <p className="text-muted-foreground mt-2">
-              Welcome back to BookCircle
+             <p className="text-muted-foreground mt-2">
+              Welcome back to DISbook
             </p>
           </div>
 
