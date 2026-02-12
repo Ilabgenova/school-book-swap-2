@@ -2,19 +2,13 @@ import { useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Languages, ChevronRight, BookOpen } from "lucide-react";
+import { ArrowLeft, Languages, ChevronRight } from "lucide-react";
 
-const englishLevels = [
-  { id: "English Proficient", label: "Proficient" },
-  { id: "English Capable", label: "Capable" },
-];
-
-const italianLevels = [
-  { id: "Italiano Fase 1", label: "Fase 1 (A1)", descIt: "Principiante", descEn: "Beginner" },
-  { id: "Italiano Fase 2", label: "Fase 2 (A2)", descIt: "Elementare", descEn: "Elementary" },
-  { id: "Italiano Fase 3", label: "Fase 3 (B1)", descIt: "Intermedio", descEn: "Intermediate" },
-  { id: "Italiano Fase 4", label: "Fase 4 (B2)", descIt: "Intermedio superiore", descEn: "Upper Intermediate" },
-  { id: "Italiano Fase 5", label: "Fase 5 (C1)", descIt: "Avanzato", descEn: "Advanced" },
+const foreignLanguages = [
+  { id: "Spanish", labelIt: "Spagnolo", labelEn: "Spanish", flag: "🇪🇸" },
+  { id: "German", labelIt: "Tedesco", labelEn: "German", flag: "🇩🇪" },
+  { id: "Chinese", labelIt: "Cinese", labelEn: "Chinese", flag: "🇨🇳" },
+  { id: "French", labelIt: "Francese", labelEn: "French", flag: "🇫🇷" },
 ];
 
 interface MYPLanguageSelectorProps {
@@ -29,13 +23,11 @@ export const MYPLanguageSelector = ({
   onBack,
 }: MYPLanguageSelectorProps) => {
   const { t, language } = useLanguage();
-  const [selectedEnglish, setSelectedEnglish] = useState<string | null>(null);
-  const [selectedItalian, setSelectedItalian] = useState<string | null>(null);
+  const [selectedForeignLang, setSelectedForeignLang] = useState<string | null>(null);
 
   const handleContinue = () => {
     const languages: Record<string, string> = {};
-    if (selectedEnglish) languages.english = selectedEnglish;
-    if (selectedItalian) languages.italian = selectedItalian;
+    if (selectedForeignLang) languages.foreignLanguage = selectedForeignLang;
     onSelectLanguages(languages);
   };
 
@@ -58,54 +50,28 @@ export const MYPLanguageSelector = ({
       <div className="text-center">
         <Languages className="h-12 w-12 text-primary mx-auto mb-4" />
         <h2 className="font-display text-2xl font-bold text-foreground mb-2">
-          {t.browse.selectLanguageLevel}
+          {t.browse.selectForeignLanguage}
         </h2>
         <p className="text-muted-foreground">
-          {t.browse.selectLanguageLevelDesc}
+          {t.browse.selectForeignLanguageDesc}
         </p>
       </div>
 
-      {/* English Level */}
-      <div className="space-y-3">
-        <div className="flex items-center gap-2">
-          <BookOpen className="h-5 w-5 text-primary" />
-          <h3 className="font-semibold text-foreground">English</h3>
-        </div>
-        <div className="grid grid-cols-2 gap-3">
-          {englishLevels.map((level) => (
-            <Button
-              key={level.id}
-              variant={selectedEnglish === level.id ? "default" : "outline"}
-              className="h-auto py-4 flex flex-col gap-1"
-              onClick={() => setSelectedEnglish(selectedEnglish === level.id ? null : level.id)}
-            >
-              <span className="font-medium">{level.label}</span>
-            </Button>
-          ))}
-        </div>
-      </div>
-
-      {/* Italian Level */}
-      <div className="space-y-3">
-        <div className="flex items-center gap-2">
-          <BookOpen className="h-5 w-5 text-primary" />
-          <h3 className="font-semibold text-foreground">Italiano</h3>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          {italianLevels.map((level) => (
-            <Button
-              key={level.id}
-              variant={selectedItalian === level.id ? "default" : "outline"}
-              className="h-auto py-4 flex flex-col gap-1"
-              onClick={() => setSelectedItalian(selectedItalian === level.id ? null : level.id)}
-            >
-              <span className="font-medium">{level.label}</span>
-              <span className="text-xs opacity-70">
-                {language === "it" ? level.descIt : level.descEn}
-              </span>
-            </Button>
-          ))}
-        </div>
+      {/* Foreign Language Selection */}
+      <div className="grid grid-cols-2 gap-4">
+        {foreignLanguages.map((lang) => (
+          <Button
+            key={lang.id}
+            variant={selectedForeignLang === lang.id ? "default" : "outline"}
+            className="h-auto py-6 flex flex-col gap-2 text-lg"
+            onClick={() => setSelectedForeignLang(selectedForeignLang === lang.id ? null : lang.id)}
+          >
+            <span className="text-2xl">{lang.flag}</span>
+            <span className="font-medium">
+              {language === "it" ? lang.labelIt : lang.labelEn}
+            </span>
+          </Button>
+        ))}
       </div>
 
       {/* Continue button */}

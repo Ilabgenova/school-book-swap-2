@@ -11,7 +11,7 @@ import {
 import { BookListItem } from "./BookListItem";
 import { ListingsModal } from "./ListingsModal";
 import { SummerReadingSection } from "./SummerReadingSection";
-import { officialBooks, mockListings, OfficialBook, getBookLanguageGroup } from "@/data/officialBooks";
+import { officialBooks, mockListings, OfficialBook } from "@/data/officialBooks";
 
 interface BookListProps {
   selectedGrade: string;
@@ -38,15 +38,13 @@ export const BookList = ({
     if (selectedProgram === "DP" && selectedSubjects && selectedSubjects.length > 0) {
       return selectedSubjects.includes(book.subject);
     }
-    // For MYP, filter by language groups
-    if (selectedProgram === "MYP" && selectedLanguages) {
-      const langGroup = getBookLanguageGroup(book);
-      if (langGroup) {
-        // langGroup is like "English Proficient" or "Italiano Fase 3"
-        const category = langGroup.startsWith("English") ? "english" : "italian";
-        const selectedLevel = selectedLanguages[category];
-        if (selectedLevel && langGroup !== selectedLevel) return false;
-      }
+    // For MYP, filter by foreign language: show core books + selected foreign language books
+    if (selectedProgram === "MYP" && selectedLanguages?.foreignLanguage) {
+      const foreignLang = selectedLanguages.foreignLanguage;
+      const isForeignLangBook = book.subject === foreignLang || book.subject === `${foreignLang} B`;
+      const isCoreForeignLang = ["Spanish", "German", "Chinese", "French", "Spanish B", "German B", "Chinese B", "French B"].includes(book.subject);
+      // If it's a foreign language book, only show if it matches selection
+      if (isCoreForeignLang) return isForeignLangBook;
     }
     return true;
   });
