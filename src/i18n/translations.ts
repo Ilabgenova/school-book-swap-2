@@ -124,8 +124,8 @@ export const translations = {
       // In progress
       inProgress: "In arrivo",
       // Language selector
-      selectLanguageLevel: "Seleziona il tuo livello di lingua",
-      selectLanguageLevelDesc: "Scegli il livello di English e Italiano per vedere solo i libri del tuo corso",
+      selectForeignLanguage: "Quale lingua straniera studi?",
+      selectForeignLanguageDesc: "Seleziona la tua lingua straniera per vedere il libro corrispondente nell'elenco",
       // Login school origin
       fromDISSchool: "Vengo già da DIS",
       newToDIS: "Sono nuovo a DIS",
@@ -348,8 +348,8 @@ export const translations = {
       // In progress
       inProgress: "Coming soon",
       // Language selector
-      selectLanguageLevel: "Select your language level",
-      selectLanguageLevelDesc: "Choose your English and Italian level to see only your course books",
+      selectForeignLanguage: "Which foreign language do you study?",
+      selectForeignLanguageDesc: "Select your foreign language to see the corresponding book in the list",
       // Login school origin
       fromDISSchool: "I'm already from DIS",
       newToDIS: "I'm new to DIS",
