@@ -121,6 +121,11 @@ export const translations = {
       continueToBooks: "Continua ai Libri",
       // Price range
       usedPriceRange: "Prezzo usato",
+      // In progress
+      inProgress: "In arrivo",
+      // Language selector
+      selectLanguageLevel: "Seleziona il tuo livello di lingua",
+      selectLanguageLevelDesc: "Scegli il livello di English e Italiano per vedere solo i libri del tuo corso",
       // Login school origin
       fromDISSchool: "Vengo già da DIS",
       newToDIS: "Sono nuovo a DIS",
@@ -340,6 +345,11 @@ export const translations = {
       continueToBooks: "Continue to Books",
       // Price range
       usedPriceRange: "Used price",
+      // In progress
+      inProgress: "Coming soon",
+      // Language selector
+      selectLanguageLevel: "Select your language level",
+      selectLanguageLevelDesc: "Choose your English and Italian level to see only your course books",
       // Login school origin
       fromDISSchool: "I'm already from DIS",
       newToDIS: "I'm new to DIS",

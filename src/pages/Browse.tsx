@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
-import { LanguageProvider, useLanguage } from "@/i18n/LanguageContext";
+import { useLanguage } from "@/i18n/LanguageContext";
 import { GradeSelector } from "@/components/browse/GradeSelector";
 import { BuyingModeSelector } from "@/components/browse/BuyingModeSelector";
 import { DPSubjectSelector } from "@/components/browse/DPSubjectSelector";
+import { MYPLanguageSelector } from "@/components/browse/MYPLanguageSelector";
 import { BookList } from "@/components/browse/BookList";
 
-type BrowseStep = "grade" | "mode" | "dpSubjects" | "books";
+type BrowseStep = "grade" | "mode" | "dpSubjects" | "mypLanguage" | "books";
 
 const BrowseContent = () => {
   const { t } = useLanguage();
@@ -14,6 +15,7 @@ const BrowseContent = () => {
   const [selectedGrade, setSelectedGrade] = useState<string | null>(null);
   const [selectedProgram, setSelectedProgram] = useState<string | null>(null);
   const [selectedSubjects, setSelectedSubjects] = useState<string[] | null>(null);
+  const [selectedLanguages, setSelectedLanguages] = useState<Record<string, string> | null>(null);
 
   const handleSelectGrade = (grade: string, program: string) => {
     setSelectedGrade(grade);
@@ -23,18 +25,23 @@ const BrowseContent = () => {
 
   const handleSelectMode = (mode: "new" | "used") => {
     if (mode === "used") {
-      // For DP program, show subject selection first
       if (selectedProgram === "DP") {
         setStep("dpSubjects");
+      } else if (selectedProgram === "MYP") {
+        setStep("mypLanguage");
       } else {
         setStep("books");
       }
     }
-    // "new" mode opens Amazon link directly in BuyingModeSelector
   };
 
   const handleSelectDPSubjects = (subjects: string[]) => {
     setSelectedSubjects(subjects);
+    setStep("books");
+  };
+
+  const handleSelectLanguages = (languages: Record<string, string>) => {
+    setSelectedLanguages(languages);
     setStep("books");
   };
 
@@ -43,15 +50,21 @@ const BrowseContent = () => {
     setSelectedGrade(null);
     setSelectedProgram(null);
     setSelectedSubjects(null);
+    setSelectedLanguages(null);
   };
 
   const handleBackToMode = () => {
     setStep("mode");
     setSelectedSubjects(null);
+    setSelectedLanguages(null);
   };
 
   const handleBackToDPSubjects = () => {
     setStep("dpSubjects");
+  };
+
+  const handleBackToMYPLanguage = () => {
+    setStep("mypLanguage");
   };
 
   return (
@@ -75,12 +88,26 @@ const BrowseContent = () => {
             onBack={handleBackToMode}
           />
         )}
+        {step === "mypLanguage" && selectedGrade && selectedProgram === "MYP" && (
+          <MYPLanguageSelector
+            selectedGrade={selectedGrade}
+            onSelectLanguages={handleSelectLanguages}
+            onBack={handleBackToMode}
+          />
+        )}
         {step === "books" && selectedGrade && selectedProgram && (
           <BookList
             selectedGrade={selectedGrade}
-            selectedProgram={selectedProgram!}
+            selectedProgram={selectedProgram}
             selectedSubjects={selectedSubjects}
-            onBack={selectedProgram === "DP" ? handleBackToDPSubjects : handleBackToMode}
+            selectedLanguages={selectedLanguages}
+            onBack={
+              selectedProgram === "DP"
+                ? handleBackToDPSubjects
+                : selectedProgram === "MYP"
+                ? handleBackToMYPLanguage
+                : handleBackToMode
+            }
           />
         )}
       </div>
@@ -89,11 +116,7 @@ const BrowseContent = () => {
 };
 
 const Browse = () => {
-  return (
-    <LanguageProvider>
-      <BrowseContent />
-    </LanguageProvider>
-  );
+  return <BrowseContent />;
 };
 
 export default Browse;
