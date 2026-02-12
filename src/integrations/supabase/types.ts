@@ -14,7 +14,137 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          completed_transactions: number | null
+          created_at: string
+          first_name: string
+          id: string
+          is_from_dis: boolean | null
+          last_name: string
+          no_show_count: number | null
+          previous_grade: string | null
+          previous_program: string | null
+          rating_average: number | null
+          rating_count: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed_transactions?: number | null
+          created_at?: string
+          first_name?: string
+          id?: string
+          is_from_dis?: boolean | null
+          last_name?: string
+          no_show_count?: number | null
+          previous_grade?: string | null
+          previous_program?: string | null
+          rating_average?: number | null
+          rating_count?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed_transactions?: number | null
+          created_at?: string
+          first_name?: string
+          id?: string
+          is_from_dis?: boolean | null
+          last_name?: string
+          no_show_count?: number | null
+          previous_grade?: string | null
+          previous_program?: string | null
+          rating_average?: number | null
+          rating_count?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      transactions: {
+        Row: {
+          book_title: string
+          buyer_confirmed_at: string | null
+          buyer_id: string
+          completed_at: string | null
+          created_at: string
+          id: string
+          listing_id: string
+          seller_confirmed_at: string | null
+          seller_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          book_title: string
+          buyer_confirmed_at?: string | null
+          buyer_id: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          listing_id: string
+          seller_confirmed_at?: string | null
+          seller_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          book_title?: string
+          buyer_confirmed_at?: string | null
+          buyer_id?: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          listing_id?: string
+          seller_confirmed_at?: string | null
+          seller_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_ratings: {
+        Row: {
+          comment: string | null
+          created_at: string
+          id: string
+          rated_user_id: string
+          rater_id: string
+          rating_type: string
+          score: number
+          transaction_id: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          rated_user_id: string
+          rater_id: string
+          rating_type: string
+          score: number
+          transaction_id: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          rated_user_id?: string
+          rater_id?: string
+          rating_type?: string
+          score?: number
+          transaction_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_ratings_transaction_id_fkey"
+            columns: ["transaction_id"]
+            isOneToOne: false
+            referencedRelation: "transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

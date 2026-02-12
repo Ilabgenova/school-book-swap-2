@@ -5,20 +5,19 @@ import { Button } from "@/components/ui/button";
 import {
   ArrowLeft,
   BookOpen,
-  CheckCircle2,
-  ShoppingCart,
   ListChecks,
   Calendar,
 } from "lucide-react";
 import { BookListItem } from "./BookListItem";
 import { ListingsModal } from "./ListingsModal";
 import { SummerReadingSection } from "./SummerReadingSection";
-import { officialBooks, mockListings, OfficialBook, getPriceRange } from "@/data/officialBooks";
+import { officialBooks, mockListings, OfficialBook, getBookLanguageGroup } from "@/data/officialBooks";
 
 interface BookListProps {
   selectedGrade: string;
   selectedProgram: string;
   selectedSubjects?: string[] | null;
+  selectedLanguages?: Record<string, string> | null;
   onBack: () => void;
 }
 
@@ -26,76 +25,34 @@ export const BookList = ({
   selectedGrade,
   selectedProgram,
   selectedSubjects,
+  selectedLanguages,
   onBack,
 }: BookListProps) => {
   const { t } = useLanguage();
-  const [foundBooks, setFoundBooks] = useState<Set<string>>(new Set());
-  const [toBuyBooks, setToBuyBooks] = useState<Set<string>>(new Set());
   const [selectedBook, setSelectedBook] = useState<OfficialBook | null>(null);
 
-  // Filter books by selected grade and subjects (for DP)
+  // Filter books by selected grade, subjects (for DP), and language levels (for MYP)
   const books = officialBooks.filter((book) => {
     if (book.grade !== selectedGrade || book.isSummerReading) return false;
     // For DP program with selected subjects, filter by subject
     if (selectedProgram === "DP" && selectedSubjects && selectedSubjects.length > 0) {
       return selectedSubjects.includes(book.subject);
     }
+    // For MYP, filter by language groups
+    if (selectedProgram === "MYP" && selectedLanguages) {
+      const langGroup = getBookLanguageGroup(book);
+      if (langGroup) {
+        // langGroup is like "English Proficient" or "Italiano Fase 3"
+        const category = langGroup.startsWith("English") ? "english" : "italian";
+        const selectedLevel = selectedLanguages[category];
+        if (selectedLevel && langGroup !== selectedLevel) return false;
+      }
+    }
     return true;
   });
 
-  const toggleFound = (bookId: string) => {
-    setFoundBooks((prev) => {
-      const next = new Set(prev);
-      if (next.has(bookId)) {
-        next.delete(bookId);
-      } else {
-        next.add(bookId);
-        // Remove from "to buy" if marking as found
-        setToBuyBooks((toBuy) => {
-          const newToBuy = new Set(toBuy);
-          newToBuy.delete(bookId);
-          return newToBuy;
-        });
-      }
-      return next;
-    });
-  };
-
-  const toggleToBuy = (bookId: string) => {
-    if (foundBooks.has(bookId)) return;
-    setToBuyBooks((prev) => {
-      const next = new Set(prev);
-      if (next.has(bookId)) {
-        next.delete(bookId);
-      } else {
-        next.add(bookId);
-      }
-      return next;
-    });
-  };
-
-  const selectAll = (type: "found" | "toBuy") => {
-    const availableBooks = books.filter((b) => b.availableFromPreviousYear);
-    if (type === "found") {
-      setFoundBooks(new Set(availableBooks.map((b) => b.id)));
-      setToBuyBooks(new Set());
-    } else {
-      const notFoundBooks = availableBooks.filter(
-        (b) => !foundBooks.has(b.id)
-      );
-      setToBuyBooks(new Set(notFoundBooks.map((b) => b.id)));
-    }
-  };
-
-  const clearAll = () => {
-    setFoundBooks(new Set());
-    setToBuyBooks(new Set());
-  };
-
   const stats = {
     total: books.length,
-    found: foundBooks.size,
-    toBuy: toBuyBooks.size,
     available: books.filter(
       (b) =>
         b.availableFromPreviousYear && (mockListings[b.id]?.length ?? 0) > 0
@@ -138,38 +95,11 @@ export const BookList = ({
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <CheckCircle2 className="h-4 w-4 text-primary" />
-          <span className="text-sm">
-            <strong>{stats.found}</strong> {t.browse.markedFound}
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <ShoppingCart className="h-4 w-4 text-accent" />
-          <span className="text-sm">
-            <strong>{stats.toBuy}</strong> {t.browse.markedToBuy}
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
           <ListChecks className="h-4 w-4 text-primary" />
           <span className="text-sm">
             <strong>{stats.available}</strong> {t.browse.withListings}
           </span>
         </div>
-      </div>
-
-      {/* Quick actions */}
-      <div className="flex flex-wrap gap-2">
-        <Button variant="outline" size="sm" onClick={() => selectAll("found")}>
-          <CheckCircle2 className="h-4 w-4 mr-1" />
-          {t.browse.markAllFound}
-        </Button>
-        <Button variant="outline" size="sm" onClick={() => selectAll("toBuy")}>
-          <ShoppingCart className="h-4 w-4 mr-1" />
-          {t.browse.markAllToBuy}
-        </Button>
-        <Button variant="ghost" size="sm" onClick={clearAll}>
-          {t.browse.clearAll}
-        </Button>
       </div>
 
       {/* Book list */}
@@ -179,10 +109,6 @@ export const BookList = ({
             key={book.id}
             book={book}
             listings={mockListings[book.id] || []}
-            isFound={foundBooks.has(book.id)}
-            isToBuy={toBuyBooks.has(book.id)}
-            onToggleFound={toggleFound}
-            onToggleToBuy={toggleToBuy}
             onViewListings={setSelectedBook}
           />
         ))}

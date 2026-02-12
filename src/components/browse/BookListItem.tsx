@@ -1,35 +1,26 @@
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   BookOpen,
   ExternalLink,
   ShoppingBag,
   Heart,
   Tag,
-  Check,
   Globe,
+  Construction,
 } from "lucide-react";
 import { OfficialBook, BookListing, getPriceRange } from "@/data/officialBooks";
 
 interface BookListItemProps {
   book: OfficialBook;
   listings: BookListing[];
-  isFound: boolean;
-  isToBuy: boolean;
-  onToggleFound: (bookId: string) => void;
-  onToggleToBuy: (bookId: string) => void;
   onViewListings: (book: OfficialBook) => void;
 }
 
 export const BookListItem = ({
   book,
   listings,
-  isFound,
-  isToBuy,
-  onToggleFound,
-  onToggleToBuy,
   onViewListings,
 }: BookListItemProps) => {
   const { t } = useLanguage();
@@ -41,51 +32,8 @@ export const BookListItem = ({
     : null;
 
   return (
-    <div
-      className={`p-4 rounded-xl border transition-all ${
-        isFound
-          ? "bg-primary/5 border-primary/30"
-          : isToBuy
-          ? "bg-accent/5 border-accent/30"
-          : "bg-card border-border hover:border-primary/20"
-      }`}
-    >
+    <div className="p-4 rounded-xl border transition-all bg-card border-border hover:border-primary/20">
       <div className="flex gap-4">
-        {/* Checkboxes */}
-        <div className="flex flex-col gap-2 pt-1">
-          <div className="flex items-center gap-2">
-            <Checkbox
-              id={`found-${book.id}`}
-              checked={isFound}
-              onCheckedChange={() => onToggleFound(book.id)}
-              className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-            />
-            <label
-              htmlFor={`found-${book.id}`}
-              className="text-xs text-muted-foreground cursor-pointer"
-            >
-              {t.browse.found}
-            </label>
-          </div>
-          <div className="flex items-center gap-2">
-            <Checkbox
-              id={`tobuy-${book.id}`}
-              checked={isToBuy}
-              onCheckedChange={() => onToggleToBuy(book.id)}
-              disabled={isFound}
-              className="data-[state=checked]:bg-accent data-[state=checked]:border-accent"
-            />
-            <label
-              htmlFor={`tobuy-${book.id}`}
-              className={`text-xs cursor-pointer ${
-                isFound ? "text-muted-foreground/50" : "text-muted-foreground"
-              }`}
-            >
-              {t.browse.toBuy}
-            </label>
-          </div>
-        </div>
-
         {/* Book cover */}
         {coverUrl && (
           <div className="shrink-0 w-16 h-20 rounded-lg overflow-hidden bg-muted">
@@ -93,6 +41,12 @@ export const BookListItem = ({
               src={coverUrl}
               alt={book.title}
               className="w-full h-full object-cover"
+              onLoad={(e) => {
+                const img = e.currentTarget;
+                if (img.naturalWidth <= 1 && img.naturalHeight <= 1) {
+                  (img.parentElement as HTMLElement).style.display = 'none';
+                }
+              }}
               onError={(e) => {
                 (e.currentTarget.parentElement as HTMLElement).style.display = 'none';
               }}
@@ -102,26 +56,17 @@ export const BookListItem = ({
 
         {/* Book info */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-2">
-            <div className="min-w-0">
-              <h3 className="font-medium text-foreground line-clamp-2">
-                {book.title}
-              </h3>
-              <p className="text-sm text-muted-foreground mt-1">
-                {book.subject} • {book.publisher}
+          <div className="min-w-0">
+            <h3 className="font-medium text-foreground line-clamp-2">
+              {book.title}
+            </h3>
+            <p className="text-sm text-muted-foreground mt-1">
+              {book.subject} • {book.publisher}
+            </p>
+            {book.isbn && (
+              <p className="text-xs text-muted-foreground mt-0.5">
+                ISBN: {book.isbn}
               </p>
-              {book.isbn && (
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  ISBN: {book.isbn}
-                </p>
-              )}
-            </div>
-
-            {isFound && (
-              <Badge variant="outline" className="shrink-0 bg-primary/10 text-primary border-primary/20">
-                <Check className="h-3 w-3 mr-1" />
-                {t.browse.found}
-              </Badge>
             )}
           </div>
 
@@ -190,15 +135,19 @@ export const BookListItem = ({
                     </a>
                   </Button>
                 )}
-                {/* Check other schools option */}
+                {/* Check other schools - IN PROGRESS */}
                 <Button
                   size="sm"
                   variant="ghost"
-                  className="gap-1 text-muted-foreground hover:text-foreground"
-                  onClick={() => window.open(`https://www.google.com/search?q=IB+school+used+books+${encodeURIComponent(book.isbn || book.title)}`, '_blank')}
+                  className="gap-1 text-muted-foreground cursor-not-allowed opacity-60"
+                  disabled
                 >
                   <Globe className="h-3 w-3" />
                   {t.browse.checkOtherSchools}
+                  <Badge variant="outline" className="ml-1 text-[10px] px-1.5 py-0 h-4 border-amber-300 text-amber-600 bg-amber-50">
+                    <Construction className="h-2.5 w-2.5 mr-0.5" />
+                    {t.browse.inProgress}
+                  </Badge>
                 </Button>
               </>
             )}

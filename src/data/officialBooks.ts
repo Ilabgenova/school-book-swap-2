@@ -325,3 +325,24 @@ export const getBooksToKeep = (currentGrade: string, program: string): OfficialB
     book.isbn && shouldKeepForNextYear(book.isbn, currentGrade, program)
   );
 };
+
+// Get language group for a book (for MYP language filtering)
+export const getBookLanguageGroup = (book: OfficialBook): string | null => {
+  if (book.program !== "MYP") return null;
+  
+  if (book.subject === "English") {
+    if (book.title.includes("Proficient")) return "English Proficient";
+    if (book.title.includes("Capable")) return "English Capable";
+  }
+  
+  if (book.subject === "Italian") {
+    if (book.title.includes("Forte! 1") || book.title.includes("Letture in gioco 1")) return "Italiano Fase 1";
+    if (book.title.includes("Forte! 2") || book.title.includes("Letture in gioco 2") || book.title.includes("Parola chiave")) return "Italiano Fase 2";
+    if (book.title.includes("Forte! 3") || book.title.includes("CONTATTO A1") || book.title.includes("Letture in gioco 3")) return "Italiano Fase 3";
+    if (book.title.includes("Contatto B1") || book.title.includes("CONTATTO B1")) return "Italiano Fase 4";
+    if (book.title.includes("Contatto B2") || book.title.includes("CONTATTO B2")) return "Italiano Fase 4";
+    if (book.title.includes("Contatto C1") || book.title.includes("CONTATTO C1") || book.title.includes("Promessi sposi")) return "Italiano Fase 5";
+  }
+  
+  return null;
+};
