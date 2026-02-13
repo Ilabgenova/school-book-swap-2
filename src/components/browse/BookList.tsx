@@ -7,11 +7,14 @@ import {
   BookOpen,
   ListChecks,
   Calendar,
+  Languages,
 } from "lucide-react";
 import { BookListItem } from "./BookListItem";
 import { ListingsModal } from "./ListingsModal";
 import { SummerReadingSection } from "./SummerReadingSection";
 import { officialBooks, mockListings, OfficialBook } from "@/data/officialBooks";
+
+const FOREIGN_LANGUAGE_SUBJECTS = ["Spanish", "German", "Chinese", "French", "Spanish B", "German B", "Chinese B", "French B"];
 
 interface BookListProps {
   selectedGrade: string;
@@ -32,7 +35,7 @@ export const BookList = ({
   const [selectedBook, setSelectedBook] = useState<OfficialBook | null>(null);
 
   // Filter books by selected grade, subjects (for DP), and language levels (for MYP)
-  const books = officialBooks.filter((book) => {
+  const allBooks = officialBooks.filter((book) => {
     if (book.grade !== selectedGrade || book.isSummerReading) return false;
     // For DP program with selected subjects, filter by subject
     if (selectedProgram === "DP" && selectedSubjects && selectedSubjects.length > 0) {
@@ -42,20 +45,42 @@ export const BookList = ({
     if (selectedProgram === "MYP" && selectedLanguages?.foreignLanguage) {
       const foreignLang = selectedLanguages.foreignLanguage;
       const isForeignLangBook = book.subject === foreignLang || book.subject === `${foreignLang} B`;
-      const isCoreForeignLang = ["Spanish", "German", "Chinese", "French", "Spanish B", "German B", "Chinese B", "French B"].includes(book.subject);
+      const isCoreForeignLang = FOREIGN_LANGUAGE_SUBJECTS.includes(book.subject);
       // If it's a foreign language book, only show if it matches selection
       if (isCoreForeignLang) return isForeignLangBook;
     }
     return true;
   });
 
+  // For MYP, split into core and foreign language sections
+  const isMYP = selectedProgram === "MYP";
+  const coreBooks = isMYP
+    ? allBooks.filter((b) => !FOREIGN_LANGUAGE_SUBJECTS.includes(b.subject))
+    : allBooks;
+  const foreignLangBooks = isMYP
+    ? allBooks.filter((b) => FOREIGN_LANGUAGE_SUBJECTS.includes(b.subject))
+    : [];
+
   const stats = {
-    total: books.length,
-    available: books.filter(
+    total: allBooks.length,
+    available: allBooks.filter(
       (b) =>
         b.availableFromPreviousYear && (mockListings[b.id]?.length ?? 0) > 0
     ).length,
   };
+
+  const renderBookList = (books: OfficialBook[]) => (
+    <div className="space-y-3">
+      {books.map((book) => (
+        <BookListItem
+          key={book.id}
+          book={book}
+          listings={mockListings[book.id] || []}
+          onViewListings={setSelectedBook}
+        />
+      ))}
+    </div>
+  );
 
   return (
     <div className="space-y-6">
@@ -100,17 +125,43 @@ export const BookList = ({
         </div>
       </div>
 
-      {/* Book list */}
-      <div className="space-y-3">
-        {books.map((book) => (
-          <BookListItem
-            key={book.id}
-            book={book}
-            listings={mockListings[book.id] || []}
-            onViewListings={setSelectedBook}
-          />
-        ))}
-      </div>
+      {/* Book list - split into sections for MYP */}
+      {isMYP ? (
+        <>
+          {/* Core books section */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <BookOpen className="h-5 w-5 text-primary" />
+              <h3 className="font-display text-lg font-semibold text-foreground">
+                {t.browse.coreBooks}
+              </h3>
+              <Badge variant="outline" className="text-xs">{coreBooks.length}</Badge>
+            </div>
+            {renderBookList(coreBooks)}
+          </div>
+
+          {/* Foreign language section */}
+          {foreignLangBooks.length > 0 && (
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Languages className="h-5 w-5 text-primary" />
+                <h3 className="font-display text-lg font-semibold text-foreground">
+                  {t.browse.foreignLanguageBooks}
+                  {selectedLanguages?.foreignLanguage && (
+                    <span className="ml-2 text-muted-foreground font-normal">
+                      — {selectedLanguages.foreignLanguage}
+                    </span>
+                  )}
+                </h3>
+                <Badge variant="outline" className="text-xs">{foreignLangBooks.length}</Badge>
+              </div>
+              {renderBookList(foreignLangBooks)}
+            </div>
+          )}
+        </>
+      ) : (
+        renderBookList(allBooks)
+      )}
 
       {/* Summer Reading Section */}
       <SummerReadingSection

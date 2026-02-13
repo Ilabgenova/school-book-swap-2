@@ -126,6 +126,9 @@ export const translations = {
       // Language selector
       selectForeignLanguage: "Quale lingua straniera studi?",
       selectForeignLanguageDesc: "Seleziona la tua lingua straniera per vedere il libro corrispondente nell'elenco",
+      // Book list sections
+      coreBooks: "Libri Core",
+      foreignLanguageBooks: "Libri Seconda Lingua",
       // Login school origin
       fromDISSchool: "Vengo già da DIS",
       newToDIS: "Sono nuovo a DIS",
@@ -350,6 +353,9 @@ export const translations = {
       // Language selector
       selectForeignLanguage: "Which foreign language do you study?",
       selectForeignLanguageDesc: "Select your foreign language to see the corresponding book in the list",
+      // Book list sections
+      coreBooks: "Core Books",
+      foreignLanguageBooks: "Foreign Language Books",
       // Login school origin
       fromDISSchool: "I'm already from DIS",
       newToDIS: "I'm new to DIS",
