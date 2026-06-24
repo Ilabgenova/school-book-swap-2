@@ -14,8 +14,132 @@ export type Database = {
   }
   public: {
     Tables: {
+      conversations: {
+        Row: {
+          buyer_id: string
+          created_at: string
+          id: string
+          listing_id: string
+          seller_id: string
+          updated_at: string
+        }
+        Insert: {
+          buyer_id: string
+          created_at?: string
+          id?: string
+          listing_id: string
+          seller_id: string
+          updated_at?: string
+        }
+        Update: {
+          buyer_id?: string
+          created_at?: string
+          id?: string
+          listing_id?: string
+          seller_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversations_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      listings: {
+        Row: {
+          book_id: string | null
+          class_year: string | null
+          condition: Database["public"]["Enums"]["listing_condition"]
+          created_at: string
+          id: string
+          images: string[]
+          notes: string | null
+          price: number
+          program: string | null
+          seller_id: string
+          status: Database["public"]["Enums"]["listing_status"]
+          subject: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          book_id?: string | null
+          class_year?: string | null
+          condition?: Database["public"]["Enums"]["listing_condition"]
+          created_at?: string
+          id?: string
+          images?: string[]
+          notes?: string | null
+          price: number
+          program?: string | null
+          seller_id: string
+          status?: Database["public"]["Enums"]["listing_status"]
+          subject?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          book_id?: string | null
+          class_year?: string | null
+          condition?: Database["public"]["Enums"]["listing_condition"]
+          created_at?: string
+          id?: string
+          images?: string[]
+          notes?: string | null
+          price?: number
+          program?: string | null
+          seller_id?: string
+          status?: Database["public"]["Enums"]["listing_status"]
+          subject?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      messages: {
+        Row: {
+          body: string
+          conversation_id: string
+          created_at: string
+          id: string
+          read_at: string | null
+          sender_id: string
+        }
+        Insert: {
+          body: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          sender_id: string
+        }
+        Update: {
+          body?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
+          avatar_url: string | null
+          bio: string | null
+          class_year: string | null
           completed_transactions: number | null
           created_at: string
           first_name: string
@@ -23,14 +147,19 @@ export type Database = {
           is_from_dis: boolean | null
           last_name: string
           no_show_count: number | null
+          phone: string | null
           previous_grade: string | null
           previous_program: string | null
           rating_average: number | null
           rating_count: number | null
+          school: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          class_year?: string | null
           completed_transactions?: number | null
           created_at?: string
           first_name?: string
@@ -38,14 +167,19 @@ export type Database = {
           is_from_dis?: boolean | null
           last_name?: string
           no_show_count?: number | null
+          phone?: string | null
           previous_grade?: string | null
           previous_program?: string | null
           rating_average?: number | null
           rating_count?: number | null
+          school?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          class_year?: string | null
           completed_transactions?: number | null
           created_at?: string
           first_name?: string
@@ -53,10 +187,12 @@ export type Database = {
           is_from_dis?: boolean | null
           last_name?: string
           no_show_count?: number | null
+          phone?: string | null
           previous_grade?: string | null
           previous_program?: string | null
           rating_average?: number | null
           rating_count?: number | null
+          school?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -153,7 +289,8 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      listing_condition: "new" | "like_new" | "good" | "fair" | "poor"
+      listing_status: "active" | "sold" | "reserved" | "archived"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -280,6 +417,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      listing_condition: ["new", "like_new", "good", "fair", "poor"],
+      listing_status: ["active", "sold", "reserved", "archived"],
+    },
   },
 } as const
