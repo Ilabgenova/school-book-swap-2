@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState, FormEvent } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { LanguageProvider, useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Link } from "react-router-dom";
-import { BookOpen, ArrowRight, School, UserPlus } from "lucide-react";
+import { Link, useNavigate, Navigate } from "react-router-dom";
+import { BookOpen, ArrowRight, School, UserPlus, Loader2 } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -14,6 +14,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { BooksToSellSuggestion } from "@/components/browse/BooksToSellSuggestion";
+import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 const grades = {
   PYP: ["PYP 1", "PYP 2", "PYP 3", "PYP 4", "PYP 5"],
@@ -21,11 +25,27 @@ const grades = {
   DP: ["DP 1", "DP 2"],
 };
 
+const GoogleIcon = () => (
+  <svg className="h-4 w-4" viewBox="0 0 24 24" aria-hidden="true">
+    <path fill="#EA4335" d="M12 10.2v3.9h5.5c-.2 1.4-1.6 4.2-5.5 4.2-3.3 0-6-2.7-6-6.1s2.7-6.1 6-6.1c1.9 0 3.1.8 3.8 1.5l2.6-2.5C16.8 3.6 14.7 2.7 12 2.7 6.9 2.7 2.8 6.8 2.8 12s4.1 9.3 9.2 9.3c5.3 0 8.8-3.7 8.8-9 0-.6-.1-1.1-.2-1.6H12z"/>
+  </svg>
+);
+
 const RegisterContent = () => {
   const { t } = useLanguage();
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [isFromDIS, setIsFromDIS] = useState<boolean | null>(null);
   const [previousGrade, setPreviousGrade] = useState<string>("");
   const [previousProgram, setPreviousProgram] = useState<string>("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  if (user) return <Navigate to="/browse" replace />;
 
   const handleSchoolOrigin = (fromDIS: boolean) => {
     setIsFromDIS(fromDIS);
@@ -37,10 +57,62 @@ const RegisterContent = () => {
 
   const handleGradeSelect = (grade: string) => {
     setPreviousGrade(grade);
-    // Determine program from grade
     if (grade.startsWith("PYP")) setPreviousProgram("PYP");
     else if (grade.startsWith("MYP")) setPreviousProgram("MYP");
     else if (grade.startsWith("DP")) setPreviousProgram("DP");
+  };
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (password !== confirmPassword) {
+      toast.error("Passwords don't match");
+      return;
+    }
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+    setLoading(true);
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/browse`,
+        data: {
+          first_name: firstName,
+          last_name: lastName,
+          full_name: `${firstName} ${lastName}`.trim(),
+        },
+      },
+    });
+    if (error) {
+      setLoading(false);
+      toast.error(error.message);
+      return;
+    }
+    // Update profile with extra fields (school / grade) if provided
+    if (data.user) {
+      await supabase
+        .from("profiles")
+        .update({
+          first_name: firstName,
+          last_name: lastName,
+          is_from_dis: isFromDIS ?? false,
+          previous_grade: previousGrade || null,
+          previous_program: previousProgram || null,
+        })
+        .eq("user_id", data.user.id);
+    }
+    setLoading(false);
+    toast.success("Account created! Check your email to confirm.");
+    navigate("/browse");
+  };
+
+  const handleGoogle = async () => {
+    const result = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: window.location.origin + "/browse",
+    });
+    if (result.error) toast.error("Google sign-in failed");
   };
 
   return (
@@ -51,18 +123,22 @@ const RegisterContent = () => {
             <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg mx-auto mb-4">
               <BookOpen className="h-7 w-7" />
             </div>
-            <h1 className="font-display text-2xl font-bold text-foreground">
-              {t.nav.register}
-            </h1>
-            <p className="text-muted-foreground mt-2">
-              Join our school community
-            </p>
+            <h1 className="font-display text-2xl font-bold text-foreground">{t.nav.register}</h1>
+            <p className="text-muted-foreground mt-2">Join our school community</p>
           </div>
 
           <div className="bg-card rounded-2xl border border-border p-6 shadow-lg">
-            <form className="space-y-4">
+            <Button type="button" variant="outline" className="w-full mb-4" onClick={handleGoogle}>
+              <GoogleIcon /> Continue with Google
+            </Button>
+            <div className="relative my-4">
+              <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-card px-2 text-muted-foreground">or</span>
+              </div>
+            </div>
 
-              {/* School Origin Question */}
+            <form className="space-y-4" onSubmit={handleSubmit}>
               <div className="space-y-3">
                 <Label className="flex items-center gap-2">
                   <School className="h-4 w-4 text-primary" />
@@ -73,9 +149,7 @@ const RegisterContent = () => {
                     type="button"
                     onClick={() => handleSchoolOrigin(true)}
                     className={`p-4 rounded-xl border-2 text-center transition-all ${
-                      isFromDIS === true
-                        ? "border-primary bg-primary/5"
-                        : "border-border hover:border-primary/50"
+                      isFromDIS === true ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
                     }`}
                   >
                     <School className="h-6 w-6 mx-auto mb-2 text-primary" />
@@ -85,9 +159,7 @@ const RegisterContent = () => {
                     type="button"
                     onClick={() => handleSchoolOrigin(false)}
                     className={`p-4 rounded-xl border-2 text-center transition-all ${
-                      isFromDIS === false
-                        ? "border-primary bg-primary/5"
-                        : "border-border hover:border-primary/50"
+                      isFromDIS === false ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
                     }`}
                   >
                     <UserPlus className="h-6 w-6 mx-auto mb-2 text-accent" />
@@ -96,22 +168,17 @@ const RegisterContent = () => {
                 </div>
               </div>
 
-              {/* Previous Grade Selection - shown only if from DIS */}
               {isFromDIS && (
                 <div className="space-y-2">
                   <Label>Previous Grade (Last Year)</Label>
                   <Select onValueChange={handleGradeSelect} value={previousGrade}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select your previous grade" />
-                    </SelectTrigger>
+                    <SelectTrigger><SelectValue placeholder="Select your previous grade" /></SelectTrigger>
                     <SelectContent>
-                      {Object.entries(grades).map(([program, programGrades]) => (
+                      {Object.entries(grades).map(([, programGrades]) =>
                         programGrades.map((grade) => (
-                          <SelectItem key={grade} value={grade}>
-                            {grade}
-                          </SelectItem>
+                          <SelectItem key={grade} value={grade}>{grade}</SelectItem>
                         ))
-                      ))}
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
@@ -120,77 +187,44 @@ const RegisterContent = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="firstName">First Name</Label>
-                  <Input
-                    id="firstName"
-                    type="text"
-                    placeholder="Mario"
-                    required
-                  />
+                  <Input id="firstName" type="text" placeholder="Mario" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="lastName">Last Name</Label>
-                  <Input
-                    id="lastName"
-                    type="text"
-                    placeholder="Rossi"
-                    required
-                  />
+                  <Input id="lastName" type="text" placeholder="Rossi" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
                 </div>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="your@email.com"
-                  required
-                />
+                <Input id="email" type="email" placeholder="your@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="••••••••"
-                  required
-                />
+                <Input id="password" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="confirmPassword">Confirm Password</Label>
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  placeholder="••••••••"
-                  required
-                />
+                <Input id="confirmPassword" type="password" placeholder="••••••••" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
               </div>
 
-              <Button type="submit" className="w-full" size="lg">
-                {t.nav.register}
-                <ArrowRight className="h-4 w-4" />
+              <Button type="submit" className="w-full" size="lg" disabled={loading}>
+                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <>{t.nav.register}<ArrowRight className="h-4 w-4" /></>}
               </Button>
             </form>
-
 
             <div className="mt-6 text-center text-sm">
               <p className="text-muted-foreground">
                 Already have an account?{" "}
-                <Link to="/login" className="text-primary font-medium hover:underline">
-                  {t.nav.login}
-                </Link>
+                <Link to="/login" className="text-primary font-medium hover:underline">{t.nav.login}</Link>
               </p>
             </div>
           </div>
 
-          {/* Books to Sell Suggestion - shown if from DIS and grade selected */}
           {isFromDIS && previousGrade && previousProgram && (
-            <BooksToSellSuggestion
-              previousGrade={previousGrade}
-              previousProgram={previousProgram}
-            />
+            <BooksToSellSuggestion previousGrade={previousGrade} previousProgram={previousProgram} />
           )}
         </div>
       </div>
@@ -198,12 +232,10 @@ const RegisterContent = () => {
   );
 };
 
-const Register = () => {
-  return (
-    <LanguageProvider>
-      <RegisterContent />
-    </LanguageProvider>
-  );
-};
+const Register = () => (
+  <LanguageProvider>
+    <RegisterContent />
+  </LanguageProvider>
+);
 
 export default Register;
