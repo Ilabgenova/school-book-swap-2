@@ -75,15 +75,19 @@ export const Header = () => {
               </Button>
             </Link>
           )}
+          <Link to="/buy">
+            <Button
+              variant="ghost"
+              size="sm"
+              className={isActive("/buy") ? "text-accent bg-accent/10" : ""}
+            >
+              Buy a book
+            </Button>
+          </Link>
           <div className="mx-1 h-5 w-px bg-border" />
           <LanguageSwitcher />
           {user ? (
             <>
-              <Link to="/sell">
-                <Button variant="hero" size="sm" className="gap-1.5">
-                  <Plus className="h-4 w-4" /> List
-                </Button>
-              </Link>
               <Button
                 variant="ghost"
                 size="sm"
@@ -93,6 +97,7 @@ export const Header = () => {
                 <LogOut className="h-4 w-4" /> {t.nav.logout}
               </Button>
             </>
+
           ) : (
             <>
               <Link to="/login">
@@ -132,6 +137,12 @@ export const Header = () => {
                 {t.nav.browse}
               </Button>
             </Link>
+            <Link to="/buy" onClick={() => setMobileMenuOpen(false)}>
+              <Button variant="ghost" className="w-full justify-start">
+                Buy a book
+              </Button>
+            </Link>
+
             {user ? (
               <>
                 <Link to="/sell" onClick={() => setMobileMenuOpen(false)}>
