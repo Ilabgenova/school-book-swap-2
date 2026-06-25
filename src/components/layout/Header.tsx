@@ -137,6 +137,12 @@ export const Header = () => {
                 {t.nav.browse}
               </Button>
             </Link>
+            <Link to="/buy" onClick={() => setMobileMenuOpen(false)}>
+              <Button variant="ghost" className="w-full justify-start">
+                Buy a book
+              </Button>
+            </Link>
+
             {user ? (
               <>
                 <Link to="/sell" onClick={() => setMobileMenuOpen(false)}>
