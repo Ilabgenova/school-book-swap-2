@@ -93,10 +93,20 @@ export const Footer = () => {
           </div>
         </div>
 
+        {/* Disclaimer */}
+        <div className="mt-10 pt-6 border-t border-primary-foreground/10">
+          <p className="text-xs text-primary-foreground/70 leading-relaxed max-w-3xl">
+            <span className="font-semibold text-primary-foreground">Disclaimer.</span>{" "}
+            DISbook is an independent student-created project for the DIS community.
+            It is not an official platform of Deledda International School and is not
+            managed, approved or endorsed by the school.
+          </p>
+        </div>
+
         {/* Bottom Bar */}
-        <div className="mt-10 pt-6 border-t border-primary-foreground/10 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="mt-6 pt-6 border-t border-primary-foreground/10 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs text-primary-foreground/60">
-            © {currentYear} DISbook · Independent community platform — not affiliated with Deledda International School.
+            © {currentYear} DISbook · Independent student-created community project — not affiliated with Deledda International School.
           </p>
           <p className="text-xs text-primary-foreground/60 font-mono">
             v1.0 · {t.footer.rights}
