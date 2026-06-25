@@ -243,7 +243,7 @@ export const translations = {
       hero: {
         title: "Used School Books",
         subtitle: "Your School Community",
-        description: "Buy, exchange, or donate used school books within our community. Only books from the official school list.",
+        description: "Buy, exchange, or donate used school books within our community. Books matched to the DIS book list reference.",
         cta: "Get Started",
         browse: "Browse Books",
       },
