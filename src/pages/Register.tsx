@@ -124,7 +124,12 @@ const RegisterContent = () => {
               <BookOpen className="h-7 w-7" />
             </div>
             <h1 className="font-display text-2xl font-bold text-foreground">{t.nav.register}</h1>
-            <p className="text-muted-foreground mt-2">Join our school community</p>
+            <p className="text-muted-foreground mt-2">Join the DIS community project</p>
+            <p className="text-[11px] text-muted-foreground/80 mt-3 italic leading-relaxed border-l-2 border-accent/40 pl-2 text-left">
+              DISbook is an independent student-created project for the DIS community.
+              It is not an official platform of Deledda International School and is not
+              managed, approved or endorsed by the school.
+            </p>
           </div>
 
           <div className="bg-card rounded-2xl border border-border p-6 shadow-lg">
