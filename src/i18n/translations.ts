@@ -68,8 +68,8 @@ export const translations = {
     },
     // Browse page
     browse: {
-      selectGrade: "Seleziona la Classe",
-      selectGradeDescription: "Scegli la classe per vedere l'elenco dei libri richiesti",
+      selectGrade: "Sfoglia libri MYP & DP",
+      selectGradeDescription: "Scegli la classe MYP o DP per vedere i libri usati disponibili e quelli cercati dalle famiglie.",
       primaryYears: "Primary Years Programme",
       middleYears: "Middle Years Programme",
       diplomaProgramme: "Diploma Programme",
@@ -297,8 +297,8 @@ export const translations = {
     },
     // Browse page
     browse: {
-      selectGrade: "Select Your Class",
-      selectGradeDescription: "Choose your class to see the required book list",
+      selectGrade: "Browse MYP & DP Books",
+      selectGradeDescription: "Choose your MYP or DP class/year to see used books currently available and books families are looking for.",
       primaryYears: "Primary Years Programme",
       middleYears: "Middle Years Programme",
       diplomaProgramme: "Diploma Programme",
