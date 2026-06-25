@@ -21,10 +21,10 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 const grades = [
-  "PYP 1","PYP 2","PYP 3","PYP 4","PYP 5",
   "MYP 1","MYP 2","MYP 3","MYP 4","MYP 5",
   "DP 1","DP 2",
 ];
+
 
 type ListingType = "sale" | "exchange" | "donation";
 type Condition = "new" | "like_new" | "good" | "fair" | "poor";
