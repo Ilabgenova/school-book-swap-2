@@ -3,10 +3,10 @@ import { ShieldCheck, Repeat2, Leaf, ArrowUpRight } from "lucide-react";
 const features = [
   {
     icon: ShieldCheck,
-    eyebrow: "01 — Verified",
-    title: "DIS official book list",
+    eyebrow: "01 — Reference list",
+    title: "DIS book list reference",
     description:
-      "Every listing is matched against the school's official booklist. No off-brand, no out-of-syllabus — only books your kids actually need.",
+      "Every listing is matched against the DIS book list reference shared by community members. ISBN-based matching means only books your kids actually need.",
   },
   {
     icon: Repeat2,
