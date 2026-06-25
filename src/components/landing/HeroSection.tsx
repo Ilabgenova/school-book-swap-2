@@ -60,25 +60,63 @@ export const HeroSection = () => {
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3 animate-slide-up" style={{ animationDelay: "0.1s" }}>
-              <Link to="/browse">
-                <Button variant="hero" size="lg" className="w-full sm:w-auto group">
-                  <Search className="h-4 w-4" />
-                  Find Books
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </Button>
+            {/* Two clear paths */}
+            <div className="grid sm:grid-cols-2 gap-3 animate-slide-up" style={{ animationDelay: "0.1s" }}>
+              <Link to="/sell" className="group">
+                <div className="h-full rounded-xl border border-border bg-card hover:border-accent/50 hover:shadow-elevated transition-all p-5 flex flex-col gap-3">
+                  <div className="flex items-center gap-2">
+                    <div className="h-8 w-8 rounded-lg bg-accent/10 flex items-center justify-center">
+                      <BookOpen className="h-4 w-4 text-accent" />
+                    </div>
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Step 1 · End of year</span>
+                  </div>
+                  <div>
+                    <h3 className="font-display text-lg font-semibold text-foreground">
+                      Sell last year's books
+                    </h3>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      List the books you used in the previous academic year and pass them on.
+                    </p>
+                  </div>
+                  <span className="text-sm font-medium text-accent inline-flex items-center gap-1 mt-auto">
+                    List a book <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                  </span>
+                </div>
               </Link>
-              <Link to="/sell">
-                <Button variant="outline" size="lg" className="w-full sm:w-auto">
-                  <BookOpen className="h-4 w-4" />
-                  List a Book
-                </Button>
+
+              <Link to="/browse" className="group">
+                <div className="h-full rounded-xl border border-accent/40 bg-accent/5 hover:bg-accent/10 hover:shadow-elevated transition-all p-5 flex flex-col gap-3">
+                  <div className="flex items-center gap-2">
+                    <div className="h-8 w-8 rounded-lg bg-accent/20 flex items-center justify-center">
+                      <Search className="h-4 w-4 text-accent" />
+                    </div>
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-accent">Step 2 · New school year</span>
+                  </div>
+                  <div>
+                    <h3 className="font-display text-lg font-semibold text-foreground">
+                      Buy used books for the new year
+                    </h3>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Find the books you need for your new grade from other DIS students.
+                    </p>
+                  </div>
+                  <span className="text-sm font-medium text-accent inline-flex items-center gap-1 mt-auto">
+                    Browse books <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                  </span>
+                </div>
               </Link>
+            </div>
+
+            <div className="flex items-center gap-3 text-sm animate-fade-in" style={{ animationDelay: "0.15s" }}>
               <Link to="/register">
-                <Button variant="ghost" size="lg" className="w-full sm:w-auto">
-                  Register
+                <Button variant="ghost" size="sm">
+                  Register to start
+                  <ArrowRight className="h-3.5 w-3.5" />
                 </Button>
               </Link>
+              <span className="text-xs text-muted-foreground">
+                Free · DIS community only
+              </span>
             </div>
 
             {/* Trust strip */}
