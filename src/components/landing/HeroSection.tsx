@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { ArrowRight, Users, BookOpen, Recycle, Heart, Leaf, HandHeart, CheckCircle2 } from "lucide-react";
-import heroImage from "@/assets/hero-books.jpg";
+import heroImage from "@/assets/genova-skyline.jpg";
 
 export const HeroSection = () => {
   const { t } = useLanguage();
@@ -69,7 +69,9 @@ export const HeroSection = () => {
             <div className="relative rounded-2xl overflow-hidden shadow-2xl">
               <img 
                 src={heroImage} 
-                alt="School books" 
+                alt="Skyline di Genova — DISbook" 
+                width={1920}
+                height={1024}
                 className="w-full h-auto object-cover aspect-[4/3]"
               />
               {/* Overlay gradient */}
