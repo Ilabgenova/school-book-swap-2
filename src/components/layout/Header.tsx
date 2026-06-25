@@ -1,13 +1,22 @@
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { Link } from "react-router-dom";
-import { BookOpen, Menu, X } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { BookOpen, Menu, X, Plus, LogOut } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
 
 export const Header = () => {
   const { t } = useLanguage();
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const handleSignOut = async () => {
+    await signOut();
+    setMobileMenuOpen(false);
+    navigate("/");
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/80 backdrop-blur-md">
@@ -30,16 +39,31 @@ export const Header = () => {
             </Button>
           </Link>
           <LanguageSwitcher />
-          <Link to="/login">
-            <Button variant="outline" size="sm">
-              {t.nav.login}
-            </Button>
-          </Link>
-          <Link to="/register">
-            <Button variant="default" size="sm">
-              {t.nav.register}
-            </Button>
-          </Link>
+          {user ? (
+            <>
+              <Link to="/sell">
+                <Button variant="default" size="sm" className="gap-1">
+                  <Plus className="h-4 w-4" /> Sell
+                </Button>
+              </Link>
+              <Button variant="outline" size="sm" onClick={handleSignOut} className="gap-1">
+                <LogOut className="h-4 w-4" /> {t.nav.logout}
+              </Button>
+            </>
+          ) : (
+            <>
+              <Link to="/login">
+                <Button variant="outline" size="sm">
+                  {t.nav.login}
+                </Button>
+              </Link>
+              <Link to="/register">
+                <Button variant="default" size="sm">
+                  {t.nav.register}
+                </Button>
+              </Link>
+            </>
+          )}
         </nav>
 
         {/* Mobile Menu Button */}
@@ -65,16 +89,31 @@ export const Header = () => {
                 {t.nav.browse}
               </Button>
             </Link>
-            <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
-              <Button variant="outline" className="w-full">
-                {t.nav.login}
-              </Button>
-            </Link>
-            <Link to="/register" onClick={() => setMobileMenuOpen(false)}>
-              <Button variant="default" className="w-full">
-                {t.nav.register}
-              </Button>
-            </Link>
+            {user ? (
+              <>
+                <Link to="/sell" onClick={() => setMobileMenuOpen(false)}>
+                  <Button variant="default" className="w-full gap-1">
+                    <Plus className="h-4 w-4" /> Sell
+                  </Button>
+                </Link>
+                <Button variant="outline" className="w-full gap-1" onClick={handleSignOut}>
+                  <LogOut className="h-4 w-4" /> {t.nav.logout}
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
+                  <Button variant="outline" className="w-full">
+                    {t.nav.login}
+                  </Button>
+                </Link>
+                <Link to="/register" onClick={() => setMobileMenuOpen(false)}>
+                  <Button variant="default" className="w-full">
+                    {t.nav.register}
+                  </Button>
+                </Link>
+              </>
+            )}
           </nav>
         </div>
       )}
