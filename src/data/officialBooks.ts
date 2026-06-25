@@ -287,3 +287,15 @@ export function getBooksToKeep(previousGrade: string, _previousProgram: string):
   // Keep = previous-year book reused in the next grade
   return previousBooks.filter((b) => b.isbn && nextIsbns.has(b.isbn));
 }
+
+export function getPriceRange(_bookId: string): { min: number; max: number } | null {
+  return null;
+}
+
+export function getAmazonListUrl(grade: string, _program: string): string {
+  return `https://www.amazon.it/s?k=${encodeURIComponent(grade + " IB textbooks")}`;
+}
+
+export function getSubjectsForGrade(grade: string): string[] {
+  return Array.from(new Set(officialBooks.filter((b) => b.grade === grade).map((b) => b.subject))).sort();
+}
