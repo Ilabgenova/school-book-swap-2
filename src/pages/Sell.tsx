@@ -1,4 +1,4 @@
-import { useState, FormEvent, useMemo, ChangeEvent } from "react";
+import { useState, FormEvent, useMemo, ChangeEvent, useEffect } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { LanguageProvider } from "@/i18n/LanguageContext";
