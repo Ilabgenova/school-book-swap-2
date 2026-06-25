@@ -20,7 +20,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 
 const grades = {
-  PYP: ["PYP 1", "PYP 2", "PYP 3", "PYP 4", "PYP 5"],
   MYP: ["MYP 1", "MYP 2", "MYP 3", "MYP 4", "MYP 5"],
   DP: ["DP 1", "DP 2"],
 };
@@ -59,8 +58,7 @@ const RegisterContent = () => {
 
   const handleGradeSelect = (grade: string) => {
     setPreviousGrade(grade);
-    if (grade.startsWith("PYP")) setPreviousProgram("PYP");
-    else if (grade.startsWith("MYP")) setPreviousProgram("MYP");
+    if (grade.startsWith("MYP")) setPreviousProgram("MYP");
     else if (grade.startsWith("DP")) setPreviousProgram("DP");
   };
 

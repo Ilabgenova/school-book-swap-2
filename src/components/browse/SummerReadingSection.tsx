@@ -21,11 +21,6 @@ export const SummerReadingSection = ({
 
   // Filter summer reading books for the current program level
   const relevantBooks = summerReadingBooks.filter((book) => {
-    if (selectedProgram === "PYP") {
-      const gradeNum = parseInt(selectedGrade.replace("PYP ", ""));
-      if (gradeNum <= 3) return book.grade === "PYP 1-3";
-      return book.grade === "PYP 4-5";
-    }
     if (selectedProgram === "MYP") {
       const gradeNum = parseInt(selectedGrade.replace("MYP ", ""));
       if (gradeNum <= 2) return book.grade === "MYP 1-2";
