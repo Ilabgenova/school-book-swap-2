@@ -115,6 +115,9 @@ const RegisterContent = () => {
     if (result.error) toast.error("Google sign-in failed");
   };
 
+  const originChosen = isFromDIS !== null;
+  const canShowAuth = isFromDIS === false || (isFromDIS === true && !!previousGrade);
+
   return (
     <MainLayout showFooter={false}>
       <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center py-12 px-4">
@@ -132,110 +135,130 @@ const RegisterContent = () => {
             </p>
           </div>
 
-          <div className="bg-card rounded-2xl border border-border p-6 shadow-lg">
-            <Button type="button" variant="outline" className="w-full mb-4" onClick={handleGoogle}>
-              <GoogleIcon /> Continue with Google
-            </Button>
-            <div className="relative my-4">
-              <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-muted-foreground">or</span>
+          {/* Step 1 — DIS origin */}
+          <div className="bg-card rounded-2xl border border-border p-6 shadow-lg space-y-4">
+            <div className="space-y-3">
+              <Label className="flex items-center gap-2">
+                <School className="h-4 w-4 text-primary" />
+                <span className="text-xs uppercase tracking-wide text-muted-foreground mr-1">Step 1</span>
+                {t.browse.schoolOriginQuestion}
+              </Label>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => handleSchoolOrigin(true)}
+                  className={`p-4 rounded-xl border-2 text-center transition-all ${
+                    isFromDIS === true ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
+                  }`}
+                >
+                  <School className="h-6 w-6 mx-auto mb-2 text-primary" />
+                  <span className="text-sm font-medium">{t.browse.fromDISSchool}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSchoolOrigin(false)}
+                  className={`p-4 rounded-xl border-2 text-center transition-all ${
+                    isFromDIS === false ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
+                  }`}
+                >
+                  <UserPlus className="h-6 w-6 mx-auto mb-2 text-accent" />
+                  <span className="text-sm font-medium">{t.browse.newToDIS}</span>
+                </button>
               </div>
             </div>
 
-            <form className="space-y-4" onSubmit={handleSubmit}>
-              <div className="space-y-3">
-                <Label className="flex items-center gap-2">
-                  <School className="h-4 w-4 text-primary" />
-                  {t.browse.schoolOriginQuestion}
-                </Label>
-                <div className="grid grid-cols-2 gap-3">
-                  <button
-                    type="button"
-                    onClick={() => handleSchoolOrigin(true)}
-                    className={`p-4 rounded-xl border-2 text-center transition-all ${
-                      isFromDIS === true ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
-                    }`}
-                  >
-                    <School className="h-6 w-6 mx-auto mb-2 text-primary" />
-                    <span className="text-sm font-medium">{t.browse.fromDISSchool}</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleSchoolOrigin(false)}
-                    className={`p-4 rounded-xl border-2 text-center transition-all ${
-                      isFromDIS === false ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
-                    }`}
-                  >
-                    <UserPlus className="h-6 w-6 mx-auto mb-2 text-accent" />
-                    <span className="text-sm font-medium">{t.browse.newToDIS}</span>
-                  </button>
-                </div>
-              </div>
-
-              {isFromDIS && (
-                <div className="space-y-2">
-                  <Label>Previous Grade (Last Year)</Label>
-                  <Select onValueChange={handleGradeSelect} value={previousGrade}>
-                    <SelectTrigger><SelectValue placeholder="Select your previous grade" /></SelectTrigger>
-                    <SelectContent>
-                      {Object.entries(grades).map(([, programGrades]) =>
-                        programGrades.map((grade) => (
-                          <SelectItem key={grade} value={grade}>{grade}</SelectItem>
-                        ))
-                      )}
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="firstName">First Name</Label>
-                  <Input id="firstName" type="text" placeholder="Mario" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="lastName">Last Name</Label>
-                  <Input id="lastName" type="text" placeholder="Rossi" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
-                </div>
-              </div>
-
+            {isFromDIS && (
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="your@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                <Label>Previous Grade (Last Year)</Label>
+                <Select onValueChange={handleGradeSelect} value={previousGrade}>
+                  <SelectTrigger><SelectValue placeholder="Select your previous grade" /></SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(grades).map(([, programGrades]) =>
+                      programGrades.map((grade) => (
+                        <SelectItem key={grade} value={grade}>{grade}</SelectItem>
+                      ))
+                    )}
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">
+                  We'll suggest which books from last year you can list now.
+                </p>
               </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input id="password" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
-                <Input id="confirmPassword" type="password" placeholder="••••••••" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
-              </div>
-
-              <Button type="submit" className="w-full" size="lg" disabled={loading}>
-                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <>{t.nav.register}<ArrowRight className="h-4 w-4" /></>}
-              </Button>
-            </form>
-
-            <div className="mt-6 text-center text-sm">
-              <p className="text-muted-foreground">
-                Already have an account?{" "}
-                <Link to="/login" className="text-primary font-medium hover:underline">{t.nav.login}</Link>
-              </p>
-            </div>
+            )}
           </div>
 
+          {/* Previous-year sellable suggestion (before account creation) */}
           {isFromDIS && previousGrade && previousProgram && (
             <BooksToSellSuggestion previousGrade={previousGrade} previousProgram={previousProgram} />
+          )}
+
+          {/* Step 2 — Account creation, gated */}
+          {originChosen && (
+            <div className={`mt-6 bg-card rounded-2xl border border-border p-6 shadow-lg transition-opacity ${canShowAuth ? "opacity-100" : "opacity-50 pointer-events-none"}`}>
+              <p className="text-xs uppercase tracking-wide text-muted-foreground mb-3">
+                Step 2 — Create your account
+              </p>
+              {!canShowAuth && (
+                <p className="text-sm text-muted-foreground mb-3">
+                  Select your previous grade above to continue.
+                </p>
+              )}
+              <Button type="button" variant="outline" className="w-full mb-4" onClick={handleGoogle} disabled={!canShowAuth}>
+                <GoogleIcon /> Continue with Google
+              </Button>
+              <div className="relative my-4">
+                <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-card px-2 text-muted-foreground">or</span>
+                </div>
+              </div>
+
+              <form className="space-y-4" onSubmit={handleSubmit}>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="firstName">First Name</Label>
+                    <Input id="firstName" type="text" placeholder="Mario" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="lastName">Last Name</Label>
+                    <Input id="lastName" type="text" placeholder="Rossi" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input id="email" type="email" placeholder="your@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="password">Password</Label>
+                  <Input id="password" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword">Confirm Password</Label>
+                  <Input id="confirmPassword" type="password" placeholder="••••••••" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
+                </div>
+
+                <Button type="submit" className="w-full" size="lg" disabled={loading || !canShowAuth}>
+                  {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <>{t.nav.register}<ArrowRight className="h-4 w-4" /></>}
+                </Button>
+              </form>
+
+              <div className="mt-6 text-center text-sm">
+                <p className="text-muted-foreground">
+                  Already have an account?{" "}
+                  <Link to="/login" className="text-primary font-medium hover:underline">{t.nav.login}</Link>
+                </p>
+              </div>
+            </div>
           )}
         </div>
       </div>
     </MainLayout>
   );
 };
+
 
 const Register = () => (
   <LanguageProvider>
