@@ -1,8 +1,7 @@
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ShoppingBag, Recycle, ExternalLink, ArrowLeft } from "lucide-react";
-import { getAmazonListUrl } from "@/data/officialBooks";
+import { ShoppingBag, Recycle, ArrowLeft, Construction } from "lucide-react";
 
 interface BuyingModeSelectorProps {
   selectedGrade: string;
@@ -19,9 +18,6 @@ export const BuyingModeSelector = ({
 }: BuyingModeSelectorProps) => {
   const { t } = useLanguage();
 
-  const handleBuyAllNew = () => {
-    window.open(getAmazonListUrl(selectedGrade, selectedProgram), "_blank");
-  };
 
   return (
     <div className="space-y-8">
