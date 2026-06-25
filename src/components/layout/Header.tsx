@@ -45,7 +45,7 @@ export const Header = () => {
           </div>
           <div className="flex flex-col leading-none">
             <span className="font-display text-lg font-bold text-foreground tracking-tight">
-              RiLibro
+              DISbook
             </span>
             <span className="hidden sm:inline text-[10px] uppercase tracking-[0.14em] text-muted-foreground font-medium">
               DIS · Genova

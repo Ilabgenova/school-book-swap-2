@@ -31,7 +31,7 @@ export const FeaturesSection = () => {
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12 md:mb-16">
           <div className="max-w-xl">
             <p className="font-mono text-xs uppercase tracking-[0.18em] text-accent mb-3">
-              What RiLibro is
+              What DISbook is
             </p>
             <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-foreground tracking-tighter leading-[1.05]">
               A trusted digital platform for the DIS community.

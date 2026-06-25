@@ -38,7 +38,7 @@ export const HeroSection = () => {
 
             <div className="space-y-4 animate-slide-up">
               <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-bold text-foreground leading-[1.02] tracking-tighter">
-                RiLibro<span className="text-accent">.</span>
+                DISbook<span className="text-accent">.</span>
               </h1>
               <p className="font-display text-xl md:text-2xl text-foreground/80 leading-snug max-w-xl">
                 Smart used books platform for{" "}
