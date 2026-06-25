@@ -113,6 +113,17 @@ const SellContent = () => {
   const [price, setPrice] = useState("");
   const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [isFromDIS, setIsFromDIS] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("profiles")
+      .select("is_from_dis")
+      .eq("user_id", user.id)
+      .maybeSingle()
+      .then(({ data }) => setIsFromDIS(!!data?.is_from_dis));
+  }, [user]);
 
   const [front, setFront] = useState<PhotoState>(null);
   const [inside, setInside] = useState<PhotoState>(null);
