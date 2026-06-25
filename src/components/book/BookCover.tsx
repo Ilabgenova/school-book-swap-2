@@ -42,28 +42,13 @@ const resolveCover = async (rawIsbn: string): Promise<CacheEntry> => {
   const isbn = cleanIsbn(rawIsbn);
   if (!isbn) return { url: null };
 
-  // 1) Google Books — edition-specific cover
-  try {
-    const res = await fetch(
-      `https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}&maxResults=1&fields=items(volumeInfo/imageLinks)`
-    );
-    if (res.ok) {
-      const data = await res.json();
-      const links = data?.items?.[0]?.volumeInfo?.imageLinks;
-      const candidate: string | undefined =
-        links?.extraLarge || links?.large || links?.medium || links?.thumbnail || links?.smallThumbnail;
-      if (candidate) return { url: upgradeGoogleThumb(candidate) };
-    }
-  } catch {
-    // ignore, fall through
-  }
-
-  // 2) Open Library — verify the image actually exists (placeholder is 1×1)
+  // Open Library — free, no quota. Verify the image actually exists (placeholder is 1×1).
   const olUrl = `https://covers.openlibrary.org/b/isbn/${isbn}-L.jpg?default=false`;
   if (await probeImage(olUrl)) return { url: olUrl };
 
   return { url: null };
 };
+
 
 const getCover = (isbn: string) => {
   let entry = coverCache.get(isbn);
