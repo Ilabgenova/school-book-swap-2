@@ -26,7 +26,7 @@ const grades = [
 ];
 
 type ListingType = "sale" | "exchange" | "donation";
-type Condition = "new" | "as_new" | "used";
+type Condition = "new" | "like_new" | "good" | "fair" | "poor";
 
 const SellContent = () => {
   const { user, loading: authLoading } = useAuth();
@@ -75,7 +75,7 @@ const SellContent = () => {
     }
 
     setSubmitting(true);
-    const { error } = await supabase.from("listings").insert({
+    const { error } = await supabase.from("listings").insert([{
       seller_id: user.id,
       title: selectedBook.title,
       book_id: selectedBook.id,
@@ -88,7 +88,7 @@ const SellContent = () => {
       price: priceValue,
       notes: notes || null,
       status: "active",
-    });
+    }]);
     setSubmitting(false);
 
     if (error) {
@@ -172,8 +172,10 @@ const SellContent = () => {
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="new">New</SelectItem>
-                  <SelectItem value="as_new">As new</SelectItem>
-                  <SelectItem value="used">Used</SelectItem>
+                  <SelectItem value="like_new">Like new</SelectItem>
+                  <SelectItem value="good">Good</SelectItem>
+                  <SelectItem value="fair">Fair</SelectItem>
+                  <SelectItem value="poor">Poor</SelectItem>
                 </SelectContent>
               </Select>
             </div>
