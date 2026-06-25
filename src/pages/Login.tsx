@@ -21,11 +21,13 @@ const LoginContent = () => {
   const { t } = useLanguage();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const nextPath = new URLSearchParams(window.location.search).get("next");
+  const redirectTo = nextPath?.startsWith("/") ? nextPath : "/browse";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  if (user) return <Navigate to="/browse" replace />;
+  if (user) return <Navigate to={redirectTo} replace />;
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -37,12 +39,12 @@ const LoginContent = () => {
       return;
     }
     toast.success("Welcome back!");
-    navigate("/browse");
+    navigate(redirectTo);
   };
 
   const handleGoogle = async () => {
     const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin + "/browse",
+      redirect_uri: `${window.location.origin}/login?next=${encodeURIComponent(redirectTo)}`,
     });
     if (result.error) toast.error("Google sign-in failed");
   };
@@ -89,7 +91,7 @@ const LoginContent = () => {
             <div className="mt-6 text-center text-sm">
               <p className="text-muted-foreground">
                 Don't have an account?{" "}
-                <Link to="/register" className="text-primary font-medium hover:underline">{t.nav.register}</Link>
+                <Link to={`/register?next=${encodeURIComponent(redirectTo)}`} className="text-primary font-medium hover:underline">{t.nav.register}</Link>
               </p>
             </div>
           </div>

@@ -2,7 +2,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Menu, X, Plus, LogOut, Sparkles } from "lucide-react";
+import { Menu, X, LogOut, Sparkles } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -64,17 +64,15 @@ export const Header = () => {
               {t.nav.browse}
             </Button>
           </Link>
-          {user && (
-            <Link to="/sell">
-              <Button
-                variant="ghost"
-                size="sm"
-                className={isActive("/sell") ? "text-accent bg-accent/10" : ""}
-              >
-                List a book
-              </Button>
-            </Link>
-          )}
+          <Link to="/sell">
+            <Button
+              variant="ghost"
+              size="sm"
+              className={isActive("/sell") ? "text-accent bg-accent/10" : ""}
+            >
+              List a book
+            </Button>
+          </Link>
           <Link to="/buy">
             <Button
               variant="ghost"
@@ -143,13 +141,14 @@ export const Header = () => {
               </Button>
             </Link>
 
+            <Link to="/sell" onClick={() => setMobileMenuOpen(false)}>
+              <Button variant="ghost" className="w-full justify-start">
+                List a book
+              </Button>
+            </Link>
+
             {user ? (
               <>
-                <Link to="/sell" onClick={() => setMobileMenuOpen(false)}>
-                  <Button variant="hero" className="w-full gap-1.5">
-                    <Plus className="h-4 w-4" /> List a book
-                  </Button>
-                </Link>
                 <Button
                   variant="outline"
                   className="w-full gap-1.5"

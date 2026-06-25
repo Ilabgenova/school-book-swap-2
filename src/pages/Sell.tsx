@@ -141,7 +141,7 @@ const SellContent = () => {
       </MainLayout>
     );
   }
-  if (!user) return <Navigate to="/login" replace />;
+  if (!user) return <Navigate to="/login?next=%2Fsell" replace />;
 
   const uploadPhoto = async (slot: PhotoSlot, file: File, listingId: string) => {
     const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
