@@ -51,7 +51,7 @@ export const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/sell" className="text-primary-foreground/80 hover:text-[hsl(var(--electric-glow))] transition-colors">
+                <Link to="/sell?intent=sell&mode=sell" className="text-primary-foreground/80 hover:text-[hsl(var(--electric-glow))] transition-colors">
                   List a book
                 </Link>
               </li>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Navigate, useSearchParams } from "react-router-dom";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { GradeSelector } from "@/components/browse/GradeSelector";
@@ -11,6 +12,7 @@ type BrowseStep = "grade" | "mode" | "dpSubjects" | "mypLanguage" | "books";
 
 const BrowseContent = () => {
   const { t } = useLanguage();
+  const [searchParams] = useSearchParams();
   const [step, setStep] = useState<BrowseStep>("grade");
   const [selectedGrade, setSelectedGrade] = useState<string | null>(null);
   const [selectedProgram, setSelectedProgram] = useState<string | null>(null);
@@ -66,6 +68,10 @@ const BrowseContent = () => {
   const handleBackToMYPLanguage = () => {
     setStep("mypLanguage");
   };
+
+  if (searchParams.get("mode") === "sell" || searchParams.get("intent") === "sell") {
+    return <Navigate to="/sell?intent=sell&mode=sell" replace />;
+  }
 
   return (
     <MainLayout>

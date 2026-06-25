@@ -64,7 +64,7 @@ export const Header = () => {
               {t.nav.browse}
             </Button>
           </Link>
-          <Link to="/sell">
+          <Link to="/sell?intent=sell&mode=sell">
             <Button
               variant="ghost"
               size="sm"
@@ -141,7 +141,7 @@ export const Header = () => {
               </Button>
             </Link>
 
-            <Link to="/sell" onClick={() => setMobileMenuOpen(false)}>
+            <Link to="/sell?intent=sell&mode=sell" onClick={() => setMobileMenuOpen(false)}>
               <Button variant="ghost" className="w-full justify-start">
                 List a book
               </Button>

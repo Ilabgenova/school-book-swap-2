@@ -81,7 +81,7 @@ export const HeroSection = () => {
             {/* Two clear paths */}
             <div className="grid sm:grid-cols-2 gap-3 animate-slide-up" style={{ animationDelay: "0.1s" }}>
               {canSellPrevious ? (
-                <Link to="/sell" className="group">
+                <Link to="/sell?intent=sell&mode=sell" className="group">
                   <div className="h-full rounded-xl border border-border bg-card hover:border-accent/50 hover:shadow-elevated transition-all p-5 flex flex-col gap-3">
                     <div className="flex items-center gap-2">
                       <div className="h-8 w-8 rounded-lg bg-accent/10 flex items-center justify-center">
@@ -103,7 +103,7 @@ export const HeroSection = () => {
                   </div>
                 </Link>
               ) : (
-                <Link to="/register" className="group">
+                <Link to="/register?next=%2Fsell%3Fintent%3Dsell%26mode%3Dsell" className="group">
                   <div className="h-full rounded-xl border border-dashed border-border bg-muted/30 p-5 flex flex-col gap-3 opacity-90 hover:opacity-100 transition">
                     <div className="flex items-center gap-2">
                       <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
