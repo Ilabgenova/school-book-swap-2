@@ -12,6 +12,7 @@ import {
   CheckCircle2,
   TrendingUp,
 } from "lucide-react";
+import lanternaAsset from "@/assets/lanterna.webp.asset.json";
 
 export const HeroSection = () => {
   const { t } = useLanguage();
@@ -91,95 +92,95 @@ export const HeroSection = () => {
             </div>
           </div>
 
-          {/* Right — dashboard preview card */}
+          {/* Right — Lanterna of Genova with floating dashboard cards */}
           <div className="relative animate-fade-in" style={{ animationDelay: "0.15s" }}>
             {/* Glow */}
             <div className="absolute -inset-6 bg-accent/20 blur-3xl rounded-full pointer-events-none" />
 
-            <div className="relative rounded-2xl border border-border bg-card shadow-elevated overflow-hidden">
-              {/* Window chrome */}
-              <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-secondary/40">
-                <div className="flex items-center gap-1.5">
-                  <span className="h-2.5 w-2.5 rounded-full bg-destructive/60" />
-                  <span className="h-2.5 w-2.5 rounded-full bg-warning/60" />
-                  <span className="h-2.5 w-2.5 rounded-full bg-success/60" />
-                </div>
-                <div className="font-mono text-[11px] text-muted-foreground">
-                  rilibro.app / browse
-                </div>
-                <div className="w-12" />
+            <div className="relative rounded-2xl border border-border bg-primary shadow-elevated overflow-hidden aspect-[4/5]">
+              {/* Lanterna photo */}
+              <img
+                src={lanternaAsset.url}
+                alt="La Lanterna — historic lighthouse of Genova, symbol of the city"
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              {/* Navy overlay for modern, technological feel */}
+              <div
+                className="absolute inset-0"
+                style={{
+                  background:
+                    "linear-gradient(180deg, hsl(222 47% 14% / 0.35) 0%, hsl(222 47% 14% / 0.55) 55%, hsl(224 71% 8% / 0.85) 100%)",
+                }}
+              />
+              {/* Electric blue accent wash */}
+              <div
+                className="absolute inset-0 mix-blend-overlay"
+                style={{
+                  background:
+                    "radial-gradient(ellipse at 70% 20%, hsl(217 91% 55% / 0.35) 0%, transparent 60%)",
+                }}
+              />
+              {/* Subtle grid overlay */}
+              <div
+                className="absolute inset-0 opacity-[0.12]"
+                style={{
+                  backgroundImage:
+                    "linear-gradient(hsl(0 0% 100%) 1px, transparent 1px), linear-gradient(90deg, hsl(0 0% 100%) 1px, transparent 1px)",
+                  backgroundSize: "40px 40px",
+                }}
+              />
+
+              {/* Top-left location chip */}
+              <div className="absolute top-4 left-4 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full glass-dark text-primary-foreground">
+                <span className="h-1.5 w-1.5 rounded-full bg-[hsl(var(--teal-glow))] animate-pulse-glow" />
+                <span className="font-mono text-[10px] uppercase tracking-wider">
+                  Genova · 44.4056°N
+                </span>
               </div>
 
-              {/* Search bar */}
-              <div className="p-4 border-b border-border">
-                <div className="flex items-center gap-2 px-3 py-2.5 rounded-md bg-secondary/60 border border-border">
-                  <Search className="h-4 w-4 text-muted-foreground shrink-0" />
-                  <span className="text-sm text-muted-foreground flex-1">
-                    978-88-08…
-                  </span>
-                  <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-background border border-border text-muted-foreground">
-                    ISBN
-                  </span>
-                </div>
-                <div className="flex flex-wrap gap-1.5 mt-3">
-                  {["MYP 3", "DP 1", "Math", "Spanish", "As new"].map((f) => (
-                    <span
-                      key={f}
-                      className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-accent/10 text-accent border border-accent/20"
-                    >
-                      {f}
+              {/* Bottom — ISBN search + stat cards */}
+              <div className="absolute inset-x-4 bottom-4 space-y-3">
+                {/* ISBN search bar */}
+                <div className="glass-dark rounded-lg p-3 backdrop-blur-xl">
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-md bg-primary-foreground/5 border border-primary-foreground/10">
+                    <Search className="h-4 w-4 text-primary-foreground/60 shrink-0" />
+                    <span className="text-sm text-primary-foreground/70 flex-1 font-mono">
+                      978-88-08…
                     </span>
+                    <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-accent/20 text-[hsl(var(--electric-glow))] border border-accent/30">
+                      ISBN
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5 mt-2.5">
+                    {["MYP 3", "DP 1", "Math", "Spanish", "As new"].map((f) => (
+                      <span
+                        key={f}
+                        className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-primary-foreground/10 text-primary-foreground/90 border border-primary-foreground/15"
+                      >
+                        {f}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Sustainability stat strip */}
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { label: "Reused", value: "1,284", icon: Recycle },
+                    { label: "Saved", value: "€18k", icon: TrendingUp },
+                    { label: "Verified", value: "100%", icon: CheckCircle2 },
+                  ].map((s) => (
+                    <div key={s.label} className="glass-dark rounded-md px-2.5 py-2 backdrop-blur-xl">
+                      <s.icon className="h-3 w-3 text-[hsl(var(--teal-glow))] mb-1" />
+                      <p className="text-sm font-bold text-primary-foreground leading-none">
+                        {s.value}
+                      </p>
+                      <p className="text-[9px] text-primary-foreground/60 uppercase tracking-wider mt-1">
+                        {s.label}
+                      </p>
+                    </div>
                   ))}
                 </div>
-              </div>
-
-              {/* Listing rows */}
-              <div className="divide-y divide-border">
-                {[
-                  { title: "Mathematics MYP 3", isbn: "978-0-19-835617-2", grade: "MYP 3", cond: "As new", price: "€18", color: "myp" },
-                  { title: "Spanish Ab Initio", isbn: "978-1-4479-7821-4", grade: "DP 1", cond: "Used", price: "€12", color: "dp" },
-                  { title: "Biology HL", isbn: "978-0-19-839262-0", grade: "DP 2", cond: "New", price: "Free", color: "dp" },
-                ].map((row, i) => (
-                  <div key={i} className="flex items-center gap-3 px-4 py-3 hover:bg-secondary/30 transition-colors">
-                    <div className="h-10 w-8 rounded-sm gradient-primary shrink-0 shadow-sm" />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <p className="text-sm font-semibold text-foreground truncate">
-                          {row.title}
-                        </p>
-                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded bg-${row.color}/10 text-${row.color} border border-${row.color}/20`}>
-                          {row.grade}
-                        </span>
-                      </div>
-                      <p className="font-mono text-[10px] text-muted-foreground truncate">
-                        {row.isbn}
-                      </p>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <p className={`text-sm font-bold ${row.price === "Free" ? "text-[hsl(var(--teal))]" : "text-foreground"}`}>
-                        {row.price}
-                      </p>
-                      <p className="text-[10px] text-muted-foreground">{row.cond}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Sustainability footer strip */}
-              <div className="grid grid-cols-3 divide-x divide-border border-t border-border bg-secondary/30">
-                {[
-                  { label: "Reused", value: "1,284", icon: Recycle },
-                  { label: "Saved", value: "€18k", icon: TrendingUp },
-                  { label: "Verified", value: "100%", icon: CheckCircle2 },
-                ].map((s) => (
-                  <div key={s.label} className="flex items-center gap-2 px-3 py-3">
-                    <s.icon className="h-3.5 w-3.5 text-[hsl(var(--teal))] shrink-0" />
-                    <div className="leading-tight">
-                      <p className="text-sm font-bold text-foreground">{s.value}</p>
-                      <p className="text-[10px] text-muted-foreground uppercase tracking-wide">{s.label}</p>
-                    </div>
-                  </div>
-                ))}
               </div>
             </div>
 
@@ -188,6 +189,17 @@ export const HeroSection = () => {
               <Sparkles className="h-3 w-3 text-accent" />
               <span className="text-[11px] font-semibold text-foreground">
                 ISBN verified
+              </span>
+            </div>
+
+            {/* Floating community pill */}
+            <div
+              className="absolute -bottom-3 -left-3 bg-card border border-border rounded-full px-3 py-1.5 shadow-elevated flex items-center gap-1.5 animate-float"
+              style={{ animationDelay: "1s" }}
+            >
+              <Users className="h-3 w-3 text-[hsl(var(--teal))]" />
+              <span className="text-[11px] font-semibold text-foreground">
+                DIS community
               </span>
             </div>
           </div>
