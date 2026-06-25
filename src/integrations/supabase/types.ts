@@ -296,7 +296,12 @@ export type Database = {
     }
     Enums: {
       listing_condition: "new" | "like_new" | "good" | "fair" | "poor"
-      listing_status: "active" | "sold" | "reserved" | "archived"
+      listing_status:
+        | "active"
+        | "sold"
+        | "reserved"
+        | "archived"
+        | "pending_review"
       listing_type: "sale" | "exchange" | "donation"
     }
     CompositeTypes: {
@@ -426,7 +431,13 @@ export const Constants = {
   public: {
     Enums: {
       listing_condition: ["new", "like_new", "good", "fair", "poor"],
-      listing_status: ["active", "sold", "reserved", "archived"],
+      listing_status: [
+        "active",
+        "sold",
+        "reserved",
+        "archived",
+        "pending_review",
+      ],
       listing_type: ["sale", "exchange", "donation"],
     },
   },
