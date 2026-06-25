@@ -33,7 +33,7 @@ export const HeroSection = () => {
                 <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-accent" />
               </span>
               <span className="text-xs font-medium text-accent tracking-wide uppercase">
-                Smart Used Books Platform
+                Student-created · DIS community
               </span>
             </div>
 
@@ -42,16 +42,21 @@ export const HeroSection = () => {
                 DISbook<span className="text-accent">.</span>
               </h1>
               <p className="font-display text-xl md:text-2xl text-foreground/80 leading-snug max-w-xl">
-                Smart used books platform for{" "}
+                A student-created used books platform for the{" "}
                 <span className="text-foreground font-semibold">
                   Deledda International School
                 </span>{" "}
-                — Genova.
+                community in Genova.
               </p>
               <p className="text-base md:text-lg text-muted-foreground max-w-xl leading-relaxed">
-                Buy, sell, donate and exchange school books inside the DIS
+                Buy, sell, donate and exchange used school books within the DIS
                 community. Search by ISBN, school year or subject and give
                 books a second life.
+              </p>
+              <p className="text-xs text-muted-foreground/80 max-w-xl leading-relaxed italic border-l-2 border-accent/40 pl-3">
+                DISbook is an independent student-created project for the DIS community.
+                It is not an official platform of Deledda International School and is not
+                managed, approved or endorsed by the school.
               </p>
             </div>
 
@@ -59,14 +64,14 @@ export const HeroSection = () => {
               <Link to="/browse">
                 <Button variant="hero" size="lg" className="w-full sm:w-auto group">
                   <Search className="h-4 w-4" />
-                  Find books
+                  Find Books
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Button>
               </Link>
               <Link to="/sell">
                 <Button variant="outline" size="lg" className="w-full sm:w-auto">
                   <BookOpen className="h-4 w-4" />
-                  List a book
+                  List a Book
                 </Button>
               </Link>
               <Link to="/register">
@@ -79,8 +84,8 @@ export const HeroSection = () => {
             {/* Trust strip */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6 border-t border-border/60 animate-fade-in" style={{ animationDelay: "0.2s" }}>
               {[
-                { icon: ShieldCheck, label: "Verified book list" },
-                { icon: Search, label: "ISBN search" },
+                { icon: ShieldCheck, label: "Book list reference" },
+                { icon: Search, label: "ISBN matching" },
                 { icon: Recycle, label: "Circular economy" },
                 { icon: Users, label: "DIS community" },
               ].map((item) => (
