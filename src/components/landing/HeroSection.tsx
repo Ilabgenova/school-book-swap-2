@@ -11,11 +11,29 @@ import {
   Sparkles,
   CheckCircle2,
   TrendingUp,
+  Lock,
 } from "lucide-react";
 import lanternaAsset from "@/assets/lanterna.webp.asset.json";
+import { useAuth } from "@/hooks/useAuth";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export const HeroSection = () => {
   const { t } = useLanguage();
+  const { user } = useAuth();
+  const [isFromDIS, setIsFromDIS] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    if (!user) { setIsFromDIS(null); return; }
+    supabase
+      .from("profiles")
+      .select("is_from_dis")
+      .eq("user_id", user.id)
+      .maybeSingle()
+      .then(({ data }) => setIsFromDIS(!!data?.is_from_dis));
+  }, [user]);
+
+  const canSellPrevious = !!user && isFromDIS === true;
 
   return (
     <section className="relative overflow-hidden gradient-hero">
