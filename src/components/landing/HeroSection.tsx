@@ -53,6 +53,10 @@ export const HeroSection = () => {
                 community. Search by ISBN, school year or subject and give
                 books a second life.
               </p>
+              <div className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-3 py-1.5 text-xs font-medium text-foreground">
+                <BookOpen className="h-3.5 w-3.5 text-accent" />
+                Currently available for MYP &amp; DP books only.
+              </div>
               <p className="text-xs text-muted-foreground/80 max-w-xl leading-relaxed italic border-l-2 border-accent/40 pl-3">
                 DISbook is an independent student-created project for the DIS community.
                 It is not an official platform of Deledda International School and is not
