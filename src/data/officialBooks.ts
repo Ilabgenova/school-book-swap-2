@@ -58,13 +58,6 @@ export const dpSubjectGroups = {
 
 // School Year 2025-2026 Official Book List (previous year)
 export const officialBooks: OfficialBook[] = [
-  { id: "pyp-1", title: "Primary English 1", author: "Celtic Publishing", subject: "English", publisher: "", isbn: "9788847232617", availableFromPreviousYear: true, grade: "PYP 1", program: "PYP" },
-  { id: "pyp-2", title: "Primary English 2", author: "Celtic Publishing", subject: "English", publisher: "", isbn: "9788847232624", availableFromPreviousYear: true, grade: "PYP 2", program: "PYP" },
-  { id: "pyp-3", title: "Grammar Time 1", author: "Sandy Jarvis", subject: "English", publisher: "", isbn: "9781405866972", availableFromPreviousYear: true, grade: "PYP 1", program: "PYP" },
-  { id: "pyp-4", title: "Grammar Time 2", author: "Sandy Jarvis", subject: "English", publisher: "", isbn: "9781405866989", availableFromPreviousYear: true, grade: "PYP 1", program: "PYP" },
-  { id: "pyp-5", title: "Grammar Time 3", author: "Sandy Jarvis", subject: "English", publisher: "", isbn: "9781405866996", availableFromPreviousYear: true, grade: "PYP 1", program: "PYP" },
-  { id: "pyp-6", title: "The Boy, the Mole, the Fox and the Horse", author: "Charlie Mackesy", subject: "Assemblies", publisher: "", isbn: "9781529105100", availableFromPreviousYear: true, grade: "PYP 1", program: "PYP" },
-  { id: "pyp-7", title: "Little Citizens,  CLIL and agenda 2030", author: "Letizia Cinganotto e Marina Screpanti", subject: "CLIL", publisher: "", isbn: "9788891918994", availableFromPreviousYear: true, grade: "PYP 1", program: "PYP" },
   { id: "myp1-1", title: "RealM@t. Aritmetica 1 + Geometria 1 + Matematica e realtà 1 +E-book cl. 1", author: "Miglio-Solmi", subject: "Mathematics", publisher: "", isbn: "9788842653332", availableFromPreviousYear: true, grade: "MYP 1", program: "MYP" },
   { id: "myp1-2", title: "Mathematics 7 MYP2 - third edition  (da usare in MYP1 e MYP2)", author: "Michael Haese, Sandra Haese, Mark Humphries, Edward Kemp, Pamela Vollmar", subject: "Mathematics", publisher: "", isbn: "9781922416308", availableFromPreviousYear: true, grade: "MYP 1", program: "MYP" },
   { id: "myp1-3", title: "Cambridge Checkpoint Lower Secondary Science student's book 7, 3rd Edition (da usare MYP1 e MYP2)", author: "Peter Riley", subject: "Science", publisher: "", isbn: "9781398300187", availableFromPreviousYear: true, grade: "MYP 1", program: "MYP" },
@@ -261,7 +254,6 @@ export const mockListings: Record<string, BookListing[]> = {};
 // Returning-student helpers: books from previous grade that the student can sell
 // or should keep (kept simple: a grade-to-next mapping)
 const NEXT_GRADE: Record<string, string> = {
-  "PYP 1": "PYP 2", "PYP 2": "PYP 3", "PYP 3": "PYP 4", "PYP 4": "PYP 5", "PYP 5": "MYP 1",
   "MYP 1": "MYP 2", "MYP 2": "MYP 3", "MYP 3": "MYP 4", "MYP 4": "MYP 5", "MYP 5": "DP 1",
   "DP 1": "DP 2",
 };
