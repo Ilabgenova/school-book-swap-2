@@ -18,7 +18,7 @@ export const Footer = () => {
               </div>
               <div className="flex flex-col leading-none">
                 <span className="font-display text-lg font-bold tracking-tight">
-                  RiLibro
+                  DISbook
                 </span>
                 <span className="text-[10px] uppercase tracking-[0.14em] text-primary-foreground/60 font-medium">
                   DIS · Genova
@@ -96,7 +96,7 @@ export const Footer = () => {
         {/* Bottom Bar */}
         <div className="mt-10 pt-6 border-t border-primary-foreground/10 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs text-primary-foreground/60">
-            © {currentYear} RiLibro · Independent community platform — not affiliated with Deledda International School.
+            © {currentYear} DISbook · Independent community platform — not affiliated with Deledda International School.
           </p>
           <p className="text-xs text-primary-foreground/60 font-mono">
             v1.0 · {t.footer.rights}

@@ -58,7 +58,7 @@ export const CTASection = () => {
         {/* CTA */}
         <div className="text-center max-w-2xl mx-auto">
           <p className="font-mono text-xs uppercase tracking-[0.18em] text-[hsl(var(--teal-glow))] mb-4">
-            Join RiLibro
+            Join DISbook
           </p>
           <h2 className="font-display text-3xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-5 tracking-tighter leading-[1.05]">
             Give books a <span className="gradient-text">second life</span>.
