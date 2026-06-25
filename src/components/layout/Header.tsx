@@ -1,16 +1,25 @@
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { Link, useNavigate } from "react-router-dom";
-import { BookOpen, Menu, X, Plus, LogOut } from "lucide-react";
-import { useState } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Menu, X, Plus, LogOut, Sparkles } from "lucide-react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 
 export const Header = () => {
   const { t } = useLanguage();
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const handleSignOut = async () => {
     await signOut();
@@ -18,47 +27,81 @@ export const Header = () => {
     navigate("/");
   };
 
+  const isActive = (path: string) => location.pathname === path;
+
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/80 backdrop-blur-md">
+    <header
+      className={`sticky top-0 z-50 w-full transition-all duration-300 ${
+        scrolled
+          ? "border-b border-border bg-background/85 backdrop-blur-xl shadow-sm"
+          : "border-b border-transparent bg-background/60 backdrop-blur-md"
+      }`}
+    >
       <div className="container flex h-16 items-center justify-between">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 group">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-md group-hover:shadow-glow transition-shadow">
-            <BookOpen className="h-5 w-5" />
+        <Link to="/" className="flex items-center gap-2.5 group">
+          <div className="relative flex h-9 w-9 items-center justify-center rounded-lg gradient-accent text-accent-foreground shadow-soft group-hover:shadow-glow transition-all">
+            <Sparkles className="h-4.5 w-4.5" strokeWidth={2.5} />
           </div>
-          <span className="font-display text-xl font-bold text-foreground hidden sm:inline">
-            DISbook
-          </span>
+          <div className="flex flex-col leading-none">
+            <span className="font-display text-lg font-bold text-foreground tracking-tight">
+              RiLibro
+            </span>
+            <span className="hidden sm:inline text-[10px] uppercase tracking-[0.14em] text-muted-foreground font-medium">
+              DIS · Genova
+            </span>
+          </div>
         </Link>
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-1">
           <Link to="/browse">
-            <Button variant="ghost" size="sm">
+            <Button
+              variant="ghost"
+              size="sm"
+              className={isActive("/browse") ? "text-accent bg-accent/10" : ""}
+            >
               {t.nav.browse}
             </Button>
           </Link>
+          {user && (
+            <Link to="/sell">
+              <Button
+                variant="ghost"
+                size="sm"
+                className={isActive("/sell") ? "text-accent bg-accent/10" : ""}
+              >
+                List a book
+              </Button>
+            </Link>
+          )}
+          <div className="mx-1 h-5 w-px bg-border" />
           <LanguageSwitcher />
           {user ? (
             <>
               <Link to="/sell">
-                <Button variant="default" size="sm" className="gap-1">
-                  <Plus className="h-4 w-4" /> Sell
+                <Button variant="hero" size="sm" className="gap-1.5">
+                  <Plus className="h-4 w-4" /> List
                 </Button>
               </Link>
-              <Button variant="outline" size="sm" onClick={handleSignOut} className="gap-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleSignOut}
+                className="gap-1.5 text-muted-foreground"
+              >
                 <LogOut className="h-4 w-4" /> {t.nav.logout}
               </Button>
             </>
           ) : (
             <>
               <Link to="/login">
-                <Button variant="outline" size="sm">
+                <Button variant="ghost" size="sm">
                   {t.nav.login}
                 </Button>
               </Link>
               <Link to="/register">
-                <Button variant="default" size="sm">
+                <Button variant="hero" size="sm">
                   {t.nav.register}
                 </Button>
               </Link>
@@ -67,7 +110,7 @@ export const Header = () => {
         </nav>
 
         {/* Mobile Menu Button */}
-        <div className="flex items-center gap-2 md:hidden">
+        <div className="flex items-center gap-1 md:hidden">
           <LanguageSwitcher />
           <Button
             variant="ghost"
@@ -82,7 +125,7 @@ export const Header = () => {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-border/50 bg-background animate-slide-up">
+        <div className="md:hidden border-t border-border bg-background animate-slide-up">
           <nav className="container flex flex-col gap-2 py-4">
             <Link to="/browse" onClick={() => setMobileMenuOpen(false)}>
               <Button variant="ghost" className="w-full justify-start">
@@ -92,11 +135,15 @@ export const Header = () => {
             {user ? (
               <>
                 <Link to="/sell" onClick={() => setMobileMenuOpen(false)}>
-                  <Button variant="default" className="w-full gap-1">
-                    <Plus className="h-4 w-4" /> Sell
+                  <Button variant="hero" className="w-full gap-1.5">
+                    <Plus className="h-4 w-4" /> List a book
                   </Button>
                 </Link>
-                <Button variant="outline" className="w-full gap-1" onClick={handleSignOut}>
+                <Button
+                  variant="outline"
+                  className="w-full gap-1.5"
+                  onClick={handleSignOut}
+                >
                   <LogOut className="h-4 w-4" /> {t.nav.logout}
                 </Button>
               </>
@@ -108,7 +155,7 @@ export const Header = () => {
                   </Button>
                 </Link>
                 <Link to="/register" onClick={() => setMobileMenuOpen(false)}>
-                  <Button variant="default" className="w-full">
+                  <Button variant="hero" className="w-full">
                     {t.nav.register}
                   </Button>
                 </Link>

@@ -56,7 +56,7 @@ const LoginContent = () => {
               <BookOpen className="h-7 w-7" />
             </div>
             <h1 className="font-display text-2xl font-bold text-foreground">{t.nav.login}</h1>
-            <p className="text-muted-foreground mt-2">Welcome back to DISbook</p>
+            <p className="text-muted-foreground mt-2">Welcome back to RiLibro</p>
           </div>
 
           <div className="bg-card rounded-2xl border border-border p-6 shadow-lg">

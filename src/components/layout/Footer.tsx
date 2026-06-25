@@ -1,48 +1,67 @@
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Link } from "react-router-dom";
-import { BookOpen, Heart } from "lucide-react";
+import { Sparkles, ShieldCheck, Leaf } from "lucide-react";
 
 export const Footer = () => {
   const { t } = useLanguage();
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-border/50 bg-secondary/30">
-      <div className="container py-8 md:py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+    <footer className="border-t border-border bg-primary text-primary-foreground">
+      <div className="container py-12 md:py-16">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
           {/* Brand */}
           <div className="md:col-span-2">
-            <Link to="/" className="flex items-center gap-2 mb-4">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-md">
-                <BookOpen className="h-5 w-5" />
+            <Link to="/" className="flex items-center gap-2.5 mb-4">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg gradient-accent shadow-soft">
+                <Sparkles className="h-4.5 w-4.5" strokeWidth={2.5} />
               </div>
-              <span className="font-display text-xl font-bold text-foreground">
-                DISbook
-              </span>
+              <div className="flex flex-col leading-none">
+                <span className="font-display text-lg font-bold tracking-tight">
+                  RiLibro
+                </span>
+                <span className="text-[10px] uppercase tracking-[0.14em] text-primary-foreground/60 font-medium">
+                  DIS · Genova
+                </span>
+              </div>
             </Link>
-            <p className="text-muted-foreground text-sm max-w-sm">
-              {t.footer.tagline}
+            <p className="text-primary-foreground/70 text-sm max-w-md leading-relaxed">
+              Smart used books platform for the Deledda International School
+              community. Buy, sell, donate and exchange — give books a second life.
             </p>
+            <div className="flex flex-wrap gap-2 mt-5">
+              <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full bg-primary-foreground/10 border border-primary-foreground/15">
+                <ShieldCheck className="h-3 w-3 text-[hsl(var(--teal))]" /> DIS community only
+              </span>
+              <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full bg-primary-foreground/10 border border-primary-foreground/15">
+                <Leaf className="h-3 w-3 text-[hsl(var(--teal))]" /> Circular economy
+              </span>
+            </div>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h4 className="font-display font-semibold text-foreground mb-4">
-              Link
+            <h4 className="font-display text-xs uppercase tracking-[0.14em] text-primary-foreground/60 mb-4">
+              Platform
             </h4>
-            <ul className="space-y-2 text-sm">
+            <ul className="space-y-2.5 text-sm">
               <li>
-                <Link to="/browse" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link to="/browse" className="text-primary-foreground/80 hover:text-[hsl(var(--electric-glow))] transition-colors">
                   {t.nav.browse}
                 </Link>
               </li>
               <li>
-                <Link to="/login" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link to="/sell" className="text-primary-foreground/80 hover:text-[hsl(var(--electric-glow))] transition-colors">
+                  List a book
+                </Link>
+              </li>
+              <li>
+                <Link to="/login" className="text-primary-foreground/80 hover:text-[hsl(var(--electric-glow))] transition-colors">
                   {t.nav.login}
                 </Link>
               </li>
               <li>
-                <Link to="/register" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link to="/register" className="text-primary-foreground/80 hover:text-[hsl(var(--electric-glow))] transition-colors">
                   {t.nav.register}
                 </Link>
               </li>
@@ -51,22 +70,22 @@ export const Footer = () => {
 
           {/* Legal */}
           <div>
-            <h4 className="font-display font-semibold text-foreground mb-4">
+            <h4 className="font-display text-xs uppercase tracking-[0.14em] text-primary-foreground/60 mb-4">
               Legal
             </h4>
-            <ul className="space-y-2 text-sm">
+            <ul className="space-y-2.5 text-sm">
               <li>
-                <Link to="/privacy" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link to="/privacy" className="text-primary-foreground/80 hover:text-[hsl(var(--electric-glow))] transition-colors">
                   {t.footer.privacy}
                 </Link>
               </li>
               <li>
-                <Link to="/terms" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link to="/terms" className="text-primary-foreground/80 hover:text-[hsl(var(--electric-glow))] transition-colors">
                   {t.footer.terms}
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link to="/contact" className="text-primary-foreground/80 hover:text-[hsl(var(--electric-glow))] transition-colors">
                   {t.footer.contact}
                 </Link>
               </li>
@@ -75,12 +94,12 @@ export const Footer = () => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-8 pt-8 border-t border-border/50 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-muted-foreground">
-            © {currentYear} DISbook. {t.footer.rights}.
+        <div className="mt-10 pt-6 border-t border-primary-foreground/10 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p className="text-xs text-primary-foreground/60">
+            © {currentYear} RiLibro · Independent community platform — not affiliated with Deledda International School.
           </p>
-          <p className="text-sm text-muted-foreground flex items-center gap-1">
-            Made with <Heart className="h-3 w-3 text-donation fill-donation" /> for our school community
+          <p className="text-xs text-primary-foreground/60 font-mono">
+            v1.0 · {t.footer.rights}
           </p>
         </div>
       </div>

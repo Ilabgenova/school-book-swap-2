@@ -1,143 +1,136 @@
 import { useLanguage } from "@/i18n/LanguageContext";
-import { Badge } from "@/components/ui/badge";
-import { BookOpen, Euro, Heart, Tag } from "lucide-react";
+import { Link } from "react-router-dom";
+import { ArrowUpRight, BookOpen, Heart, Repeat2 } from "lucide-react";
 
-// Mock data for preview
 const mockListings = [
   {
     id: "1",
-    title: "Math Grade 3 - Student Book",
-    program: "PYP",
-    grade: "PYP 3",
-    condition: "asNew",
+    title: "Mathematics MYP 3 — Concept-Based",
+    isbn: "978-0-19-835617-2",
+    grade: "MYP 3",
+    program: "myp",
+    condition: "As new",
     type: "sale",
-    price: 15,
-    image: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=300&h=400&fit=crop",
+    price: "€18",
+    seller: "Marco F.",
+    rating: "4.9",
   },
   {
     id: "2",
-    title: "English Language Arts",
-    program: "MYP",
-    grade: "MYP 1",
-    condition: "used",
+    title: "Spanish Ab Initio — Course Book",
+    isbn: "978-1-4479-7821-4",
+    grade: "DP 1",
+    program: "dp",
+    condition: "Used",
     type: "exchange",
-    price: null,
-    image: "https://images.unsplash.com/photo-1532012197267-da84d127e765?w=300&h=400&fit=crop",
+    price: "Exchange",
+    seller: "Giulia R.",
+    rating: "5.0",
   },
   {
     id: "3",
-    title: "Science - Biology Workbook",
-    program: "DP",
-    grade: "DP 1",
-    condition: "new",
+    title: "Biology Higher Level — Oxford IB",
+    isbn: "978-0-19-839262-0",
+    grade: "DP 2",
+    program: "dp",
+    condition: "New",
     type: "donation",
-    price: null,
-    image: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=300&h=400&fit=crop",
+    price: "Free",
+    seller: "Anna B.",
+    rating: "4.8",
   },
 ];
+
+const typeIcon = {
+  sale: BookOpen,
+  exchange: Repeat2,
+  donation: Heart,
+} as const;
 
 export const PreviewSection = () => {
   const { t } = useLanguage();
 
-  const getConditionLabel = (condition: string) => {
-    switch (condition) {
-      case "new": return t.common.new;
-      case "asNew": return t.common.asNew;
-      case "used": return t.common.used;
-      default: return condition;
-    }
-  };
-
-  const getTypeLabel = (type: string) => {
-    switch (type) {
-      case "sale": return t.common.sale;
-      case "exchange": return t.common.exchange;
-      case "donation": return t.common.donation;
-      default: return type;
-    }
-  };
-
   return (
-    <section className="py-16 md:py-24 bg-background">
+    <section className="py-20 md:py-28 bg-background">
       <div className="container">
-        <div className="text-center mb-12 md:mb-16">
-          <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
+          <div>
+            <p className="font-mono text-xs uppercase tracking-[0.18em] text-accent mb-3">
+              Marketplace
+            </p>
+            <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-foreground tracking-tighter">
+              Live listings from DIS families.
+            </h2>
+          </div>
+          <Link
+            to="/browse"
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent hover:gap-2 transition-all"
+          >
             {t.nav.browse}
-          </h2>
-          <p className="text-muted-foreground">
-            {t.landing.hero.description}
-          </p>
+            <ArrowUpRight className="h-4 w-4" />
+          </Link>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {mockListings.map((listing) => (
-            <div
-              key={listing.id}
-              className="group relative bg-card rounded-2xl border border-border overflow-hidden hover:shadow-xl transition-all duration-300 hover:border-primary/30"
-            >
-              {/* Image */}
-              <div className="relative aspect-[3/4] overflow-hidden bg-muted">
-                <img
-                  src={listing.image}
-                  alt={listing.title}
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                />
-                {/* Type badge */}
-                <div className="absolute top-3 left-3">
-                  <Badge variant={listing.type as "sale" | "exchange" | "donation"}>
-                    {listing.type === "donation" && <Heart className="h-3 w-3 mr-1" />}
-                    {getTypeLabel(listing.type)}
-                  </Badge>
-                </div>
-                {/* Program badge */}
-                <div className="absolute top-3 right-3">
-                  <Badge variant={listing.program.toLowerCase() as "pyp" | "myp" | "dp"}>
-                    {listing.program}
-                  </Badge>
-                </div>
-              </div>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {mockListings.map((listing) => {
+            const TypeIcon = typeIcon[listing.type as keyof typeof typeIcon];
+            const isFree = listing.type === "donation";
+            const isExchange = listing.type === "exchange";
 
-              {/* Content */}
-              <div className="p-4">
-                <div className="flex items-start justify-between gap-2 mb-2">
-                  <h3 className="font-display font-semibold text-foreground line-clamp-2 text-sm">
-                    {listing.title}
-                  </h3>
-                </div>
-
-                <div className="flex items-center gap-2 mb-3">
-                  <Badge variant="outline" className="text-xs">
+            return (
+              <div
+                key={listing.id}
+                className="group relative bg-card rounded-xl border border-border hover:border-accent/40 hover:shadow-elevated transition-all duration-300 overflow-hidden"
+              >
+                {/* Header strip */}
+                <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-secondary/30">
+                  <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-${listing.program}/10 text-${listing.program} border border-${listing.program}/20`}>
                     {listing.grade}
-                  </Badge>
-                  <Badge variant={listing.condition as "new" | "asNew" | "used"} className="text-xs">
-                    {getConditionLabel(listing.condition)}
-                  </Badge>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  {listing.type === "sale" && listing.price ? (
-                    <span className="font-display font-bold text-lg text-primary flex items-center">
-                      <Euro className="h-4 w-4 mr-0.5" />
-                      {listing.price}
-                    </span>
-                  ) : listing.type === "donation" ? (
-                    <span className="font-medium text-donation flex items-center gap-1">
-                      <Heart className="h-4 w-4" />
-                      {t.common.free}
-                    </span>
-                  ) : (
-                    <span className="font-medium text-accent flex items-center gap-1">
-                      <Tag className="h-4 w-4" />
-                      {t.common.exchange}
-                    </span>
-                  )}
-                  <span className="text-xs text-muted-foreground">
-                    {t.common.atSchool}
+                  </span>
+                  <span className="font-mono text-[10px] text-muted-foreground">
+                    {listing.isbn}
                   </span>
                 </div>
+
+                <div className="p-5">
+                  <div className="flex gap-4 mb-5">
+                    {/* Book spine */}
+                    <div className="h-20 w-14 shrink-0 rounded gradient-primary shadow-soft relative overflow-hidden">
+                      <div className="absolute inset-y-0 left-1.5 w-px bg-primary-foreground/15" />
+                      <div className="absolute inset-y-0 left-2.5 w-px bg-primary-foreground/10" />
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-display font-semibold text-foreground line-clamp-2 leading-snug mb-2">
+                        {listing.title}
+                      </h3>
+                      <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                        <span className="h-1.5 w-1.5 rounded-full bg-[hsl(var(--teal))]" />
+                        {listing.condition}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Bottom row */}
+                  <div className="flex items-center justify-between pt-4 border-t border-border">
+                    <div>
+                      <p className={`font-display font-bold text-xl leading-none flex items-center gap-1.5 ${isFree ? "text-[hsl(var(--teal))]" : isExchange ? "text-accent" : "text-foreground"}`}>
+                        <TypeIcon className="h-4 w-4" />
+                        {listing.price}
+                      </p>
+                      <p className="text-[11px] text-muted-foreground mt-1">
+                        {listing.seller} · ★ {listing.rating}
+                      </p>
+                    </div>
+                    <button className="text-xs font-semibold text-accent hover:text-accent/80 inline-flex items-center gap-1 group/btn">
+                      Contact
+                      <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5" />
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>

@@ -1,106 +1,194 @@
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
-import { ArrowRight, Users, BookOpen, Recycle, Heart, Leaf, HandHeart, CheckCircle2 } from "lucide-react";
-import heroImage from "@/assets/genova-skyline.jpg";
+import {
+  ArrowRight,
+  Search,
+  ShieldCheck,
+  Recycle,
+  Users,
+  BookOpen,
+  Sparkles,
+  CheckCircle2,
+  TrendingUp,
+} from "lucide-react";
 
 export const HeroSection = () => {
   const { t } = useLanguage();
 
   return (
-    <section className="relative overflow-hidden">
-      {/* Background */}
-      <div className="absolute inset-0 gradient-hero" />
-      <div 
-        className="absolute inset-0 opacity-10"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23166534' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-        }}
-      />
+    <section className="relative overflow-hidden gradient-hero">
+      {/* Mesh gradient + grid pattern */}
+      <div className="absolute inset-0 gradient-mesh pointer-events-none" />
+      <div className="absolute inset-0 grid-pattern opacity-40 pointer-events-none [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_75%)]" />
 
-      <div className="container relative py-16 md:py-24 lg:py-32">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Content */}
-          <div className="space-y-6 text-center lg:text-left">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 animate-fade-in">
-              <Recycle className="h-4 w-4 text-primary" />
-              <span className="text-sm font-medium text-primary">{t.landing.hero.subtitle}</span>
+      <div className="container relative py-16 md:py-24 lg:py-28">
+        <div className="grid lg:grid-cols-[1.05fr_1fr] gap-12 lg:gap-16 items-center">
+          {/* Left — copy */}
+          <div className="space-y-7">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent/10 border border-accent/20 backdrop-blur-sm animate-fade-in">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75" />
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-accent" />
+              </span>
+              <span className="text-xs font-medium text-accent tracking-wide uppercase">
+                Smart Used Books Platform
+              </span>
             </div>
 
-            <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight animate-slide-up">
-              {t.landing.hero.title}
-            </h1>
+            <div className="space-y-4 animate-slide-up">
+              <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-bold text-foreground leading-[1.02] tracking-tighter">
+                RiLibro<span className="text-accent">.</span>
+              </h1>
+              <p className="font-display text-xl md:text-2xl text-foreground/80 leading-snug max-w-xl">
+                Smart used books platform for{" "}
+                <span className="text-foreground font-semibold">
+                  Deledda International School
+                </span>{" "}
+                — Genova.
+              </p>
+              <p className="text-base md:text-lg text-muted-foreground max-w-xl leading-relaxed">
+                Buy, sell, donate and exchange school books inside the DIS
+                community. Search by ISBN, school year or subject and give
+                books a second life.
+              </p>
+            </div>
 
-            <p className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto lg:mx-0 animate-slide-up" style={{ animationDelay: "0.1s" }}>
-              {t.landing.hero.description}
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start animate-slide-up" style={{ animationDelay: "0.2s" }}>
-              <Link to="/register">
-                <Button variant="hero" size="xl" className="w-full sm:w-auto group">
-                  {t.landing.hero.cta}
-                  <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
-                </Button>
-              </Link>
+            <div className="flex flex-col sm:flex-row gap-3 animate-slide-up" style={{ animationDelay: "0.1s" }}>
               <Link to="/browse">
-                <Button variant="outline" size="xl" className="w-full sm:w-auto">
-                  <BookOpen className="h-5 w-5" />
-                  {t.landing.hero.browse}
+                <Button variant="hero" size="lg" className="w-full sm:w-auto group">
+                  <Search className="h-4 w-4" />
+                  Find books
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </Button>
+              </Link>
+              <Link to="/sell">
+                <Button variant="outline" size="lg" className="w-full sm:w-auto">
+                  <BookOpen className="h-4 w-4" />
+                  List a book
+                </Button>
+              </Link>
+              <Link to="/register">
+                <Button variant="ghost" size="lg" className="w-full sm:w-auto">
+                  Register
                 </Button>
               </Link>
             </div>
 
-            {/* Trust indicators */}
-            <div className="flex flex-wrap gap-4 justify-center lg:justify-start pt-4 animate-fade-in" style={{ animationDelay: "0.3s" }}>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Leaf className="h-4 w-4 text-primary" />
-                <span>Eco-friendly</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <HandHeart className="h-4 w-4 text-donation" />
-                <span>{t.common.free} donations</span>
-              </div>
+            {/* Trust strip */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6 border-t border-border/60 animate-fade-in" style={{ animationDelay: "0.2s" }}>
+              {[
+                { icon: ShieldCheck, label: "Verified book list" },
+                { icon: Search, label: "ISBN search" },
+                { icon: Recycle, label: "Circular economy" },
+                { icon: Users, label: "DIS community" },
+              ].map((item) => (
+                <div key={item.label} className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <item.icon className="h-3.5 w-3.5 text-accent shrink-0" />
+                  <span className="font-medium">{item.label}</span>
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* Hero Image */}
-          <div className="relative lg:order-last animate-fade-in" style={{ animationDelay: "0.2s" }}>
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl">
-              <img 
-                src={heroImage} 
-                alt="Skyline di Genova — DISbook" 
-                width={1920}
-                height={1024}
-                className="w-full h-auto object-cover aspect-[4/3]"
-              />
-              {/* Overlay gradient */}
-              <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent" />
-            </div>
-            
-            {/* Floating cards */}
-            <div className="absolute -bottom-4 -left-4 bg-card p-4 rounded-xl shadow-lg border border-border animate-float">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-success/10">
-                  <CheckCircle2 className="h-5 w-5 text-success" />
+          {/* Right — dashboard preview card */}
+          <div className="relative animate-fade-in" style={{ animationDelay: "0.15s" }}>
+            {/* Glow */}
+            <div className="absolute -inset-6 bg-accent/20 blur-3xl rounded-full pointer-events-none" />
+
+            <div className="relative rounded-2xl border border-border bg-card shadow-elevated overflow-hidden">
+              {/* Window chrome */}
+              <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-secondary/40">
+                <div className="flex items-center gap-1.5">
+                  <span className="h-2.5 w-2.5 rounded-full bg-destructive/60" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-warning/60" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-success/60" />
                 </div>
-                <div>
-                  <p className="font-semibold text-foreground">250+</p>
-                  <p className="text-xs text-muted-foreground">{t.landing.stats.families}</p>
+                <div className="font-mono text-[11px] text-muted-foreground">
+                  rilibro.app / browse
                 </div>
+                <div className="w-12" />
+              </div>
+
+              {/* Search bar */}
+              <div className="p-4 border-b border-border">
+                <div className="flex items-center gap-2 px-3 py-2.5 rounded-md bg-secondary/60 border border-border">
+                  <Search className="h-4 w-4 text-muted-foreground shrink-0" />
+                  <span className="text-sm text-muted-foreground flex-1">
+                    978-88-08…
+                  </span>
+                  <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-background border border-border text-muted-foreground">
+                    ISBN
+                  </span>
+                </div>
+                <div className="flex flex-wrap gap-1.5 mt-3">
+                  {["MYP 3", "DP 1", "Math", "Spanish", "As new"].map((f) => (
+                    <span
+                      key={f}
+                      className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-accent/10 text-accent border border-accent/20"
+                    >
+                      {f}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Listing rows */}
+              <div className="divide-y divide-border">
+                {[
+                  { title: "Mathematics MYP 3", isbn: "978-0-19-835617-2", grade: "MYP 3", cond: "As new", price: "€18", color: "myp" },
+                  { title: "Spanish Ab Initio", isbn: "978-1-4479-7821-4", grade: "DP 1", cond: "Used", price: "€12", color: "dp" },
+                  { title: "Biology HL", isbn: "978-0-19-839262-0", grade: "DP 2", cond: "New", price: "Free", color: "dp" },
+                ].map((row, i) => (
+                  <div key={i} className="flex items-center gap-3 px-4 py-3 hover:bg-secondary/30 transition-colors">
+                    <div className="h-10 w-8 rounded-sm gradient-primary shrink-0 shadow-sm" />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-semibold text-foreground truncate">
+                          {row.title}
+                        </p>
+                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded bg-${row.color}/10 text-${row.color} border border-${row.color}/20`}>
+                          {row.grade}
+                        </span>
+                      </div>
+                      <p className="font-mono text-[10px] text-muted-foreground truncate">
+                        {row.isbn}
+                      </p>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <p className={`text-sm font-bold ${row.price === "Free" ? "text-[hsl(var(--teal))]" : "text-foreground"}`}>
+                        {row.price}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground">{row.cond}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Sustainability footer strip */}
+              <div className="grid grid-cols-3 divide-x divide-border border-t border-border bg-secondary/30">
+                {[
+                  { label: "Reused", value: "1,284", icon: Recycle },
+                  { label: "Saved", value: "€18k", icon: TrendingUp },
+                  { label: "Verified", value: "100%", icon: CheckCircle2 },
+                ].map((s) => (
+                  <div key={s.label} className="flex items-center gap-2 px-3 py-3">
+                    <s.icon className="h-3.5 w-3.5 text-[hsl(var(--teal))] shrink-0" />
+                    <div className="leading-tight">
+                      <p className="text-sm font-bold text-foreground">{s.value}</p>
+                      <p className="text-[10px] text-muted-foreground uppercase tracking-wide">{s.label}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
 
-            <div className="absolute -top-4 -right-4 bg-card p-4 rounded-xl shadow-lg border border-border animate-float" style={{ animationDelay: "0.5s" }}>
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-donation/10">
-                  <Heart className="h-5 w-5 text-donation" />
-                </div>
-                <div>
-                  <p className="font-semibold text-foreground">100+</p>
-                  <p className="text-xs text-muted-foreground">{t.landing.stats.exchanges}</p>
-                </div>
-              </div>
+            {/* Floating verified pill */}
+            <div className="absolute -top-3 -right-3 glass rounded-full px-3 py-1.5 shadow-md flex items-center gap-1.5 animate-float">
+              <Sparkles className="h-3 w-3 text-accent" />
+              <span className="text-[11px] font-semibold text-foreground">
+                ISBN verified
+              </span>
             </div>
           </div>
         </div>
