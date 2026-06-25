@@ -251,3 +251,39 @@ export const officialBooks: OfficialBook[] = [
   { id: "diplomadp2-28", title: "The Stranger", author: "Albert Camus", subject: "English A", publisher: "", isbn: "9780679720201", availableFromPreviousYear: true, grade: "DP 2", program: "DP" },
   { id: "diplomadp2-29", title: "Oxford Resources for IB DP Environmental Systems and Societies: Course Book  2024 version", author: "Gillian Williams and Jill Rutherford", subject: "Environmental Systems and Societies", publisher: "", isbn: "9781382044011", availableFromPreviousYear: true, grade: "DP 2", program: "DP" },
 ];
+
+// Empty summer reading list (none in 2025-2026 source file)
+export const summerReadingBooks: OfficialBook[] = [];
+
+// Mock listings placeholder (no live data without DB query)
+export const mockListings: Record<string, BookListing[]> = {};
+
+// Returning-student helpers: books from previous grade that the student can sell
+// or should keep (kept simple: a grade-to-next mapping)
+const NEXT_GRADE: Record<string, string> = {
+  "PYP 1": "PYP 2", "PYP 2": "PYP 3", "PYP 3": "PYP 4", "PYP 4": "PYP 5", "PYP 5": "MYP 1",
+  "MYP 1": "MYP 2", "MYP 2": "MYP 3", "MYP 3": "MYP 4", "MYP 4": "MYP 5", "MYP 5": "DP 1",
+  "DP 1": "DP 2",
+};
+
+export function getSellableBooks(previousGrade: string, _previousProgram: string): OfficialBook[] {
+  const next = NEXT_GRADE[previousGrade];
+  const previousBooks = officialBooks.filter((b) => b.grade === previousGrade);
+  if (!next) return previousBooks;
+  const nextIsbns = new Set(
+    officialBooks.filter((b) => b.grade === next).map((b) => b.isbn).filter(Boolean)
+  );
+  // Sellable = previous-year book NOT reused in the next grade
+  return previousBooks.filter((b) => !b.isbn || !nextIsbns.has(b.isbn));
+}
+
+export function getBooksToKeep(previousGrade: string, _previousProgram: string): OfficialBook[] {
+  const next = NEXT_GRADE[previousGrade];
+  if (!next) return [];
+  const previousBooks = officialBooks.filter((b) => b.grade === previousGrade);
+  const nextIsbns = new Set(
+    officialBooks.filter((b) => b.grade === next).map((b) => b.isbn).filter(Boolean)
+  );
+  // Keep = previous-year book reused in the next grade
+  return previousBooks.filter((b) => b.isbn && nextIsbns.has(b.isbn));
+}
