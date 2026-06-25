@@ -1,8 +1,7 @@
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ShoppingBag, Recycle, ExternalLink, ArrowLeft } from "lucide-react";
-import { getAmazonListUrl } from "@/data/officialBooks";
+import { ShoppingBag, Recycle, ArrowLeft, Construction } from "lucide-react";
 
 interface BuyingModeSelectorProps {
   selectedGrade: string;
@@ -19,9 +18,6 @@ export const BuyingModeSelector = ({
 }: BuyingModeSelectorProps) => {
   const { t } = useLanguage();
 
-  const handleBuyAllNew = () => {
-    window.open(getAmazonListUrl(selectedGrade, selectedProgram), "_blank");
-  };
 
   return (
     <div className="space-y-8">
@@ -49,34 +45,35 @@ export const BuyingModeSelector = ({
 
       {/* Mode Selection Cards */}
       <div className="grid md:grid-cols-2 gap-6">
-        {/* Buy All New */}
-        <button
-          onClick={handleBuyAllNew}
-          className="group relative p-6 rounded-2xl border-2 border-border bg-card hover:border-primary hover:shadow-lg transition-all text-left"
+        {/* Buy All New — Coming Soon (disabled) */}
+        <div
+          aria-disabled="true"
+          className="group relative p-6 rounded-2xl border-2 border-dashed border-border bg-muted/30 text-left opacity-70 cursor-not-allowed"
         >
           <div className="absolute top-4 right-4">
-            <ExternalLink className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+            <Badge variant="outline" className="border-amber-300 text-amber-600 bg-amber-50 gap-1">
+              <Construction className="h-3 w-3" />
+              {t.browse.inProgress}
+            </Badge>
           </div>
           <div className="space-y-4">
             <div className="h-14 w-14 rounded-xl bg-primary/10 flex items-center justify-center">
               <ShoppingBag className="h-7 w-7 text-primary" />
             </div>
             <div>
-              <h3 className="font-display text-lg font-bold text-foreground group-hover:text-primary transition-colors">
+              <h3 className="font-display text-lg font-bold text-foreground">
                 {t.browse.buyAllNew}
               </h3>
               <p className="text-sm text-muted-foreground mt-1">
                 {t.browse.buyAllNewDescription}
               </p>
             </div>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <span className="px-2 py-1 bg-secondary rounded-md font-medium">
-                Amazon
-              </span>
-              <span>{t.browse.affiliateLink}</span>
-            </div>
+            <p className="text-xs text-muted-foreground italic">
+              {t.browse.affiliateLink}
+            </p>
           </div>
-        </button>
+        </div>
+
 
         {/* See Used Options */}
         <button

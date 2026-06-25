@@ -117,17 +117,8 @@ export const SummerReadingSection = ({
                       {t.browse.viewListings}
                     </Button>
                   )}
-                  {book.externalPurchaseUrl && (
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() =>
-                        window.open(book.externalPurchaseUrl, "_blank")
-                      }
-                    >
-                      <ExternalLink className="h-4 w-4" />
-                    </Button>
-                  )}
+                  {/* External purchase link disabled — Buy New is a future feature */}
+
                 </div>
               </div>
             );
