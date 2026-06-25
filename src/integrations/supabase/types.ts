@@ -57,6 +57,8 @@ export type Database = {
           created_at: string
           id: string
           images: string[]
+          isbn: string | null
+          listing_type: Database["public"]["Enums"]["listing_type"]
           notes: string | null
           price: number
           program: string | null
@@ -73,6 +75,8 @@ export type Database = {
           created_at?: string
           id?: string
           images?: string[]
+          isbn?: string | null
+          listing_type?: Database["public"]["Enums"]["listing_type"]
           notes?: string | null
           price: number
           program?: string | null
@@ -89,6 +93,8 @@ export type Database = {
           created_at?: string
           id?: string
           images?: string[]
+          isbn?: string | null
+          listing_type?: Database["public"]["Enums"]["listing_type"]
           notes?: string | null
           price?: number
           program?: string | null
@@ -291,6 +297,7 @@ export type Database = {
     Enums: {
       listing_condition: "new" | "like_new" | "good" | "fair" | "poor"
       listing_status: "active" | "sold" | "reserved" | "archived"
+      listing_type: "sale" | "exchange" | "donation"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -420,6 +427,7 @@ export const Constants = {
     Enums: {
       listing_condition: ["new", "like_new", "good", "fair", "poor"],
       listing_status: ["active", "sold", "reserved", "archived"],
+      listing_type: ["sale", "exchange", "donation"],
     },
   },
 } as const
