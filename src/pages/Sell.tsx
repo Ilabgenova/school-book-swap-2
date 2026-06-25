@@ -153,36 +153,6 @@ const SellContent = () => {
     );
   }
   if (!user) return <Navigate to="/login" replace />;
-  if (isFromDIS === null) {
-    return (
-      <MainLayout>
-        <div className="container py-16 flex justify-center">
-          <Loader2 className="h-6 w-6 animate-spin text-primary" />
-        </div>
-      </MainLayout>
-    );
-  }
-  if (!isFromDIS) {
-    return (
-      <MainLayout>
-        <div className="container py-16 max-w-xl">
-          <div className="rounded-xl border border-border bg-card p-6 space-y-3">
-            <div className="flex items-center gap-2">
-              <ShieldAlert className="h-5 w-5 text-accent" />
-              <h1 className="font-display text-xl font-semibold">Only for returning DIS students</h1>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              Selling previous year's books is available only to students who were already
-              enrolled at DIS last year. New families don't yet have last year's books to list.
-            </p>
-            <Button variant="outline" onClick={() => navigate("/browse")}>
-              <ArrowLeft className="h-4 w-4" /> Back to browse
-            </Button>
-          </div>
-        </div>
-      </MainLayout>
-    );
-  }
 
   const uploadPhoto = async (slot: PhotoSlot, file: File, listingId: string) => {
     const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
