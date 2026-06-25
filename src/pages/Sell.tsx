@@ -1,8 +1,9 @@
 import { useState, FormEvent, useMemo, ChangeEvent, useEffect } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -13,27 +14,86 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2, BookPlus, ArrowLeft, Camera, X, AlertTriangle, ShieldAlert } from "lucide-react";
+import { Loader2, BookPlus, ArrowLeft, Camera, X, AlertTriangle, ShieldAlert, GraduationCap, ChevronRight, BookOpen, ArrowRight, CheckCircle2 } from "lucide-react";
 import { officialBooks } from "@/data/officialBooks";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
-const grades = [
-  "MYP 1","MYP 2","MYP 3","MYP 4","MYP 5",
-  "DP 1","DP 2",
-];
+const grades = {
+  MYP: ["MYP 1", "MYP 2", "MYP 3", "MYP 4", "MYP 5"],
+  DP: ["DP 1", "DP 2"],
+};
 
 
 type ListingType = "sale" | "exchange" | "donation";
 type Condition = "new" | "like_new" | "good" | "fair" | "poor";
 type PhotoSlot = "front" | "inside" | "back" | "extra1" | "extra2";
+type SellStep = "grade" | "book" | "details";
 
 const MAX_BYTES = 5 * 1024 * 1024;
 const ACCEPTED = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 
 type PhotoState = { file: File; preview: string } | null;
+
+const getProgramFromGrade = (grade: string) => {
+  if (grade.startsWith("MYP")) return "MYP";
+  if (grade.startsWith("DP")) return "DP";
+  return "";
+};
+
+const getListingTypeFromParam = (type: string | null): ListingType => {
+  if (type === "donation" || type === "donate") return "donation";
+  if (type === "exchange") return "exchange";
+  return "sale";
+};
+
+const stepItems = [
+  "Choose class",
+  "Select book",
+  "Add condition and photos",
+  "Publish listing",
+];
+
+const SellProgress = ({ step, submitting }: { step: SellStep; submitting: boolean }) => {
+  const activeIndex = submitting ? 3 : step === "grade" ? 0 : step === "book" ? 1 : 2;
+
+  return (
+    <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+      {stepItems.map((item, index) => {
+        const isComplete = index < activeIndex;
+        const isActive = index === activeIndex;
+
+        return (
+          <div
+            key={item}
+            className={cn(
+              "flex min-h-16 items-center gap-2 rounded-lg border p-3 text-xs transition",
+              isActive
+                ? "border-primary bg-primary/10 text-foreground"
+                : isComplete
+                ? "border-accent/40 bg-accent/10 text-foreground"
+                : "border-border bg-muted/30 text-muted-foreground"
+            )}
+          >
+            <span
+              className={cn(
+                "flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold",
+                isComplete || isActive
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground"
+              )}
+            >
+              {isComplete ? <CheckCircle2 className="h-3.5 w-3.5" /> : index + 1}
+            </span>
+            <span className="font-medium leading-tight">{item}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
 
 interface PhotoUploadProps {
   label: string;
@@ -105,10 +165,19 @@ const PhotoUpload = ({ label, hint, required, value, onChange }: PhotoUploadProp
 const SellContent = () => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const [grade, setGrade] = useState("");
-  const [bookId, setBookId] = useState("");
-  const [listingType, setListingType] = useState<ListingType>("sale");
+  const initialGrade = searchParams.get("grade") ?? "";
+  const initialBookId = searchParams.get("bookId") ?? "";
+  const [step, setStep] = useState<SellStep>(() =>
+    initialBookId ? "details" : initialGrade ? "book" : "grade"
+  );
+  const [grade, setGrade] = useState(initialGrade);
+  const [bookId, setBookId] = useState(initialBookId);
+  const [listingType, setListingType] = useState<ListingType>(() =>
+    getListingTypeFromParam(searchParams.get("type"))
+  );
   const [condition, setCondition] = useState<Condition>("good");
   const [price, setPrice] = useState("");
   const [notes, setNotes] = useState("");
@@ -128,9 +197,17 @@ const SellContent = () => {
     () => officialBooks.find((b) => b.id === bookId) || null,
     [bookId]
   );
+  const selectedProgram = useMemo(() => getProgramFromGrade(grade), [grade]);
 
   const photosValid = !!front && !!inside;
   const canSubmit = !!selectedBook && photosValid && !submitting;
+
+  useEffect(() => {
+    if (bookId && !selectedBook) {
+      setBookId("");
+      setStep(grade ? "book" : "grade");
+    }
+  }, [bookId, grade, selectedBook]);
 
   if (authLoading) {
     return (
@@ -141,7 +218,58 @@ const SellContent = () => {
       </MainLayout>
     );
   }
-  if (!user) return <Navigate to="/login?next=%2Fsell" replace />;
+  if (!user) {
+    const nextPath = `${location.pathname}${location.search || "?intent=sell&mode=sell"}`;
+    return <Navigate to={`/login?next=${encodeURIComponent(nextPath)}`} replace />;
+  }
+
+  const updateSellParams = (next: { grade?: string; bookId?: string; type?: ListingType }) => {
+    const params = new URLSearchParams(searchParams);
+    params.set("intent", "sell");
+    params.set("mode", "sell");
+    if (next.grade !== undefined) {
+      if (next.grade) params.set("grade", next.grade);
+      else params.delete("grade");
+    }
+    if (next.bookId !== undefined) {
+      if (next.bookId) params.set("bookId", next.bookId);
+      else params.delete("bookId");
+    }
+    if (next.type !== undefined) params.set("type", next.type);
+    setSearchParams(params, { replace: true });
+  };
+
+  const handleSelectGrade = (nextGrade: string) => {
+    setGrade(nextGrade);
+    setBookId("");
+    setStep("book");
+    updateSellParams({ grade: nextGrade, bookId: "" });
+  };
+
+  const handleSelectBook = (nextBookId: string) => {
+    setBookId(nextBookId);
+    setStep("details");
+    updateSellParams({ bookId: nextBookId });
+  };
+
+  const handleListingTypeChange = (value: ListingType) => {
+    setListingType(value);
+    updateSellParams({ type: value });
+  };
+
+  const handleBack = () => {
+    if (step === "details") {
+      setStep("book");
+      return;
+    }
+    if (step === "book") {
+      setStep("grade");
+      setBookId("");
+      updateSellParams({ grade: "", bookId: "" });
+      return;
+    }
+    navigate(-1);
+  };
 
   const uploadPhoto = async (slot: PhotoSlot, file: File, listingId: string) => {
     const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
@@ -212,7 +340,7 @@ const SellContent = () => {
   return (
     <MainLayout>
       <div className="container py-8 max-w-2xl">
-        <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="mb-4 gap-2">
+        <Button variant="ghost" size="sm" onClick={handleBack} className="mb-4 gap-2">
           <ArrowLeft className="h-4 w-4" /> Back
         </Button>
 
@@ -221,129 +349,209 @@ const SellContent = () => {
             <BookPlus className="h-5 w-5" />
           </div>
           <div>
-            <h1 className="font-display text-2xl font-bold">Sell or Donate a Book</h1>
+            <h1 className="font-display text-2xl font-bold">Create your listing</h1>
             <p className="text-sm text-muted-foreground">
-              Pick a book from the DIS book list reference to publish your listing.
+              Choose the class, select the book, then add condition details and photos.
             </p>
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-5 bg-card rounded-2xl border border-border p-6 shadow-sm">
-          <div className="space-y-2">
-            <Label>Grade</Label>
-            <Select value={grade} onValueChange={(v) => { setGrade(v); setBookId(""); }}>
-              <SelectTrigger><SelectValue placeholder="Select grade" /></SelectTrigger>
-              <SelectContent>
-                {grades.map((g) => <SelectItem key={g} value={g}>{g}</SelectItem>)}
-              </SelectContent>
-            </Select>
-          </div>
+        <div className="mb-6">
+          <SellProgress step={step} submitting={submitting} />
+        </div>
 
-          <div className="space-y-2">
-            <Label>Book</Label>
-            <Select value={bookId} onValueChange={setBookId} disabled={!grade}>
-              <SelectTrigger>
-                <SelectValue placeholder={grade ? "Select a book" : "Choose grade first"} />
-              </SelectTrigger>
-              <SelectContent className="max-h-72">
-                {booksForGrade.map((b) => (
-                  <SelectItem key={b.id} value={b.id}>{b.title} — {b.subject}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {selectedBook?.isbn && (
-              <p className="text-xs text-muted-foreground">ISBN: {selectedBook.isbn}</p>
-            )}
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Listing type</Label>
-              <Select value={listingType} onValueChange={(v) => setListingType(v as ListingType)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="sale">Sale</SelectItem>
-                  <SelectItem value="exchange">Exchange</SelectItem>
-                  <SelectItem value="donation">Donation</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label>Condition</Label>
-              <Select value={condition} onValueChange={(v) => setCondition(v as Condition)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="new">New</SelectItem>
-                  <SelectItem value="like_new">Like new</SelectItem>
-                  <SelectItem value="good">Good</SelectItem>
-                  <SelectItem value="fair">Fair</SelectItem>
-                  <SelectItem value="poor">Poor</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          {listingType === "sale" && (
-            <div className="space-y-2">
-              <Label htmlFor="price">Price (€)</Label>
-              <Input id="price" type="number" min="0" step="0.50" placeholder="0.00"
-                value={price} onChange={(e) => setPrice(e.target.value)} required />
-            </div>
-          )}
-
-          {/* Photos */}
-          <div className="space-y-3 pt-2 border-t border-border">
-            <div>
-              <Label className="text-base font-display">Book photos</Label>
-              <p className="text-sm text-muted-foreground mt-1">
-                To help other DIS families understand the real condition of the book, please upload clear photos of the front cover and inside pages.
+        {step === "grade" && (
+          <section className="space-y-8 rounded-2xl border border-border bg-card p-6 shadow-sm">
+            <div className="text-center">
+              <GraduationCap className="mx-auto mb-4 h-12 w-12 text-primary" />
+              <h2 className="font-display text-2xl font-bold text-foreground">
+                Choose the class/year of the book you want to list
+              </h2>
+              <p className="mt-2 text-muted-foreground">
+                This starts the selling flow and will not show available listings to buy.
               </p>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              <PhotoUpload label="Front cover" required value={front} onChange={setFront} />
-              <PhotoUpload
-                label="Inside pages"
-                required
-                hint="Show writing, marks, page condition"
-                value={inside}
-                onChange={setInside}
-              />
-              <PhotoUpload label="Back cover" value={back} onChange={setBack} />
-              <PhotoUpload label="Extra photo" value={extra1} onChange={setExtra1} />
-              <PhotoUpload label="Extra photo" value={extra2} onChange={setExtra2} />
+            <div className="space-y-6">
+              {Object.entries(grades).map(([program, programGrades]) => (
+                <div key={program} className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Badge variant={program.toLowerCase() as "myp" | "dp"}>{program}</Badge>
+                    <span className="text-sm text-muted-foreground">
+                      {program === "MYP" ? "Middle Years Programme" : "Diploma Programme"}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-5">
+                    {programGrades.map((item) => (
+                      <Button
+                        key={item}
+                        type="button"
+                        variant="outline"
+                        className="h-auto justify-between py-3 group hover:border-primary hover:bg-primary/5"
+                        onClick={() => handleSelectGrade(item)}
+                      >
+                        <span className="font-medium">{item}</span>
+                        <ChevronRight className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-primary" />
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {step === "book" && grade && (
+          <section className="space-y-6 rounded-2xl border border-border bg-card p-6 shadow-sm">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div>
+                <div className="mb-2 flex items-center gap-2">
+                  {selectedProgram && (
+                    <Badge variant={selectedProgram.toLowerCase() as "myp" | "dp"}>{selectedProgram}</Badge>
+                  )}
+                  <span className="font-display text-xl font-bold text-foreground">{grade}</span>
+                </div>
+                <h2 className="font-display text-2xl font-bold text-foreground">
+                  Select the book you want to sell, donate or exchange
+                </h2>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Choose one book from the reference list for this class/year to create a listing.
+                </p>
+              </div>
+              <Button type="button" variant="outline" size="sm" onClick={() => setStep("grade")}>
+                Change class
+              </Button>
             </div>
 
-            <div className="flex gap-2 rounded-lg bg-muted/50 border border-border p-3 text-xs text-muted-foreground">
-              <ShieldAlert className="h-4 w-4 shrink-0 mt-0.5 text-amber-600" />
-              <p>
-                Please do not upload photos containing children, personal information or private documents.
-                Accepted formats: JPG, PNG, WEBP · Max 5 MB per image.
+            <div className="space-y-3">
+              {booksForGrade.length > 0 ? (
+                booksForGrade.map((book) => (
+                  <button
+                    key={book.id}
+                    type="button"
+                    onClick={() => handleSelectBook(book.id)}
+                    className="flex w-full items-start gap-3 rounded-xl border border-border bg-background p-4 text-left transition hover:border-primary hover:bg-primary/5"
+                  >
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                      <BookOpen className="h-5 w-5" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <h3 className="font-medium text-foreground">{book.title}</h3>
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        {book.subject}{book.publisher ? ` • ${book.publisher}` : ""}
+                      </p>
+                      {book.isbn && <p className="mt-0.5 text-xs text-muted-foreground">ISBN: {book.isbn}</p>}
+                    </div>
+                    <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-muted-foreground" />
+                  </button>
+                ))
+              ) : (
+                <div className="rounded-lg border border-border bg-muted/30 p-4 text-sm text-muted-foreground">
+                  No books found for this class/year.
+                </div>
+              )}
+            </div>
+          </section>
+        )}
+
+        {step === "details" && selectedBook && (
+          <form onSubmit={handleSubmit} className="space-y-5 rounded-2xl border border-border bg-card p-6 shadow-sm">
+            <div className="rounded-xl border border-border bg-muted/30 p-4">
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Create your listing</p>
+              <h2 className="mt-1 font-display text-xl font-bold text-foreground">{selectedBook.title}</h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {selectedBook.grade} • {selectedBook.subject}{selectedBook.isbn ? ` • ISBN: ${selectedBook.isbn}` : ""}
               </p>
             </div>
 
-            {!photosValid && (
-              <div className="flex gap-2 rounded-lg border border-amber-300/60 bg-amber-50 dark:bg-amber-950/30 p-3 text-xs text-amber-900 dark:text-amber-200">
-                <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
-                <p>Front cover and inside photo are required before you can publish.</p>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Listing type</Label>
+                <Select value={listingType} onValueChange={(v) => handleListingTypeChange(v as ListingType)}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="sale">Sell</SelectItem>
+                    <SelectItem value="exchange">Exchange</SelectItem>
+                    <SelectItem value="donation">Donate</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Condition</Label>
+                <Select value={condition} onValueChange={(v) => setCondition(v as Condition)}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="new">New</SelectItem>
+                    <SelectItem value="like_new">Like new</SelectItem>
+                    <SelectItem value="good">Good</SelectItem>
+                    <SelectItem value="fair">Fair</SelectItem>
+                    <SelectItem value="poor">Poor</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {listingType === "sale" && (
+              <div className="space-y-2">
+                <Label htmlFor="price">Price (€)</Label>
+                <Input id="price" type="number" min="0" step="0.50" placeholder="0.00"
+                  value={price} onChange={(e) => setPrice(e.target.value)} required />
               </div>
             )}
-          </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="notes">Notes (optional)</Label>
-            <Textarea id="notes" placeholder="Anything the buyer should know (highlighting, missing pages, etc.)"
-              value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} />
-          </div>
+            {/* Photos */}
+            <div className="space-y-3 border-t border-border pt-2">
+              <div>
+                <Label className="font-display text-base">Book photos</Label>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  To help other DIS families understand the real condition of the book, please upload clear photos of the front cover and inside pages.
+                </p>
+              </div>
 
-          <Button type="submit" className="w-full" size="lg" disabled={!canSubmit}>
-            {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Publish listing"}
-          </Button>
-          <p className="text-center text-xs text-muted-foreground">
-            DISbook is an independent student-created project and is not the official DIS app. Always check the official DIS book list before finalising your purchase.
-          </p>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                <PhotoUpload label="Front cover" required value={front} onChange={setFront} />
+                <PhotoUpload
+                  label="Inside pages"
+                  required
+                  hint="Show writing, marks, page condition"
+                  value={inside}
+                  onChange={setInside}
+                />
+                <PhotoUpload label="Back cover" value={back} onChange={setBack} />
+                <PhotoUpload label="Extra photo" value={extra1} onChange={setExtra1} />
+                <PhotoUpload label="Extra photo" value={extra2} onChange={setExtra2} />
+              </div>
 
-        </form>
+              <div className="flex gap-2 rounded-lg border border-border bg-muted/50 p-3 text-xs text-muted-foreground">
+                <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+                <p>
+                  Please do not upload photos containing children, personal information or private documents.
+                  Accepted formats: JPG, PNG, WEBP · Max 5 MB per image.
+                </p>
+              </div>
+
+              {!photosValid && (
+                <div className="flex gap-2 rounded-lg border border-amber-300/60 bg-amber-50 p-3 text-xs text-amber-900 dark:bg-amber-950/30 dark:text-amber-200">
+                  <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+                  <p>Front cover and inside photo are required before you can publish.</p>
+                </div>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="notes">Notes (optional)</Label>
+              <Textarea id="notes" placeholder="Anything the buyer should know (highlighting, missing pages, etc.)"
+                value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} />
+            </div>
+
+            <Button type="submit" className="w-full" size="lg" disabled={!canSubmit}>
+              {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Publish listing"}
+            </Button>
+            <p className="text-center text-xs text-muted-foreground">
+              DISbook is an independent student-created project and is not the official DIS app. Always check the official DIS book list before finalising your purchase.
+            </p>
+          </form>
+        )}
       </div>
     </MainLayout>
   );
