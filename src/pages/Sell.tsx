@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/select";
 import { Loader2, BookPlus, ArrowLeft, Camera, X, AlertTriangle, ShieldAlert, GraduationCap, ChevronRight, BookOpen, ArrowRight, CheckCircle2 } from "lucide-react";
 import { officialBooks } from "@/data/officialBooks";
+import { BookCover } from "@/components/book/BookCover";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -432,9 +433,12 @@ const SellContent = () => {
                     onClick={() => handleSelectBook(book.id)}
                     className="flex w-full items-start gap-3 rounded-xl border border-border bg-background p-4 text-left transition hover:border-primary hover:bg-primary/5"
                   >
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                      <BookOpen className="h-5 w-5" />
-                    </div>
+                    <BookCover
+                      isbn={book.isbn}
+                      title={book.title}
+                      className="h-16 w-12"
+                      iconClassName="h-5 w-5"
+                    />
                     <div className="min-w-0 flex-1">
                       <h3 className="font-medium text-foreground">{book.title}</h3>
                       <p className="mt-1 text-sm text-muted-foreground">
@@ -456,12 +460,20 @@ const SellContent = () => {
 
         {step === "details" && selectedBook && (
           <form onSubmit={handleSubmit} className="space-y-5 rounded-2xl border border-border bg-card p-6 shadow-sm">
-            <div className="rounded-xl border border-border bg-muted/30 p-4">
-              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Create your listing</p>
-              <h2 className="mt-1 font-display text-xl font-bold text-foreground">{selectedBook.title}</h2>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {selectedBook.grade} • {selectedBook.subject}{selectedBook.isbn ? ` • ISBN: ${selectedBook.isbn}` : ""}
-              </p>
+            <div className="flex gap-4 rounded-xl border border-border bg-muted/30 p-4">
+              <BookCover
+                isbn={selectedBook.isbn}
+                title={selectedBook.title}
+                className="h-24 w-16"
+                iconClassName="h-6 w-6"
+              />
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Create your listing</p>
+                <h2 className="mt-1 font-display text-xl font-bold text-foreground">{selectedBook.title}</h2>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {selectedBook.grade} • {selectedBook.subject}{selectedBook.isbn ? ` • ISBN: ${selectedBook.isbn}` : ""}
+                </p>
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">

@@ -11,6 +11,7 @@ import {
   Construction,
 } from "lucide-react";
 import { OfficialBook, BookListing, getPriceRange } from "@/data/officialBooks";
+import { BookCover } from "@/components/book/BookCover";
 
 interface BookListItemProps {
   book: OfficialBook;
@@ -27,32 +28,18 @@ export const BookListItem = ({
   const availableCount = listings.length;
   const hasDonations = listings.some((l) => l.type === "donation");
   const priceRange = getPriceRange(book.id);
-  const coverUrl = book.isbn
-    ? `https://covers.openlibrary.org/b/isbn/${book.isbn}-M.jpg`
-    : null;
 
   return (
     <div className="p-4 rounded-xl border transition-all bg-card border-border hover:border-primary/20">
       <div className="flex gap-4">
-        {/* Book cover */}
-        {coverUrl && (
-          <div className="shrink-0 w-16 h-20 rounded-lg overflow-hidden bg-muted">
-            <img
-              src={coverUrl}
-              alt={book.title}
-              className="w-full h-full object-cover"
-              onLoad={(e) => {
-                const img = e.currentTarget;
-                if (img.naturalWidth <= 1 && img.naturalHeight <= 1) {
-                  (img.parentElement as HTMLElement).style.display = 'none';
-                }
-              }}
-              onError={(e) => {
-                (e.currentTarget.parentElement as HTMLElement).style.display = 'none';
-              }}
-            />
-          </div>
-        )}
+        {/* Book cover (edition-specific via ISBN) */}
+        <BookCover
+          isbn={book.isbn}
+          title={book.title}
+          className="w-16 h-20"
+          iconClassName="h-6 w-6"
+        />
+
 
         {/* Book info */}
         <div className="flex-1 min-w-0">
