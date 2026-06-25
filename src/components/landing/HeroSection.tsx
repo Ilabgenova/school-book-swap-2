@@ -11,11 +11,29 @@ import {
   Sparkles,
   CheckCircle2,
   TrendingUp,
+  Lock,
 } from "lucide-react";
 import lanternaAsset from "@/assets/lanterna.webp.asset.json";
+import { useAuth } from "@/hooks/useAuth";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export const HeroSection = () => {
   const { t } = useLanguage();
+  const { user } = useAuth();
+  const [isFromDIS, setIsFromDIS] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    if (!user) { setIsFromDIS(null); return; }
+    supabase
+      .from("profiles")
+      .select("is_from_dis")
+      .eq("user_id", user.id)
+      .maybeSingle()
+      .then(({ data }) => setIsFromDIS(!!data?.is_from_dis));
+  }, [user]);
+
+  const canSellPrevious = !!user && isFromDIS === true;
 
   return (
     <section className="relative overflow-hidden gradient-hero">
@@ -62,27 +80,51 @@ export const HeroSection = () => {
 
             {/* Two clear paths */}
             <div className="grid sm:grid-cols-2 gap-3 animate-slide-up" style={{ animationDelay: "0.1s" }}>
-              <Link to="/sell" className="group">
-                <div className="h-full rounded-xl border border-border bg-card hover:border-accent/50 hover:shadow-elevated transition-all p-5 flex flex-col gap-3">
-                  <div className="flex items-center gap-2">
-                    <div className="h-8 w-8 rounded-lg bg-accent/10 flex items-center justify-center">
-                      <BookOpen className="h-4 w-4 text-accent" />
+              {canSellPrevious ? (
+                <Link to="/sell" className="group">
+                  <div className="h-full rounded-xl border border-border bg-card hover:border-accent/50 hover:shadow-elevated transition-all p-5 flex flex-col gap-3">
+                    <div className="flex items-center gap-2">
+                      <div className="h-8 w-8 rounded-lg bg-accent/10 flex items-center justify-center">
+                        <BookOpen className="h-4 w-4 text-accent" />
+                      </div>
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Step 1 · End of year</span>
                     </div>
-                    <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Step 1 · End of year</span>
+                    <div>
+                      <h3 className="font-display text-lg font-semibold text-foreground">
+                        Sell last year's books
+                      </h3>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        List the books you used in the previous academic year and pass them on.
+                      </p>
+                    </div>
+                    <span className="text-sm font-medium text-accent inline-flex items-center gap-1 mt-auto">
+                      List a book <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                    </span>
                   </div>
-                  <div>
-                    <h3 className="font-display text-lg font-semibold text-foreground">
-                      Sell last year's books
-                    </h3>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      List the books you used in the previous academic year and pass them on.
-                    </p>
+                </Link>
+              ) : (
+                <Link to="/register" className="group">
+                  <div className="h-full rounded-xl border border-dashed border-border bg-muted/30 p-5 flex flex-col gap-3 opacity-90 hover:opacity-100 transition">
+                    <div className="flex items-center gap-2">
+                      <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
+                        <Lock className="h-4 w-4 text-muted-foreground" />
+                      </div>
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Step 1 · Returning DIS students</span>
+                    </div>
+                    <div>
+                      <h3 className="font-display text-lg font-semibold text-foreground">
+                        Sell last year's books
+                      </h3>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Available only to students already from DIS. New families don't have last year's books yet.
+                      </p>
+                    </div>
+                    <span className="text-sm font-medium text-muted-foreground inline-flex items-center gap-1 mt-auto">
+                      {user ? "Update your profile" : "Sign in as a DIS student"} <ArrowRight className="h-3.5 w-3.5" />
+                    </span>
                   </div>
-                  <span className="text-sm font-medium text-accent inline-flex items-center gap-1 mt-auto">
-                    List a book <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
-                  </span>
-                </div>
-              </Link>
+                </Link>
+              )}
 
               <Link to="/browse" className="group">
                 <div className="h-full rounded-xl border border-accent/40 bg-accent/5 hover:bg-accent/10 hover:shadow-elevated transition-all p-5 flex flex-col gap-3">
