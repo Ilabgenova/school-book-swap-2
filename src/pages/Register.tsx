@@ -35,6 +35,8 @@ const RegisterContent = () => {
   const { t } = useLanguage();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const nextPath = new URLSearchParams(window.location.search).get("next");
+  const redirectTo = nextPath?.startsWith("/") ? nextPath : "/browse";
   const [isFromDIS, setIsFromDIS] = useState<boolean | null>(null);
   const [previousGrade, setPreviousGrade] = useState<string>("");
   const [previousProgram, setPreviousProgram] = useState<string>("");
@@ -45,7 +47,7 @@ const RegisterContent = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  if (user) return <Navigate to="/browse" replace />;
+  if (user) return <Navigate to={redirectTo} replace />;
 
   const handleSchoolOrigin = (fromDIS: boolean) => {
     setIsFromDIS(fromDIS);
@@ -77,7 +79,7 @@ const RegisterContent = () => {
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/browse`,
+        emailRedirectTo: `${window.location.origin}${redirectTo}`,
         data: {
           first_name: firstName,
           last_name: lastName,
@@ -105,12 +107,12 @@ const RegisterContent = () => {
     }
     setLoading(false);
     toast.success("Account created! Check your email to confirm.");
-    navigate("/browse");
+    navigate(redirectTo);
   };
 
   const handleGoogle = async () => {
     const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin + "/browse",
+      redirect_uri: window.location.origin + redirectTo,
     });
     if (result.error) toast.error("Google sign-in failed");
   };
