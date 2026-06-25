@@ -2,7 +2,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Menu, X, Plus, LogOut, Sparkles } from "lucide-react";
+import { Menu, X, LogOut, Sparkles } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 
