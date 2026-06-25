@@ -35,7 +35,7 @@ const SellContent = () => {
   const [grade, setGrade] = useState("");
   const [bookId, setBookId] = useState("");
   const [listingType, setListingType] = useState<ListingType>("sale");
-  const [condition, setCondition] = useState<Condition>("used");
+  const [condition, setCondition] = useState<Condition>("good");
   const [price, setPrice] = useState("");
   const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
