@@ -223,7 +223,7 @@ const SellContent = () => {
           <div>
             <h1 className="font-display text-2xl font-bold">Sell or Donate a Book</h1>
             <p className="text-sm text-muted-foreground">
-              Pick a book from the official school list to publish your listing.
+              Pick a book from the DIS book list reference to publish your listing.
             </p>
           </div>
         </div>
