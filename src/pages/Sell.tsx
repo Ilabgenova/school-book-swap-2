@@ -340,8 +340,9 @@ const SellContent = () => {
             {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Publish listing"}
           </Button>
           <p className="text-center text-xs text-muted-foreground">
-            New listings are reviewed by the DIS team before going live.
+            DISbook is an independent student-created project and is not the official DIS app. Always check the official DIS book list before finalising your purchase.
           </p>
+
         </form>
       </div>
     </MainLayout>
