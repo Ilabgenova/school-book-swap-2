@@ -103,7 +103,7 @@ export const HeroSection = () => {
                   </div>
                 </Link>
               ) : (
-                <Link to="/register?next=%2Fsell%3Fintent%3Dsell%26mode%3Dsell" className="group">
+                <Link to="/sell?intent=sell&mode=sell" className="group">
                   <div className="h-full rounded-xl border border-dashed border-border bg-muted/30 p-5 flex flex-col gap-3 opacity-90 hover:opacity-100 transition">
                     <div className="flex items-center gap-2">
                       <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
