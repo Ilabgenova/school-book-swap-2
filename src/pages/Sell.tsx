@@ -1,5 +1,5 @@
 import { useState, FormEvent, useMemo, ChangeEvent, useEffect } from "react";
-import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
+import { Navigate, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
@@ -165,6 +165,7 @@ const PhotoUpload = ({ label, hint, required, value, onChange }: PhotoUploadProp
 const SellContent = () => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const initialGrade = searchParams.get("grade") ?? "";
@@ -217,7 +218,10 @@ const SellContent = () => {
       </MainLayout>
     );
   }
-  if (!user) return <Navigate to="/login?next=%2Fsell" replace />;
+  if (!user) {
+    const nextPath = `${location.pathname}${location.search || "?intent=sell&mode=sell"}`;
+    return <Navigate to={`/login?next=${encodeURIComponent(nextPath)}`} replace />;
+  }
 
   const updateSellParams = (next: { grade?: string; bookId?: string; type?: ListingType }) => {
     const params = new URLSearchParams(searchParams);
