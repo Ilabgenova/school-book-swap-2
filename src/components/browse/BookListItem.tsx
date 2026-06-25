@@ -118,23 +118,39 @@ export const BookListItem = ({
               </Button>
             ) : (
               <>
-                {book.externalPurchaseUrl && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    asChild
-                    className="gap-1"
-                  >
-                    <a
-                      href={book.externalPurchaseUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <ExternalLink className="h-3 w-3" />
-                      {t.browse.buyNew}
-                    </a>
-                  </Button>
-                )}
+                <p className="w-full text-xs text-muted-foreground italic">
+                  {t.browse.buyNewComingSoonNote}
+                </p>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled
+                  className="gap-1 cursor-not-allowed opacity-60"
+                >
+                  <ShoppingBag className="h-3 w-3" />
+                  {t.browse.buyNew}
+                  <Badge variant="outline" className="ml-1 text-[10px] px-1.5 py-0 h-4 border-amber-300 text-amber-600 bg-amber-50">
+                    <Construction className="h-2.5 w-2.5 mr-0.5" />
+                    {t.browse.inProgress}
+                  </Badge>
+                </Button>
+                {/* Check other schools - IN PROGRESS */}
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="gap-1 text-muted-foreground cursor-not-allowed opacity-60"
+                  disabled
+                >
+                  <Globe className="h-3 w-3" />
+                  {t.browse.checkOtherSchools}
+                  <Badge variant="outline" className="ml-1 text-[10px] px-1.5 py-0 h-4 border-amber-300 text-amber-600 bg-amber-50">
+                    <Construction className="h-2.5 w-2.5 mr-0.5" />
+                    {t.browse.inProgress}
+                  </Badge>
+                </Button>
+              </>
+            )}
+
                 {/* Check other schools - IN PROGRESS */}
                 <Button
                   size="sm"
