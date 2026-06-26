@@ -287,6 +287,48 @@ export type Database = {
           },
         ]
       }
+      wanted_books: {
+        Row: {
+          book_id: string
+          class_year: string | null
+          created_at: string
+          id: string
+          isbn: string | null
+          note: string | null
+          program: string | null
+          subject: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          book_id: string
+          class_year?: string | null
+          created_at?: string
+          id?: string
+          isbn?: string | null
+          note?: string | null
+          program?: string | null
+          subject?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          book_id?: string
+          class_year?: string | null
+          created_at?: string
+          id?: string
+          isbn?: string | null
+          note?: string | null
+          program?: string | null
+          subject?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

@@ -82,6 +82,15 @@ export const Header = () => {
               Buy a book
             </Button>
           </Link>
+          <Link to="/wanted">
+            <Button
+              variant="ghost"
+              size="sm"
+              className={isActive("/wanted") ? "text-accent bg-accent/10" : ""}
+            >
+              Wanted
+            </Button>
+          </Link>
           <div className="mx-1 h-5 w-px bg-border" />
           <LanguageSwitcher />
           {user ? (
@@ -144,6 +153,11 @@ export const Header = () => {
             <Link to="/sell?intent=sell&mode=sell" onClick={() => setMobileMenuOpen(false)}>
               <Button variant="ghost" className="w-full justify-start">
                 List a book
+              </Button>
+            </Link>
+            <Link to="/wanted" onClick={() => setMobileMenuOpen(false)}>
+              <Button variant="ghost" className="w-full justify-start">
+                Wanted
               </Button>
             </Link>
 

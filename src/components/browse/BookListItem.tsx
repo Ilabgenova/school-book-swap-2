@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { OfficialBook, BookListing, getPriceRange } from "@/data/officialBooks";
 import { BookCover } from "@/components/book/BookCover";
+import { WantedButton } from "@/components/wanted/WantedButton";
 
 interface BookListItemProps {
   book: OfficialBook;
@@ -93,6 +94,7 @@ export const BookListItem = ({
 
           {/* Actions */}
           <div className="mt-3 flex flex-wrap gap-2">
+            <WantedButton book={book} />
             {book.availableFromPreviousYear && availableCount > 0 ? (
               <Button
                 size="sm"
