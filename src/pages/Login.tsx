@@ -1,6 +1,6 @@
 import { useState, FormEvent } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
-import { LanguageProvider, useLanguage } from "@/i18n/LanguageContext";
+import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

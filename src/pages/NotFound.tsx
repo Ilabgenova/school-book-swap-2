@@ -2,7 +2,7 @@ import { MainLayout } from "@/components/layout/MainLayout";
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "react-router-dom";
 import { Home, BookOpen } from "lucide-react";
-import { LanguageProvider, useLanguage } from "@/i18n/LanguageContext";
+import { useLanguage } from "@/i18n/LanguageContext";
 import { useEffect } from "react";
 
 const NotFoundContent = () => {
