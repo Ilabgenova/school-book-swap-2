@@ -191,7 +191,7 @@ const SellContent = () => {
   const [extra2, setExtra2] = useState<PhotoState>(null);
 
   const booksForGrade = useMemo(
-    () => officialBooks.filter((b) => b.grade === grade),
+    () => officialBooks.filter((b) => b.grade === grade).filter(isSellableItem),
     [grade]
   );
   const selectedBook = useMemo(
