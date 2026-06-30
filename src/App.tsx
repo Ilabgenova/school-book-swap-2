@@ -12,6 +12,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Sell from "./pages/Sell";
 import Wanted from "./pages/Wanted";
+import MyBooks from "./pages/MyBooks";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
