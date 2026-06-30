@@ -68,8 +68,8 @@ const RegisterContent = () => {
       toast.error("Passwords don't match");
       return;
     }
-    if (password.length < 6) {
-      toast.error("Password must be at least 6 characters");
+    if (password.length < 8) {
+      toast.error("Password must be at least 8 characters");
       return;
     }
     setLoading(true);
@@ -87,7 +87,15 @@ const RegisterContent = () => {
     });
     if (error) {
       setLoading(false);
-      toast.error(error.message);
+      const msg = error.message?.toLowerCase() || "";
+      if (msg.includes("pwned") || msg.includes("compromised") || msg.includes("breach") || msg.includes("weak")) {
+        toast.error(
+          "This password has appeared in known data breaches. Please choose a different password (it doesn't need to be complex — just not a commonly used one).",
+          { duration: 8000 }
+        );
+      } else {
+        toast.error(error.message);
+      }
       return;
     }
     // Update profile with extra fields (school / grade) if provided
