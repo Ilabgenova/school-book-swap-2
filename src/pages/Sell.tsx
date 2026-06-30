@@ -573,10 +573,6 @@ const SellContent = () => {
   );
 };
 
-const Sell = () => (
-  <LanguageProvider>
-    <SellContent />
-  </LanguageProvider>
-);
+const Sell = () => <SellContent />;
 
 export default Sell;
