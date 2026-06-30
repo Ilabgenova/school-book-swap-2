@@ -87,7 +87,7 @@ export const translations = {
       noListingsYet: "Nessun annuncio",
       donationAvailable: "Donazione disponibile",
       from: "da",
-      newBookRequired: "Nuovo libro richiesto",
+      newBookRequired: "Elenco nuovo anno in arrivo",
       viewListings: "Vedi annunci",
       buyNew: "Compra nuovo — In arrivo",
       buyNewComingSoonNote: "Nessuna copia usata disponibile al momento. In futuro potrebbe essere aggiunta un'opzione 'Compra nuovo'.",
