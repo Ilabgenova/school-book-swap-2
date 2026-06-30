@@ -244,7 +244,7 @@ export const HeroSection = () => {
             >
               <Users className="h-3 w-3 text-[hsl(var(--teal))]" />
               <span className="text-[11px] font-semibold text-foreground">
-                DIS community
+                {h.communityPill}
               </span>
             </div>
           </div>
