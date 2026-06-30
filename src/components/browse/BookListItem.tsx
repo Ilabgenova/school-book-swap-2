@@ -96,15 +96,19 @@ export const BookListItem = ({
           <div className="mt-3 flex flex-wrap gap-2">
             <WantedButton book={book} />
             {book.availableFromPreviousYear && availableCount > 0 ? (
-              <Button
-                size="sm"
-                variant="default"
-                onClick={() => onViewListings(book)}
-                className="gap-1"
-              >
-                <Tag className="h-3 w-3" />
-                {t.browse.viewListings} ({availableCount})
-              </Button>
+              <>
+                <Button
+                  size="sm"
+                  variant="default"
+                  onClick={() => onViewListings(book)}
+                  className="gap-1"
+                >
+                  <Tag className="h-3 w-3" />
+                  {t.browse.viewListings} ({availableCount})
+                </Button>
+                {/* Amazon "Buy New" - rendered only if admin added a link */}
+                <AmazonBuyButton isbn={book.isbn} title={book.title} />
+              </>
             ) : (
               <>
                 <AmazonBuyButton isbn={book.isbn} title={book.title} />
