@@ -100,23 +100,37 @@ const SellProgress = ({ step, submitting }: { step: SellStep; submitting: boolea
 interface PhotoUploadProps {
   label: string;
   hint?: string;
+  warning?: string;
   required?: boolean;
   value: PhotoState;
   onChange: (next: PhotoState) => void;
 }
 
-const PhotoUpload = ({ label, hint, required, value, onChange }: PhotoUploadProps) => {
+const isHeicLike = (f: File) => {
+  const t = (f.type || "").toLowerCase();
+  const n = f.name.toLowerCase();
+  return t.includes("heic") || t.includes("heif") || n.endsWith(".heic") || n.endsWith(".heif");
+};
+
+const PhotoUpload = ({ label, hint, warning, required, value, onChange }: PhotoUploadProps) => {
   const handleFile = (e: ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
     e.target.value = "";
     if (!f) return;
-    if (!ACCEPTED.includes(f.type)) {
-      toast.error("Only JPG, PNG or WEBP images are allowed");
-      return;
-    }
     if (f.size > MAX_BYTES) {
       toast.error("Image must be 5 MB or smaller");
       return;
+    }
+    const typeOk = ACCEPTED.includes((f.type || "").toLowerCase()) || isHeicLike(f);
+    if (!typeOk) {
+      toast.error("Please upload JPG, PNG or WEBP images.");
+      return;
+    }
+    if (isHeicLike(f)) {
+      // Browsers cannot preview HEIC; accept but warn — server/admin can transcode later.
+      const img = new Image();
+      img.onerror = () => toast.message("HEIC photo uploaded. It may not preview here, but admins will see it.");
+      try { img.src = URL.createObjectURL(f); } catch {}
     }
     onChange({ file: f, preview: URL.createObjectURL(f) });
   };
@@ -128,9 +142,9 @@ const PhotoUpload = ({ label, hint, required, value, onChange }: PhotoUploadProp
         {required && <span className="text-destructive">*</span>}
       </Label>
       {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
-      <label
+      <div
         className={cn(
-          "relative flex aspect-[3/4] cursor-pointer items-center justify-center overflow-hidden rounded-lg border-2 border-dashed bg-muted/30 transition hover:bg-muted/50",
+          "relative flex aspect-[3/4] items-center justify-center overflow-hidden rounded-lg border-2 border-dashed bg-muted/30",
           value ? "border-primary/40" : required ? "border-border" : "border-border/60"
         )}
       >
@@ -139,7 +153,7 @@ const PhotoUpload = ({ label, hint, required, value, onChange }: PhotoUploadProp
             <img src={value.preview} alt={label} className="h-full w-full object-cover" />
             <button
               type="button"
-              onClick={(e) => { e.preventDefault(); URL.revokeObjectURL(value.preview); onChange(null); }}
+              onClick={() => { URL.revokeObjectURL(value.preview); onChange(null); }}
               className="absolute right-1.5 top-1.5 rounded-full bg-background/90 p-1 shadow-md hover:bg-background"
               aria-label="Remove photo"
             >
@@ -147,19 +161,38 @@ const PhotoUpload = ({ label, hint, required, value, onChange }: PhotoUploadProp
             </button>
           </>
         ) : (
-          <div className="flex flex-col items-center gap-1.5 p-2 text-center">
+          <div className="flex flex-col items-center gap-2 p-3 text-center">
             <Camera className="h-6 w-6 text-muted-foreground" />
-            <span className="text-xs font-medium text-muted-foreground">Tap to add</span>
+            <span className="text-[11px] text-muted-foreground">Take a new photo or upload one</span>
           </div>
         )}
-        <input
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-          capture="environment"
-          className="hidden"
-          onChange={handleFile}
-        />
-      </label>
+      </div>
+
+      <div className="grid grid-cols-2 gap-1.5">
+        <label className="flex cursor-pointer items-center justify-center gap-1.5 rounded-md border border-border bg-background px-2 py-1.5 text-xs font-medium hover:bg-muted">
+          <Camera className="h-3.5 w-3.5" />
+          {value ? "Retake" : "Take Photo"}
+          <input
+            type="file"
+            accept={ACCEPT_ATTR}
+            capture="environment"
+            className="hidden"
+            onChange={handleFile}
+          />
+        </label>
+        <label className="flex cursor-pointer items-center justify-center gap-1.5 rounded-md border border-border bg-background px-2 py-1.5 text-xs font-medium hover:bg-muted">
+          <Upload className="h-3.5 w-3.5" />
+          {value ? "Replace" : "Upload"}
+          <input
+            type="file"
+            accept={ACCEPT_ATTR}
+            className="hidden"
+            onChange={handleFile}
+          />
+        </label>
+      </div>
+
+      {warning && <p className="text-[11px] text-muted-foreground">{warning}</p>}
     </div>
   );
 };
