@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { MainLayout } from "@/components/layout/MainLayout";
-import { LanguageProvider } from "@/i18n/LanguageContext";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Heart, Loader2, BookPlus, Users } from "lucide-react";
@@ -125,10 +124,6 @@ const WantedContent = () => {
   );
 };
 
-const Wanted = () => (
-  <LanguageProvider>
-    <WantedContent />
-  </LanguageProvider>
-);
+const Wanted = () => <WantedContent />;
 
 export default Wanted;

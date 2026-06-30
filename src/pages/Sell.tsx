@@ -1,7 +1,6 @@
 import { useState, FormEvent, useMemo, ChangeEvent, useEffect } from "react";
 import { Navigate, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { MainLayout } from "@/components/layout/MainLayout";
-import { LanguageProvider } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -573,10 +572,6 @@ const SellContent = () => {
   );
 };
 
-const Sell = () => (
-  <LanguageProvider>
-    <SellContent />
-  </LanguageProvider>
-);
+const Sell = () => <SellContent />;
 
 export default Sell;
