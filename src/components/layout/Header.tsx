@@ -95,6 +95,15 @@ export const Header = () => {
           <LanguageSwitcher />
           {user ? (
             <>
+              <Link to="/my-books">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={isActive("/my-books") ? "text-accent bg-accent/10" : ""}
+                >
+                  My Books
+                </Button>
+              </Link>
               <Button
                 variant="ghost"
                 size="sm"
@@ -163,6 +172,11 @@ export const Header = () => {
 
             {user ? (
               <>
+                <Link to="/my-books" onClick={() => setMobileMenuOpen(false)}>
+                  <Button variant="ghost" className="w-full justify-start">
+                    My Books
+                  </Button>
+                </Link>
                 <Button
                   variant="outline"
                   className="w-full gap-1.5"

@@ -130,6 +130,80 @@ export type Database = {
         }
         Relationships: []
       }
+      bought_books: {
+        Row: {
+          acquisition_type: string
+          book_id: string | null
+          class_year: string | null
+          created_at: string
+          date_bought: string
+          id: string
+          isbn: string | null
+          listing_id: string | null
+          notes: string | null
+          price_paid: number | null
+          program: string | null
+          seller_id: string | null
+          seller_name: string | null
+          source: string
+          status: string
+          subject: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          acquisition_type?: string
+          book_id?: string | null
+          class_year?: string | null
+          created_at?: string
+          date_bought?: string
+          id?: string
+          isbn?: string | null
+          listing_id?: string | null
+          notes?: string | null
+          price_paid?: number | null
+          program?: string | null
+          seller_id?: string | null
+          seller_name?: string | null
+          source?: string
+          status?: string
+          subject?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          acquisition_type?: string
+          book_id?: string | null
+          class_year?: string | null
+          created_at?: string
+          date_bought?: string
+          id?: string
+          isbn?: string | null
+          listing_id?: string | null
+          notes?: string | null
+          price_paid?: number | null
+          program?: string | null
+          seller_id?: string | null
+          seller_name?: string | null
+          source?: string
+          status?: string
+          subject?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bought_books_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       conversations: {
         Row: {
           buyer_id: string
