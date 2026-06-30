@@ -89,6 +89,17 @@ export const translations = {
           },
         ],
       },
+      preview: {
+        eyebrow: "Marketplace",
+        title: "Annunci dal vivo dalle famiglie DIS.",
+        viewAll: "Sfoglia",
+        contact: "Contatta",
+        conditionAsNew: "Come nuovo",
+        conditionUsed: "Usato",
+        conditionNew: "Nuovo",
+        exchange: "Scambio",
+        free: "Gratis",
+      },
       communityTips: {
         badge: "In arrivo",
         titlePart1: "In arrivo: ",
