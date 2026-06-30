@@ -108,7 +108,7 @@ export const PreviewSection = () => {
                       </h3>
                       <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
                         <span className="h-1.5 w-1.5 rounded-full bg-[hsl(var(--teal))]" />
-                        {listing.condition}
+                        {listing.condition === "As new" ? p.conditionAsNew : listing.condition === "New" ? p.conditionNew : p.conditionUsed}
                       </div>
                     </div>
                   </div>
@@ -118,16 +118,17 @@ export const PreviewSection = () => {
                     <div>
                       <p className={`font-display font-bold text-xl leading-none flex items-center gap-1.5 ${isFree ? "text-[hsl(var(--teal))]" : isExchange ? "text-accent" : "text-foreground"}`}>
                         <TypeIcon className="h-4 w-4" />
-                        {listing.price}
+                        {isFree ? p.free : isExchange ? p.exchange : listing.price}
                       </p>
                       <p className="text-[11px] text-muted-foreground mt-1">
                         {listing.seller} · ★ {listing.rating}
                       </p>
                     </div>
                     <button className="text-xs font-semibold text-accent hover:text-accent/80 inline-flex items-center gap-1 group/btn">
-                      Contact
+                      {p.contact}
                       <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5" />
                     </button>
+
                   </div>
                 </div>
               </div>
