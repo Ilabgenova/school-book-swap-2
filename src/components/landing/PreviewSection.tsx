@@ -49,6 +49,7 @@ const typeIcon = {
 
 export const PreviewSection = () => {
   const { t } = useLanguage();
+  const p = t.landing.preview;
 
   return (
     <section className="py-20 md:py-28 bg-background">
@@ -56,20 +57,21 @@ export const PreviewSection = () => {
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
           <div>
             <p className="font-mono text-xs uppercase tracking-[0.18em] text-accent mb-3">
-              Marketplace
+              {p.eyebrow}
             </p>
             <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-foreground tracking-tighter">
-              Live listings from DIS families.
+              {p.title}
             </h2>
           </div>
           <Link
             to="/browse"
             className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent hover:gap-2 transition-all"
           >
-            {t.nav.browse}
+            {p.viewAll}
             <ArrowUpRight className="h-4 w-4" />
           </Link>
         </div>
+
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {mockListings.map((listing) => {
