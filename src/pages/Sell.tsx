@@ -34,7 +34,8 @@ type PhotoSlot = "front" | "inside" | "back" | "extra1" | "extra2";
 type SellStep = "grade" | "book" | "details";
 
 const MAX_BYTES = 5 * 1024 * 1024;
-const ACCEPTED = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+const ACCEPTED = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/heic", "image/heif"];
+const ACCEPT_ATTR = "image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif";
 
 type PhotoState = { file: File; preview: string } | null;
 
