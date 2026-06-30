@@ -172,6 +172,11 @@ export const Header = () => {
 
             {user ? (
               <>
+                <Link to="/my-books" onClick={() => setMobileMenuOpen(false)}>
+                  <Button variant="ghost" className="w-full justify-start">
+                    My Books
+                  </Button>
+                </Link>
                 <Button
                   variant="outline"
                   className="w-full gap-1.5"
