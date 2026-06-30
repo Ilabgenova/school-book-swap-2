@@ -554,16 +554,50 @@ const SellContent = () => {
               <div>
                 <Label className="font-display text-base">Book photos</Label>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  To help other DIS families understand the real condition of the book, please upload clear photos of the front cover and inside pages.
+                  You can take a new photo now or upload an existing image from your gallery.
                 </p>
               </div>
 
+              <div className="flex gap-2 rounded-lg border border-primary/30 bg-primary/5 p-3 text-xs text-foreground">
+                <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                <p>
+                  Please upload real photos of the exact book you are listing. Photos must clearly show the book cover and inside pages.
+                  Do not upload unrelated images, screenshots, memes, stock photos or photos of a different book.
+                </p>
+              </div>
+
+              <Collapsible>
+                <CollapsibleTrigger className="flex w-full items-center justify-between rounded-lg border border-border bg-muted/30 px-3 py-2 text-sm font-medium hover:bg-muted/50">
+                  <span className="flex items-center gap-2"><Info className="h-4 w-4" /> Photo Guidelines</span>
+                  <ChevronDown className="h-4 w-4 transition-transform data-[state=open]:rotate-180" />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="rounded-b-lg border border-t-0 border-border bg-muted/20 px-4 py-3 text-xs text-muted-foreground">
+                  <ul className="list-disc space-y-1 pl-4">
+                    <li>Use real photos of the exact book you are listing</li>
+                    <li>Show the full front cover</li>
+                    <li>Show at least one inside page to demonstrate condition</li>
+                    <li>Make sure the title and book condition are visible</li>
+                    <li>Avoid blurry, dark or cropped photos</li>
+                    <li>Do not upload stock photos, screenshots, memes or unrelated images</li>
+                    <li>Do not upload photos of a different book</li>
+                    <li>Do not include children, faces, addresses, phone numbers, school documents or private information</li>
+                  </ul>
+                </CollapsibleContent>
+              </Collapsible>
+
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                <PhotoUpload label="Front cover" required value={front} onChange={setFront} />
+                <PhotoUpload
+                  label="Front cover"
+                  required
+                  warning="Upload the actual front cover of this book."
+                  value={front}
+                  onChange={setFront}
+                />
                 <PhotoUpload
                   label="Inside pages"
                   required
                   hint="Show writing, marks, page condition"
+                  warning="Upload a real inside-page photo showing the condition of this book."
                   value={inside}
                   onChange={setInside}
                 />
@@ -574,19 +608,25 @@ const SellContent = () => {
 
               <div className="flex gap-2 rounded-lg border border-border bg-muted/50 p-3 text-xs text-muted-foreground">
                 <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
-                <p>
-                  Please do not upload photos containing children, personal information or private documents.
-                  Accepted formats: JPG, PNG, WEBP · Max 5 MB per image.
-                </p>
+                <div className="space-y-1">
+                  <p>
+                    Please make sure photos do not contain children, faces, addresses, phone numbers, school documents or other private information.
+                  </p>
+                  <p>
+                    Photos should be clear, well-lit and readable. Blurry or unrelated photos may cause the listing to be rejected by DISbook admins.
+                  </p>
+                  <p>Accepted formats: JPG, PNG, WEBP, HEIC/HEIF · Max 5 MB per image.</p>
+                </div>
               </div>
 
               {!photosValid && (
                 <div className="flex gap-2 rounded-lg border border-amber-300/60 bg-amber-50 p-3 text-xs text-amber-900 dark:bg-amber-950/30 dark:text-amber-200">
                   <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
-                  <p>Front cover and inside photo are required before you can publish.</p>
+                  <p>Please upload at least a front cover photo and one inside photo before publishing your listing.</p>
                 </div>
               )}
             </div>
+
 
             <div className="space-y-2">
               <Label htmlFor="notes">Notes (optional)</Label>
