@@ -39,12 +39,6 @@ const NotFoundContent = () => {
   );
 };
 
-const NotFound = () => {
-  return (
-    <LanguageProvider>
-      <NotFoundContent />
-    </LanguageProvider>
-  );
-};
+const NotFound = () => <NotFoundContent />;
 
 export default NotFound;
