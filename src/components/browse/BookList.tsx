@@ -12,7 +12,7 @@ import {
 import { BookListItem } from "./BookListItem";
 import { ListingsModal } from "./ListingsModal";
 import { SummerReadingSection } from "./SummerReadingSection";
-import { officialBooks, mockListings, OfficialBook } from "@/data/officialBooks";
+import { officialBooks, mockListings, OfficialBook, isSellableItem, LAST_SCHOOL_YEAR, NEW_SCHOOL_YEAR_AVAILABLE } from "@/data/officialBooks";
 
 const FOREIGN_LANGUAGE_SUBJECTS = ["Spanish", "German", "Chinese", "French", "Spanish B", "German B", "Chinese B", "French B"];
 
@@ -37,6 +37,7 @@ export const BookList = ({
   // Filter books by selected grade, subjects (for DP), and language levels (for MYP)
   const allBooks = officialBooks.filter((book) => {
     if (book.grade !== selectedGrade || book.isSummerReading) return false;
+    if (!isSellableItem(book)) return false;
     // For DP program with selected subjects, filter by subject
     if (selectedProgram === "DP" && selectedSubjects && selectedSubjects.length > 0) {
       return selectedSubjects.includes(book.subject);
@@ -122,7 +123,15 @@ export const BookList = ({
           <span className="text-sm">
             <strong>{stats.available}</strong> {t.browse.withListings}
           </span>
-        </div>
+      </div>
+
+      {/* Last-year list notice */}
+      <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+        <strong>Used books available from last year's list ({LAST_SCHOOL_YEAR}).</strong>{" "}
+        {NEW_SCHOOL_YEAR_AVAILABLE
+          ? null
+          : "The new school year book list is coming soon — until then, please verify required titles against the school's official list before purchasing."}
+      </div>
       </div>
 
       {/* Book list - split into sections for MYP */}

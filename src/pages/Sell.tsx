@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Loader2, BookPlus, ArrowLeft, Camera, X, AlertTriangle, ShieldAlert, GraduationCap, ChevronRight, BookOpen, ArrowRight, CheckCircle2 } from "lucide-react";
-import { officialBooks } from "@/data/officialBooks";
+import { officialBooks, isSellableItem, LAST_SCHOOL_YEAR } from "@/data/officialBooks";
 import { BookCover } from "@/components/book/BookCover";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -191,7 +191,7 @@ const SellContent = () => {
   const [extra2, setExtra2] = useState<PhotoState>(null);
 
   const booksForGrade = useMemo(
-    () => officialBooks.filter((b) => b.grade === grade),
+    () => officialBooks.filter((b) => b.grade === grade).filter(isSellableItem),
     [grade]
   );
   const selectedBook = useMemo(
@@ -417,6 +417,10 @@ const SellContent = () => {
                 </h2>
                 <p className="mt-2 text-sm text-muted-foreground">
                   Choose one book from the reference list for this class/year to create a listing.
+                </p>
+                <p className="mt-2 text-xs text-muted-foreground">
+                  Showing the {LAST_SCHOOL_YEAR} reference list. The new school year book list is coming soon.
+                  Only real books (plus Keyboard and Sphero) are shown — PDFs, photocopies and downloadable materials are excluded.
                 </p>
               </div>
               <Button type="button" variant="outline" size="sm" onClick={() => setStep("grade")}>

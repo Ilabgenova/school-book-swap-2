@@ -14,6 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
+      book_catalog: {
+        Row: {
+          author: string | null
+          created_at: string
+          external_book_id: string | null
+          grade: string
+          id: string
+          is_sellable: boolean
+          isbn: string | null
+          program: string
+          publisher: string | null
+          school_year: string
+          subject: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author?: string | null
+          created_at?: string
+          external_book_id?: string | null
+          grade: string
+          id?: string
+          is_sellable?: boolean
+          isbn?: string | null
+          program: string
+          publisher?: string | null
+          school_year: string
+          subject?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author?: string | null
+          created_at?: string
+          external_book_id?: string | null
+          grade?: string
+          id?: string
+          is_sellable?: boolean
+          isbn?: string | null
+          program?: string
+          publisher?: string | null
+          school_year?: string
+          subject?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       conversations: {
         Row: {
           buyer_id: string
@@ -62,6 +110,7 @@ export type Database = {
           notes: string | null
           price: number
           program: string | null
+          school_year: string
           seller_id: string
           status: Database["public"]["Enums"]["listing_status"]
           subject: string | null
@@ -80,6 +129,7 @@ export type Database = {
           notes?: string | null
           price: number
           program?: string | null
+          school_year?: string
           seller_id: string
           status?: Database["public"]["Enums"]["listing_status"]
           subject?: string | null
@@ -98,6 +148,7 @@ export type Database = {
           notes?: string | null
           price?: number
           program?: string | null
+          school_year?: string
           seller_id?: string
           status?: Database["public"]["Enums"]["listing_status"]
           subject?: string | null

@@ -11,6 +11,7 @@ export interface OfficialBook {
   grade: string;
   program: string;
   isSummerReading?: boolean;
+  schoolYear?: string;
 }
 
 export interface BookListing {
@@ -245,39 +246,88 @@ export const officialBooks: OfficialBook[] = [
   { id: "diplomadp2-29", title: "Oxford Resources for IB DP Environmental Systems and Societies: Course Book  2024 version", author: "Gillian Williams and Jill Rutherford", subject: "Environmental Systems and Societies", publisher: "", isbn: "9781382044011", availableFromPreviousYear: true, grade: "DP 2", program: "DP" },
 ];
 
+// ============================================================
+// School-year configuration
+// ============================================================
+// "Last year" = the list students may already own and can resell now.
+// "New year" = the upcoming list; NOT yet available. When uploaded, set
+// NEW_SCHOOL_YEAR_AVAILABLE = true and populate `newYearBooks`.
+export const LAST_SCHOOL_YEAR = "2025-2026";
+export const NEW_SCHOOL_YEAR = "2026-2027";
+export const NEW_SCHOOL_YEAR_AVAILABLE = false;
+
+// Placeholder for the upcoming year. Will be replaced/imported later.
+export const newYearBooks: OfficialBook[] = [];
+
+// Backwards-compatible alias
+export const lastYearBooks = officialBooks;
+
 // Empty summer reading list (none in 2025-2026 source file)
 export const summerReadingBooks: OfficialBook[] = [];
 
 // Mock listings placeholder (no live data without DB query)
 export const mockListings: Record<string, BookListing[]> = {};
 
-// Returning-student helpers: books from previous grade that the student can sell
-// or should keep (kept simple: a grade-to-next mapping)
-const NEXT_GRADE: Record<string, string> = {
-  "MYP 1": "MYP 2", "MYP 2": "MYP 3", "MYP 3": "MYP 4", "MYP 4": "MYP 5", "MYP 5": "DP 1",
-  "DP 1": "DP 2",
-};
+// ============================================================
+// Sellable-item filter
+// ============================================================
+// The catalog mixes real textbooks with non-resellable items (PDFs,
+// photocopies, downloads, sketchbook paper, "to be communicated"
+// placeholders, calculators, etc.). Only real books are sellable, plus
+// two explicit exceptions: Keyboard and Sphero (Mini) robot.
+const ALLOWED_NON_BOOK = /\b(keyboard|tastiera|sphero)\b/i;
 
-export function getSellableBooks(previousGrade: string, _previousProgram: string): OfficialBook[] {
-  const next = NEXT_GRADE[previousGrade];
-  const previousBooks = officialBooks.filter((b) => b.grade === previousGrade);
-  if (!next) return previousBooks;
-  const nextIsbns = new Set(
-    officialBooks.filter((b) => b.grade === next).map((b) => b.isbn).filter(Boolean)
-  );
-  // Sellable = previous-year book NOT reused in the next grade
-  return previousBooks.filter((b) => !b.isbn || !nextIsbns.has(b.isbn));
+const EXCLUDED_PATTERNS: RegExp[] = [
+  /^\s*pdf\b/i,
+  /pdf\s+will\s+be\s+given/i,
+  /libro\s+in\s+pdf/i,
+  /pdf\s+da\s+stampare/i,
+  /pdfs?\s+to\s+be\s+(downloaded|dowloaded|printed)/i,
+  /^\s*no\s+book/i,
+  /text\s*books?\s+will\s+be\s+chosen/i,
+  /books?\s+for\s+english\s+depend/i,
+  /books?\s+will\s+be\s+communicated/i,
+  /to\s+be\s+communicated/i,
+  /to\s+be\s+decided/i,
+  /more\s+info\s+in\s+september/i,
+  /depending\s+on\s+sections/i,
+  /the\s+other\s+books\s+for\s+english/i,
+  /un\s+libro\s+di\s+lettura\s+sar[àa]\s+comunicato/i,
+  /l[''`]?acquisto\s+di\s+ulteriori/i,
+  /l[''`]?insegnante\s+forni/i,
+  /dispens[ea]/i,
+  /quaderno/i,
+  /canson/i,
+  /graphing\s+calculator/i,
+  /\bti[-\s]?84\b/i,
+  /casio\s+fx/i,
+  /worksheet/i,
+  /photocop/i,
+];
+
+export function isSellableItem(book: OfficialBook): boolean {
+  const title = book.title || "";
+  if (ALLOWED_NON_BOOK.test(title)) return true;
+  if (EXCLUDED_PATTERNS.some((re) => re.test(title))) return false;
+  return true;
 }
 
-export function getBooksToKeep(previousGrade: string, _previousProgram: string): OfficialBook[] {
-  const next = NEXT_GRADE[previousGrade];
-  if (!next) return [];
-  const previousBooks = officialBooks.filter((b) => b.grade === previousGrade);
-  const nextIsbns = new Set(
-    officialBooks.filter((b) => b.grade === next).map((b) => b.isbn).filter(Boolean)
-  );
-  // Keep = previous-year book reused in the next grade
-  return previousBooks.filter((b) => b.isbn && nextIsbns.has(b.isbn));
+// ============================================================
+// Selling helpers (last-year list only, for now)
+// ============================================================
+export function getSellableBooks(previousGrade: string, _previousProgram: string): OfficialBook[] {
+  // Until the new year list is uploaded, every real book from the
+  // previous grade is potentially sellable. Filter out non-book items.
+  return officialBooks
+    .filter((b) => b.grade === previousGrade)
+    .filter(isSellableItem);
+}
+
+export function getBooksToKeep(_previousGrade: string, _previousProgram: string): OfficialBook[] {
+  // We cannot tell which books should be kept until the new school year
+  // book list has been uploaded.
+  if (!NEW_SCHOOL_YEAR_AVAILABLE) return [];
+  return [];
 }
 
 export function getPriceRange(_bookId: string): { min: number; max: number } | null {
@@ -289,5 +339,59 @@ export function getAmazonListUrl(grade: string, _program: string): string {
 }
 
 export function getSubjectsForGrade(grade: string): string[] {
-  return Array.from(new Set(officialBooks.filter((b) => b.grade === grade).map((b) => b.subject))).sort();
+  return Array.from(
+    new Set(
+      officialBooks
+        .filter((b) => b.grade === grade)
+        .filter(isSellableItem)
+        .map((b) => b.subject)
+    )
+  ).sort();
 }
+
+// ============================================================
+// Cross-year matcher (used once the new list is uploaded).
+// Primary match: ISBN. Secondary: normalized title+author when neither
+// side has a valid ISBN. Different editions are intentionally NOT
+// matched (different ISBNs => no match).
+// ============================================================
+export interface BookMatch {
+  lastYear: OfficialBook;
+  newYear: OfficialBook;
+  matchedBy: "isbn" | "title-author";
+}
+
+const normalize = (s?: string) =>
+  (s || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+
+const isValidIsbn = (isbn?: string) => {
+  if (!isbn) return false;
+  const digits = isbn.replace(/[^0-9]/g, "");
+  return digits.length === 10 || digits.length === 13;
+};
+
+export function matchBooksAcrossYears(
+  lastList: OfficialBook[] = officialBooks,
+  newList: OfficialBook[] = newYearBooks
+): BookMatch[] {
+  const matches: BookMatch[] = [];
+  const newByIsbn = new Map<string, OfficialBook>();
+  for (const nb of newList) {
+    if (isValidIsbn(nb.isbn)) newByIsbn.set(nb.isbn!.replace(/[^0-9]/g, ""), nb);
+  }
+  for (const lb of lastList) {
+    if (isValidIsbn(lb.isbn)) {
+      const hit = newByIsbn.get(lb.isbn!.replace(/[^0-9]/g, ""));
+      if (hit) { matches.push({ lastYear: lb, newYear: hit, matchedBy: "isbn" }); continue; }
+      continue; // ISBN present but no ISBN match → don't fuzzy match (avoid edition mix-ups)
+    }
+    const nt = normalize(lb.title);
+    const na = normalize(lb.author);
+    const hit = newList.find(
+      (nb) => !isValidIsbn(nb.isbn) && normalize(nb.title) === nt && normalize(nb.author) === na
+    );
+    if (hit) matches.push({ lastYear: lb, newYear: hit, matchedBy: "title-author" });
+  }
+  return matches;
+}
+
