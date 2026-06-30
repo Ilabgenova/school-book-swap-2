@@ -14,6 +14,74 @@ export type Database = {
   }
   public: {
     Tables: {
+      amazon_links: {
+        Row: {
+          affiliate_url: string | null
+          amazon_url: string | null
+          author: string | null
+          book_catalog_id: string | null
+          created_at: string
+          created_by: string | null
+          edition: string | null
+          grade: string | null
+          id: string
+          isbn: string | null
+          note: string | null
+          program: string | null
+          school_year: string | null
+          status: Database["public"]["Enums"]["amazon_link_status"]
+          subject: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          affiliate_url?: string | null
+          amazon_url?: string | null
+          author?: string | null
+          book_catalog_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          edition?: string | null
+          grade?: string | null
+          id?: string
+          isbn?: string | null
+          note?: string | null
+          program?: string | null
+          school_year?: string | null
+          status?: Database["public"]["Enums"]["amazon_link_status"]
+          subject?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          affiliate_url?: string | null
+          amazon_url?: string | null
+          author?: string | null
+          book_catalog_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          edition?: string | null
+          grade?: string | null
+          id?: string
+          isbn?: string | null
+          note?: string | null
+          program?: string | null
+          school_year?: string | null
+          status?: Database["public"]["Enums"]["amazon_link_status"]
+          subject?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "amazon_links_book_catalog_id_fkey"
+            columns: ["book_catalog_id"]
+            isOneToOne: false
+            referencedRelation: "book_catalog"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       book_catalog: {
         Row: {
           author: string | null
@@ -338,6 +406,27 @@ export type Database = {
           },
         ]
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       wanted_books: {
         Row: {
           book_id: string
@@ -385,9 +474,17 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
+      amazon_link_status: "coming_soon" | "available" | "not_available"
+      app_role: "admin" | "moderator" | "user"
       listing_condition: "new" | "like_new" | "good" | "fair" | "poor"
       listing_status:
         | "active"
@@ -523,6 +620,8 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      amazon_link_status: ["coming_soon", "available", "not_available"],
+      app_role: ["admin", "moderator", "user"],
       listing_condition: ["new", "like_new", "good", "fair", "poor"],
       listing_status: [
         "active",
