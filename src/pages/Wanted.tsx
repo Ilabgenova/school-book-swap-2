@@ -125,10 +125,6 @@ const WantedContent = () => {
   );
 };
 
-const Wanted = () => (
-  <LanguageProvider>
-    <WantedContent />
-  </LanguageProvider>
-);
+const Wanted = () => <WantedContent />;
 
 export default Wanted;
