@@ -382,6 +382,17 @@ export const translations = {
           },
         ],
       },
+      preview: {
+        eyebrow: "Marketplace",
+        title: "Live listings from DIS families.",
+        viewAll: "Browse",
+        contact: "Contact",
+        conditionAsNew: "As new",
+        conditionUsed: "Used",
+        conditionNew: "New",
+        exchange: "Exchange",
+        free: "Free",
+      },
       communityTips: {
         badge: "Coming soon",
         titlePart1: "Coming soon: ",
