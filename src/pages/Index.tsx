@@ -5,9 +5,8 @@ import { HowItWorksSection } from "@/components/landing/HowItWorksSection";
 import { PreviewSection } from "@/components/landing/PreviewSection";
 import { CommunityTipsSection } from "@/components/landing/CommunityTipsSection";
 import { CTASection } from "@/components/landing/CTASection";
-import { LanguageProvider } from "@/i18n/LanguageContext";
 
-const IndexContent = () => {
+const Index = () => {
   return (
     <MainLayout>
       <HeroSection />
@@ -17,14 +16,6 @@ const IndexContent = () => {
       <CommunityTipsSection />
       <CTASection />
     </MainLayout>
-  );
-};
-
-const Index = () => {
-  return (
-    <LanguageProvider>
-      <IndexContent />
-    </LanguageProvider>
   );
 };
 
