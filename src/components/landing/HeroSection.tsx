@@ -211,9 +211,9 @@ export const HeroSection = () => {
                 {/* Sustainability stat strip */}
                 <div className="grid grid-cols-3 gap-2">
                   {[
-                    { label: "Reused", value: "1,284", icon: Recycle },
-                    { label: "Saved", value: "€18k", icon: TrendingUp },
-                    { label: "Verified", value: "100%", icon: CheckCircle2 },
+                    { label: h.statReused, value: "1,284", icon: Recycle },
+                    { label: h.statSaved, value: "€18k", icon: TrendingUp },
+                    { label: h.statVerified, value: "100%", icon: CheckCircle2 },
                   ].map((s) => (
                     <div key={s.label} className="glass-dark rounded-md px-2.5 py-2 backdrop-blur-xl">
                       <s.icon className="h-3 w-3 text-[hsl(var(--teal-glow))] mb-1" />
