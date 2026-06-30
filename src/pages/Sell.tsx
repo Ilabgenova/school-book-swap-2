@@ -418,6 +418,10 @@ const SellContent = () => {
                 <p className="mt-2 text-sm text-muted-foreground">
                   Choose one book from the reference list for this class/year to create a listing.
                 </p>
+                <p className="mt-2 text-xs text-muted-foreground">
+                  Showing the {LAST_SCHOOL_YEAR} reference list. The new school year book list is coming soon.
+                  Only real books (plus Keyboard and Sphero) are shown — PDFs, photocopies and downloadable materials are excluded.
+                </p>
               </div>
               <Button type="button" variant="outline" size="sm" onClick={() => setStep("grade")}>
                 Change class
