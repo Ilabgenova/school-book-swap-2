@@ -11,6 +11,7 @@ export interface OfficialBook {
   grade: string;
   program: string;
   isSummerReading?: boolean;
+  schoolYear?: string;
 }
 
 export interface BookListing {
