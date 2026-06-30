@@ -210,10 +210,22 @@ const MyBooksContent = () => {
     loadAll();
   };
 
-  const removeListing = async (id: string) => {
+  const archiveListing = async (id: string) => {
     await supabase.from("listings").update({ status: "archived" }).eq("id", id);
     loadAll();
   };
+
+  const deleteListing = async (id: string) => {
+    if (!confirm("Delete this listing permanently? This cannot be undone.")) return;
+    const { error } = await supabase.from("listings").delete().eq("id", id);
+    if (error) {
+      toast({ title: "Could not delete", description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: "Listing deleted" });
+    loadAll();
+  };
+
 
   if (authLoading || !user) {
     return (
