@@ -47,49 +47,76 @@ export const translations = {
         statVerified: "Verificati",
       },
       features: {
-        title: "Come Funziona",
-        trust: {
-          title: "Comunità Fidata",
-          description: "Accesso riservato alle famiglie della scuola. Scambi sicuri e verificati.",
-        },
-        sustainable: {
-          title: "Economia Circolare",
-          description: "Dai nuova vita ai libri. Risparmia denaro e aiuta l'ambiente.",
-        },
-        simple: {
-          title: "Semplice & Locale",
-          description: "Incontra a scuola per lo scambio. Tutto gratuito per il primo lancio.",
-        },
-        free: {
-          title: "Dona Libri",
-          description: "Dona i tuoi libri usati alle famiglie che ne hanno bisogno.",
-        },
+        eyebrow: "Cosa è DISbook",
+        title: "Una piattaforma digitale fidata per la comunità DIS.",
+        subtitle: "Non un marketplace generico. Uno strumento pensato per come le famiglie IB comprano, condividono e riutilizzano i libri scolastici.",
+        items: [
+          {
+            eyebrow: "01 — Elenco di riferimento",
+            title: "Riferimento elenco libri DIS",
+            description: "Ogni annuncio è confrontato con l'elenco libri DIS condiviso dalla comunità. La corrispondenza per ISBN garantisce solo i libri che servono davvero.",
+          },
+          {
+            eyebrow: "02 — Marketplace",
+            title: "Vendi, dona o scambia",
+            description: "Tre modi per dare una seconda vita a un libro. Fissa un prezzo, regalalo a un'altra famiglia, o scambialo con il titolo che ti servirà l'anno prossimo.",
+          },
+          {
+            eyebrow: "03 — Sostenibile",
+            title: "Impatto dell'economia circolare",
+            description: "Ogni libro riusato riduce costi e sprechi. Misura l'impatto che la tua famiglia — e la comunità DIS — generate insieme.",
+          },
+        ],
       },
       howItWorks: {
-        title: "Inizia in 3 Passi",
-        step1: {
-          title: "Registrati",
-          description: "Crea il tuo account per unirti alla comunità scolastica.",
-        },
-        step2: {
-          title: "Sfoglia o Pubblica",
-          description: "Trova i libri che ti servono o pubblica quelli che non usi più.",
-        },
-        step3: {
-          title: "Scambia a Scuola",
-          description: "Incontra l'altra famiglia a scuola per completare lo scambio.",
-        },
+        eyebrow: "Come funziona",
+        title: "Tre passi. Niente burocrazia.",
+        steps: [
+          {
+            number: "01",
+            title: "Unisciti alla comunità",
+            description: "Registrati con la mail della tua famiglia DIS e crea il tuo profilo.",
+          },
+          {
+            number: "02",
+            title: "Cerca o pubblica",
+            description: "Trova i libri della lista di tuo figlio — o pubblica quelli che non ti servono più.",
+          },
+          {
+            number: "03",
+            title: "Incontrati a scuola",
+            description: "Scambio di persona a DIS. Nessun pagamento gestito nell'app — da genitore a genitore.",
+          },
+        ],
       },
-      stats: {
-        families: "Famiglie",
-        books: "Libri Disponibili",
-        exchanges: "Scambi Completati",
-        saved: "Risparmiato",
+      communityTips: {
+        badge: "In arrivo",
+        titlePart1: "In arrivo: ",
+        titleHighlight: "Community Tips",
+        titlePart2: ".",
+        description: "Uno spazio futuro dove le famiglie potranno condividere consigli utili su attività extrascolastiche, corsi, summer camp e opportunità per gli studenti.",
+        soonBadge: "Presto",
+        disclaimer: "Community Tips sarà uno spazio condiviso dalle famiglie. Non è un elenco ufficiale né un'approvazione della Deledda International School.",
+        items: [
+          { title: "Corsi e ripetizioni", description: "Lingue, musica, sport e supporto scolastico condivisi da altre famiglie DIS." },
+          { title: "Summer camp", description: "Camp e programmi che altri studenti hanno effettivamente frequentato e apprezzato." },
+          { title: "Attività extrascolastiche", description: "Club pomeridiani, workshop e opportunità per studenti a Genova." },
+        ],
       },
       cta: {
-        title: "Unisciti alla Nostra Comunità",
-        description: "Registrati ora e inizia a risparmiare sui libri scolastici. Tutto gratuito!",
-        button: "Registrati Ora",
+        eyebrow: "Unisciti a DISbook",
+        titlePart1: "Dai ai libri una ",
+        titleHighlight: "seconda vita",
+        titlePart2: ".",
+        description: "Gratis. Comunità DIS verificata. Scambio da genitore a genitore, nessun pagamento nell'app.",
+        ctaCreate: "Crea il tuo account",
+        ctaExplore: "Esplora il marketplace",
+        stats: [
+          { value: "1.284", label: "Libri riusati" },
+          { value: "18.420", label: "Denaro risparmiato" },
+          { value: "3,2", label: "Tonnellate CO₂ evitate" },
+          { value: "412", label: "Famiglie iscritte" },
+        ],
       },
     },
     // Browse page
