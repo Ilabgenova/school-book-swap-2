@@ -3,7 +3,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   BookOpen,
-  ExternalLink,
   ShoppingBag,
   Heart,
   Tag,
@@ -13,6 +12,7 @@ import {
 import { OfficialBook, BookListing, getPriceRange } from "@/data/officialBooks";
 import { BookCover } from "@/components/book/BookCover";
 import { WantedButton } from "@/components/wanted/WantedButton";
+import { AmazonBuyButton } from "@/components/buy-new/AmazonBuyButton";
 
 interface BookListItemProps {
   book: OfficialBook;
@@ -96,33 +96,22 @@ export const BookListItem = ({
           <div className="mt-3 flex flex-wrap gap-2">
             <WantedButton book={book} />
             {book.availableFromPreviousYear && availableCount > 0 ? (
-              <Button
-                size="sm"
-                variant="default"
-                onClick={() => onViewListings(book)}
-                className="gap-1"
-              >
-                <Tag className="h-3 w-3" />
-                {t.browse.viewListings} ({availableCount})
-              </Button>
-            ) : (
               <>
-                <p className="w-full text-xs text-muted-foreground italic">
-                  {t.browse.buyNewComingSoonNote}
-                </p>
                 <Button
                   size="sm"
-                  variant="outline"
-                  disabled
-                  className="gap-1 cursor-not-allowed opacity-60"
+                  variant="default"
+                  onClick={() => onViewListings(book)}
+                  className="gap-1"
                 >
-                  <ShoppingBag className="h-3 w-3" />
-                  {t.browse.buyNew}
-                  <Badge variant="outline" className="ml-1 text-[10px] px-1.5 py-0 h-4 border-amber-300 text-amber-600 bg-amber-50">
-                    <Construction className="h-2.5 w-2.5 mr-0.5" />
-                    {t.browse.inProgress}
-                  </Badge>
+                  <Tag className="h-3 w-3" />
+                  {t.browse.viewListings} ({availableCount})
                 </Button>
+                {/* Amazon "Buy New" - rendered only if admin added a link */}
+                <AmazonBuyButton isbn={book.isbn} title={book.title} />
+              </>
+            ) : (
+              <>
+                <AmazonBuyButton isbn={book.isbn} title={book.title} />
                 {/* Check other schools - IN PROGRESS */}
                 <Button
                   size="sm"

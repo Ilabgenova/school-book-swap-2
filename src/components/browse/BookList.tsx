@@ -13,6 +13,7 @@ import { BookListItem } from "./BookListItem";
 import { ListingsModal } from "./ListingsModal";
 import { SummerReadingSection } from "./SummerReadingSection";
 import { officialBooks, mockListings, OfficialBook, isSellableItem, LAST_SCHOOL_YEAR, NEW_SCHOOL_YEAR_AVAILABLE } from "@/data/officialBooks";
+import { BuyNewNotice } from "@/components/buy-new/BuyNewNotice";
 
 const FOREIGN_LANGUAGE_SUBJECTS = ["Spanish", "German", "Chinese", "French", "Spanish B", "German B", "Chinese B", "French B"];
 
@@ -123,6 +124,7 @@ export const BookList = ({
           <span className="text-sm">
             <strong>{stats.available}</strong> {t.browse.withListings}
           </span>
+        </div>
       </div>
 
       {/* Last-year list notice */}
@@ -132,7 +134,9 @@ export const BookList = ({
           ? null
           : "The new school year book list is coming soon — until then, please verify required titles against the school's official list before purchasing."}
       </div>
-      </div>
+
+      {/* Buy-new (Amazon) coming-soon notice */}
+      <BuyNewNotice />
 
       {/* Book list - split into sections for MYP */}
       {isMYP ? (
