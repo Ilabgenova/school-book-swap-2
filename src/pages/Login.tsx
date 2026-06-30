@@ -101,10 +101,6 @@ const LoginContent = () => {
   );
 };
 
-const Login = () => (
-  <LanguageProvider>
-    <LoginContent />
-  </LanguageProvider>
-);
+const Login = () => <LoginContent />;
 
 export default Login;
