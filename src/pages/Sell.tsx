@@ -13,7 +13,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2, BookPlus, ArrowLeft, Camera, X, AlertTriangle, ShieldAlert, GraduationCap, ChevronRight, BookOpen, ArrowRight, CheckCircle2 } from "lucide-react";
+import { Loader2, BookPlus, ArrowLeft, Camera, X, AlertTriangle, ShieldAlert, GraduationCap, ChevronRight, BookOpen, ArrowRight, CheckCircle2, Upload, Info, ChevronDown } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { officialBooks, isSellableItem, LAST_SCHOOL_YEAR } from "@/data/officialBooks";
 import { BookCover } from "@/components/book/BookCover";
 import { useAuth } from "@/hooks/useAuth";
@@ -33,7 +34,8 @@ type PhotoSlot = "front" | "inside" | "back" | "extra1" | "extra2";
 type SellStep = "grade" | "book" | "details";
 
 const MAX_BYTES = 5 * 1024 * 1024;
-const ACCEPTED = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+const ACCEPTED = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/heic", "image/heif"];
+const ACCEPT_ATTR = "image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif";
 
 type PhotoState = { file: File; preview: string } | null;
 
@@ -98,23 +100,37 @@ const SellProgress = ({ step, submitting }: { step: SellStep; submitting: boolea
 interface PhotoUploadProps {
   label: string;
   hint?: string;
+  warning?: string;
   required?: boolean;
   value: PhotoState;
   onChange: (next: PhotoState) => void;
 }
 
-const PhotoUpload = ({ label, hint, required, value, onChange }: PhotoUploadProps) => {
+const isHeicLike = (f: File) => {
+  const t = (f.type || "").toLowerCase();
+  const n = f.name.toLowerCase();
+  return t.includes("heic") || t.includes("heif") || n.endsWith(".heic") || n.endsWith(".heif");
+};
+
+const PhotoUpload = ({ label, hint, warning, required, value, onChange }: PhotoUploadProps) => {
   const handleFile = (e: ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
     e.target.value = "";
     if (!f) return;
-    if (!ACCEPTED.includes(f.type)) {
-      toast.error("Only JPG, PNG or WEBP images are allowed");
-      return;
-    }
     if (f.size > MAX_BYTES) {
       toast.error("Image must be 5 MB or smaller");
       return;
+    }
+    const typeOk = ACCEPTED.includes((f.type || "").toLowerCase()) || isHeicLike(f);
+    if (!typeOk) {
+      toast.error("Please upload JPG, PNG or WEBP images.");
+      return;
+    }
+    if (isHeicLike(f)) {
+      // Browsers cannot preview HEIC; accept but warn — server/admin can transcode later.
+      const img = new Image();
+      img.onerror = () => toast.message("HEIC photo uploaded. It may not preview here, but admins will see it.");
+      try { img.src = URL.createObjectURL(f); } catch {}
     }
     onChange({ file: f, preview: URL.createObjectURL(f) });
   };
@@ -126,9 +142,9 @@ const PhotoUpload = ({ label, hint, required, value, onChange }: PhotoUploadProp
         {required && <span className="text-destructive">*</span>}
       </Label>
       {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
-      <label
+      <div
         className={cn(
-          "relative flex aspect-[3/4] cursor-pointer items-center justify-center overflow-hidden rounded-lg border-2 border-dashed bg-muted/30 transition hover:bg-muted/50",
+          "relative flex aspect-[3/4] items-center justify-center overflow-hidden rounded-lg border-2 border-dashed bg-muted/30",
           value ? "border-primary/40" : required ? "border-border" : "border-border/60"
         )}
       >
@@ -137,7 +153,7 @@ const PhotoUpload = ({ label, hint, required, value, onChange }: PhotoUploadProp
             <img src={value.preview} alt={label} className="h-full w-full object-cover" />
             <button
               type="button"
-              onClick={(e) => { e.preventDefault(); URL.revokeObjectURL(value.preview); onChange(null); }}
+              onClick={() => { URL.revokeObjectURL(value.preview); onChange(null); }}
               className="absolute right-1.5 top-1.5 rounded-full bg-background/90 p-1 shadow-md hover:bg-background"
               aria-label="Remove photo"
             >
@@ -145,19 +161,38 @@ const PhotoUpload = ({ label, hint, required, value, onChange }: PhotoUploadProp
             </button>
           </>
         ) : (
-          <div className="flex flex-col items-center gap-1.5 p-2 text-center">
+          <div className="flex flex-col items-center gap-2 p-3 text-center">
             <Camera className="h-6 w-6 text-muted-foreground" />
-            <span className="text-xs font-medium text-muted-foreground">Tap to add</span>
+            <span className="text-[11px] text-muted-foreground">Take a new photo or upload one</span>
           </div>
         )}
-        <input
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-          capture="environment"
-          className="hidden"
-          onChange={handleFile}
-        />
-      </label>
+      </div>
+
+      <div className="grid grid-cols-2 gap-1.5">
+        <label className="flex cursor-pointer items-center justify-center gap-1.5 rounded-md border border-border bg-background px-2 py-1.5 text-xs font-medium hover:bg-muted">
+          <Camera className="h-3.5 w-3.5" />
+          {value ? "Retake" : "Take Photo"}
+          <input
+            type="file"
+            accept={ACCEPT_ATTR}
+            capture="environment"
+            className="hidden"
+            onChange={handleFile}
+          />
+        </label>
+        <label className="flex cursor-pointer items-center justify-center gap-1.5 rounded-md border border-border bg-background px-2 py-1.5 text-xs font-medium hover:bg-muted">
+          <Upload className="h-3.5 w-3.5" />
+          {value ? "Replace" : "Upload"}
+          <input
+            type="file"
+            accept={ACCEPT_ATTR}
+            className="hidden"
+            onChange={handleFile}
+          />
+        </label>
+      </div>
+
+      {warning && <p className="text-[11px] text-muted-foreground">{warning}</p>}
     </div>
   );
 };
@@ -519,16 +554,50 @@ const SellContent = () => {
               <div>
                 <Label className="font-display text-base">Book photos</Label>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  To help other DIS families understand the real condition of the book, please upload clear photos of the front cover and inside pages.
+                  You can take a new photo now or upload an existing image from your gallery.
                 </p>
               </div>
 
+              <div className="flex gap-2 rounded-lg border border-primary/30 bg-primary/5 p-3 text-xs text-foreground">
+                <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                <p>
+                  Please upload real photos of the exact book you are listing. Photos must clearly show the book cover and inside pages.
+                  Do not upload unrelated images, screenshots, memes, stock photos or photos of a different book.
+                </p>
+              </div>
+
+              <Collapsible>
+                <CollapsibleTrigger className="flex w-full items-center justify-between rounded-lg border border-border bg-muted/30 px-3 py-2 text-sm font-medium hover:bg-muted/50">
+                  <span className="flex items-center gap-2"><Info className="h-4 w-4" /> Photo Guidelines</span>
+                  <ChevronDown className="h-4 w-4 transition-transform data-[state=open]:rotate-180" />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="rounded-b-lg border border-t-0 border-border bg-muted/20 px-4 py-3 text-xs text-muted-foreground">
+                  <ul className="list-disc space-y-1 pl-4">
+                    <li>Use real photos of the exact book you are listing</li>
+                    <li>Show the full front cover</li>
+                    <li>Show at least one inside page to demonstrate condition</li>
+                    <li>Make sure the title and book condition are visible</li>
+                    <li>Avoid blurry, dark or cropped photos</li>
+                    <li>Do not upload stock photos, screenshots, memes or unrelated images</li>
+                    <li>Do not upload photos of a different book</li>
+                    <li>Do not include children, faces, addresses, phone numbers, school documents or private information</li>
+                  </ul>
+                </CollapsibleContent>
+              </Collapsible>
+
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                <PhotoUpload label="Front cover" required value={front} onChange={setFront} />
+                <PhotoUpload
+                  label="Front cover"
+                  required
+                  warning="Upload the actual front cover of this book."
+                  value={front}
+                  onChange={setFront}
+                />
                 <PhotoUpload
                   label="Inside pages"
                   required
                   hint="Show writing, marks, page condition"
+                  warning="Upload a real inside-page photo showing the condition of this book."
                   value={inside}
                   onChange={setInside}
                 />
@@ -539,19 +608,25 @@ const SellContent = () => {
 
               <div className="flex gap-2 rounded-lg border border-border bg-muted/50 p-3 text-xs text-muted-foreground">
                 <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
-                <p>
-                  Please do not upload photos containing children, personal information or private documents.
-                  Accepted formats: JPG, PNG, WEBP · Max 5 MB per image.
-                </p>
+                <div className="space-y-1">
+                  <p>
+                    Please make sure photos do not contain children, faces, addresses, phone numbers, school documents or other private information.
+                  </p>
+                  <p>
+                    Photos should be clear, well-lit and readable. Blurry or unrelated photos may cause the listing to be rejected by DISbook admins.
+                  </p>
+                  <p>Accepted formats: JPG, PNG, WEBP, HEIC/HEIF · Max 5 MB per image.</p>
+                </div>
               </div>
 
               {!photosValid && (
                 <div className="flex gap-2 rounded-lg border border-amber-300/60 bg-amber-50 p-3 text-xs text-amber-900 dark:bg-amber-950/30 dark:text-amber-200">
                   <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
-                  <p>Front cover and inside photo are required before you can publish.</p>
+                  <p>Please upload at least a front cover photo and one inside photo before publishing your listing.</p>
                 </div>
               )}
             </div>
+
 
             <div className="space-y-2">
               <Label htmlFor="notes">Notes (optional)</Label>
