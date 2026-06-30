@@ -123,7 +123,15 @@ export const BookList = ({
           <span className="text-sm">
             <strong>{stats.available}</strong> {t.browse.withListings}
           </span>
-        </div>
+      </div>
+
+      {/* Last-year list notice */}
+      <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+        <strong>Used books available from last year's list ({LAST_SCHOOL_YEAR}).</strong>{" "}
+        {NEW_SCHOOL_YEAR_AVAILABLE
+          ? null
+          : "The new school year book list is coming soon — until then, please verify required titles against the school's official list before purchasing."}
+      </div>
       </div>
 
       {/* Book list - split into sections for MYP */}
