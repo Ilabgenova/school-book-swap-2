@@ -37,6 +37,7 @@ export const BookList = ({
   // Filter books by selected grade, subjects (for DP), and language levels (for MYP)
   const allBooks = officialBooks.filter((book) => {
     if (book.grade !== selectedGrade || book.isSummerReading) return false;
+    if (!isSellableItem(book)) return false;
     // For DP program with selected subjects, filter by subject
     if (selectedProgram === "DP" && selectedSubjects && selectedSubjects.length > 0) {
       return selectedSubjects.includes(book.subject);
