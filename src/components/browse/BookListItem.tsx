@@ -3,7 +3,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   BookOpen,
-  ExternalLink,
   ShoppingBag,
   Heart,
   Tag,
@@ -13,6 +12,7 @@ import {
 import { OfficialBook, BookListing, getPriceRange } from "@/data/officialBooks";
 import { BookCover } from "@/components/book/BookCover";
 import { WantedButton } from "@/components/wanted/WantedButton";
+import { AmazonBuyButton } from "@/components/buy-new/AmazonBuyButton";
 
 interface BookListItemProps {
   book: OfficialBook;
