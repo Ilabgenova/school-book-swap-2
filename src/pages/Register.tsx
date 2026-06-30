@@ -260,10 +260,6 @@ const RegisterContent = () => {
 };
 
 
-const Register = () => (
-  <LanguageProvider>
-    <RegisterContent />
-  </LanguageProvider>
-);
+const Register = () => <RegisterContent />;
 
 export default Register;
