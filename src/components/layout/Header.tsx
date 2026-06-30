@@ -95,6 +95,15 @@ export const Header = () => {
           <LanguageSwitcher />
           {user ? (
             <>
+              <Link to="/my-books">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={isActive("/my-books") ? "text-accent bg-accent/10" : ""}
+                >
+                  My Books
+                </Button>
+              </Link>
               <Button
                 variant="ghost"
                 size="sm"
