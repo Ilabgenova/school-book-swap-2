@@ -316,7 +316,7 @@ export const translations = {
       noListingsYet: "No listings yet",
       donationAvailable: "Donation available",
       from: "from",
-      newBookRequired: "New book required",
+      newBookRequired: "New school year list coming soon",
       viewListings: "View listings",
       buyNew: "Buy New — Coming Soon",
       buyNewComingSoonNote: "No used copy is currently available. A future 'Buy New' option may be added later.",
