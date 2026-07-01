@@ -5,10 +5,12 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Menu, X, LogOut, Sparkles } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 
 export const Header = () => {
   const { t } = useLanguage();
   const { user, signOut } = useAuth();
+  const { isAdmin } = useIsAdmin();
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -104,6 +106,13 @@ export const Header = () => {
                   My Books
                 </Button>
               </Link>
+              {isAdmin && (
+                <Link to="/admin">
+                  <Button variant="ghost" size="sm" className={isActive("/admin") ? "text-accent bg-accent/10" : ""}>
+                    Admin
+                  </Button>
+                </Link>
+              )}
               <Button
                 variant="ghost"
                 size="sm"
