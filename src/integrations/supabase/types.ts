@@ -566,7 +566,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_admin: { Args: never; Returns: boolean }
     }
     Enums: {
       amazon_link_status: "coming_soon" | "available" | "not_available"
