@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,11 +16,11 @@ import {
   Tag,
   MessageCircle,
   CheckCircle2,
-  BookOpen,
 } from "lucide-react";
 import { OfficialBook, BookListing } from "@/data/officialBooks";
 import { TransactionConfirmation } from "./TransactionConfirmation";
 import { useTransactions, Transaction } from "@/hooks/useTransactions";
+import { useAuth } from "@/hooks/useAuth";
 
 interface ListingsModalProps {
   book: OfficialBook;
@@ -34,8 +35,10 @@ export const ListingsModal = ({
   listings,
   onClose,
 }: ListingsModalProps) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { createTransaction, confirmByBuyer, confirmBySeller } = useTransactions();
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [currentTransaction, setCurrentTransaction] = useState<Transaction | null>(null);
   const [view, setView] = useState<ModalView>("listings");
 

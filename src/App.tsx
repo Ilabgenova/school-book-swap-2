@@ -15,6 +15,7 @@ import Wanted from "./pages/Wanted";
 import MyBooks from "./pages/MyBooks";
 import NotFound from "./pages/NotFound";
 import Admin from "./pages/Admin";
+import Messages from "./pages/Messages";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,7 @@ const App = () => (
             <Route path="/sell" element={<Sell />} />
             <Route path="/wanted" element={<Wanted />} />
             <Route path="/my-books" element={<MyBooks />} />
+            <Route path="/messages" element={<Messages />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/admin" element={<Admin />} />
