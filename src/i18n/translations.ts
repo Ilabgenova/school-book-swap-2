@@ -583,6 +583,15 @@ export const translations = {
       perYear: "",
       free: "Free",
     },
+    // Listing status
+    listingStatus: {
+      pending_review: "Pending approval",
+      active: "Approved",
+      sold: "Sold",
+      reserved: "Reserved",
+      archived: "Removed",
+    },
+
     // Programs
     programs: {
       pyp: "PYP",
