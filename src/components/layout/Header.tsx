@@ -33,6 +33,7 @@ export const Header = () => {
   const { user, signOut } = useAuth();
   const { isAdmin } = useIsAdmin();
   const unread = useUnreadMessages();
+  const adminPending = useAdminPendingCount();
   const navigate = useNavigate();
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
@@ -138,8 +139,23 @@ export const Header = () => {
               </Link>
               {isAdmin && (
                 <Link to="/admin">
-                  <Button variant="ghost" size="sm" className={isActive("/admin") ? "text-accent bg-accent/10" : ""}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className={cn(
+                      "gap-1.5 relative",
+                      isActive("/admin") ? "text-accent bg-accent/10" : ""
+                    )}
+                  >
                     Admin
+                    {adminPending > 0 && (
+                      <Badge
+                        variant="destructive"
+                        className="ml-1 h-5 min-w-5 rounded-full px-1.5 text-[10px]"
+                      >
+                        {adminPending}
+                      </Badge>
+                    )}
                   </Button>
                 </Link>
               )}
