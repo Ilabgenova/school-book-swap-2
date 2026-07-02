@@ -138,6 +138,19 @@ export const Header = () => {
                   )}
                 </Button>
               </Link>
+              <Link to="/help-feedback">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={cn(
+                    "gap-1.5",
+                    isActive("/help-feedback") ? "text-accent bg-accent/10" : ""
+                  )}
+                >
+                  <LifeBuoy className="h-4 w-4" />
+                  {t.nav.help}
+                </Button>
+              </Link>
               {isAdmin && (
                 <Link to="/admin">
                   <Button
