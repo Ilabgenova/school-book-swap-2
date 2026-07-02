@@ -50,31 +50,14 @@ export const UsersPanel = () => {
     if (!modal) return;
     if (!reason) return toast.error("Reason required");
     const { user, action } = modal;
-    const patch: any = {
-      account_status: action,
-      block_reason: reason,
-      admin_notes: note || user.admin_notes,
-    };
-    if (action === "blocked") {
-      patch.blocked_at = new Date().toISOString();
-      patch.suspension_until = null;
-    } else {
-      patch.suspension_until = until ? new Date(until).toISOString() : null;
-    }
-    const { data: userRes } = await supabase.auth.getUser();
-    const adminId = userRes.user!.id;
-    patch.blocked_by = adminId;
-    const { error } = await supabase.from("profiles").update(patch).eq("user_id", user.user_id);
-    if (error) return toast.error(error.message);
-    await supabase.from("user_moderation_log" as any).insert({
-      user_id: user.user_id, admin_id: adminId, action,
-      reason, internal_note: note || null,
-      suspension_until: action === "suspended" && until ? new Date(until).toISOString() : null,
+    const { error } = await supabase.rpc("admin_moderate_user", {
+      _user_id: user.user_id,
+      _action: action,
+      _reason: reason,
+      _internal_note: note || null,
+      _suspension_until: action === "suspended" && until ? new Date(until).toISOString() : null,
     });
-    // Hide their active listings
-    if (action === "blocked") {
-      await supabase.from("listings").update({ status: "archived" as any }).eq("seller_id", user.user_id).eq("status", "active" as any);
-    }
+    if (error) return toast.error(error.message);
     toast.success(`User ${action}`);
     setModal(null); setReason(""); setNote(""); setUntil("");
     load();
@@ -82,19 +65,18 @@ export const UsersPanel = () => {
 
   const unblock = async (u: Profile) => {
     if (!confirm(`Unblock ${u.first_name} ${u.last_name}?`)) return;
-    const { data: userRes } = await supabase.auth.getUser();
-    const adminId = userRes.user!.id;
-    const { error } = await supabase.from("profiles").update({
-      account_status: "active", blocked_at: null, blocked_by: null,
-      block_reason: null, suspension_until: null,
-    }).eq("user_id", u.user_id);
-    if (error) return toast.error(error.message);
-    await supabase.from("user_moderation_log" as any).insert({
-      user_id: u.user_id, admin_id: adminId, action: "unblocked", reason: "Admin unblock",
+    const { error } = await supabase.rpc("admin_moderate_user", {
+      _user_id: u.user_id,
+      _action: "unblocked",
+      _reason: "Admin unblock",
+      _internal_note: null,
+      _suspension_until: null,
     });
+    if (error) return toast.error(error.message);
     toast.success("User unblocked");
     load();
   };
+
 
   return (
     <div className="space-y-4">

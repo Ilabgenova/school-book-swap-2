@@ -15,7 +15,7 @@ export const useIsAdmin = () => {
         setLoading(false);
         return;
       }
-      const { data, error } = await supabase.rpc("is_admin");
+      const { data, error } = await supabase.rpc("current_user_is_admin");
       if (!cancelled) {
         setIsAdmin(!error && data === true);
         setLoading(false);

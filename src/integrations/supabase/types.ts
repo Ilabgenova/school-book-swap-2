@@ -844,8 +844,17 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      is_account_active: { Args: { _user_id: string }; Returns: boolean }
-      is_admin: { Args: never; Returns: boolean }
+      admin_moderate_user: {
+        Args: {
+          _action: string
+          _internal_note?: string
+          _reason: string
+          _suspension_until?: string
+          _user_id: string
+        }
+        Returns: undefined
+      }
+      current_user_is_admin: { Args: never; Returns: boolean }
     }
     Enums: {
       amazon_link_status: "coming_soon" | "available" | "not_available"
