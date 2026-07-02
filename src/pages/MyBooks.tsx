@@ -459,6 +459,14 @@ const MyBooksContent = () => {
 
           {/* LISTED */}
           <TabsContent value="listed" className="mt-6">
+            <div className="mb-4 flex items-start gap-3 rounded-xl border border-success/30 bg-success/5 p-3 text-sm text-foreground">
+              <Leaf className="h-4 w-4 mt-0.5 text-success shrink-0" />
+              <p>
+                {language === "it"
+                  ? "Hai venduto il libro? Segnalo come venduto: ci aiuta a contare quanti libri vengono riutilizzati e a stimare la CO₂ evitata dalla comunità DISbook."
+                  : "Sold your book? Mark it as sold — this helps us count how many books are reused and estimate the CO₂ avoided by the DISbook community."}
+              </p>
+            </div>
             {loading ? (
               <Loader2 className="mx-auto my-12 h-6 w-6 animate-spin text-primary" />
             ) : listings.length === 0 ? (
