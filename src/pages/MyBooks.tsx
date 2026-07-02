@@ -151,7 +151,7 @@ const MyBooksContent = () => {
     const [listingsRes, wantedRes, boughtRes] = await Promise.all([
       supabase
         .from("listings")
-        .select("id,title,isbn,subject,program,class_year,price,status,listing_type,condition,created_at")
+        .select("id,title,isbn,subject,program,class_year,price,status,listing_type,condition,notes,admin_review_note,created_at")
         .eq("seller_id", user.id)
         .order("created_at", { ascending: false }),
       supabase
