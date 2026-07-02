@@ -974,6 +974,29 @@ export type Database = {
         Returns: undefined
       }
       admin_get_impact_stats: { Args: never; Returns: Json }
+      admin_list_users_with_auth: {
+        Args: never
+        Returns: {
+          account_status: string
+          active_listings_count: number
+          admin_notes: string
+          block_reason: string
+          completed_transactions: number
+          created_at: string
+          email: string
+          email_confirmed_at: string
+          first_name: string
+          is_admin: boolean
+          last_name: string
+          last_sign_in_at: string
+          listings_count: number
+          rating_average: number
+          school: string
+          sold_listings_count: number
+          suspension_until: string
+          user_id: string
+        }[]
+      }
       admin_moderate_user: {
         Args: {
           _action: string
