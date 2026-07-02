@@ -584,6 +584,30 @@ const MessagesContent = () => {
           </section>
         </div>
       </div>
+
+      <Dialog open={markSoldOpen} onOpenChange={setMarkSoldOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {language === "it" ? "Segna come venduto" : "Mark as sold"}
+            </DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            {language === "it"
+              ? `Confermi che "${selected?.listing?.title ?? ""}" è stato venduto a ${selected?.otherName ?? ""}? Sarà rimosso dalla sezione Compra ma resterà registrato per le statistiche di impatto DISbook.`
+              : `Confirm that "${selected?.listing?.title ?? ""}" has been sold to ${selected?.otherName ?? ""}? It will be removed from the Buy section but kept for DISbook impact statistics.`}
+          </p>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setMarkSoldOpen(false)}>
+              {language === "it" ? "Annulla" : "Cancel"}
+            </Button>
+            <Button onClick={handleMarkSold} disabled={markSoldSubmitting}>
+              {markSoldSubmitting && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
+              {language === "it" ? "Sì, segna come venduto" : "Yes, mark as sold"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </MainLayout>
   );
 };
