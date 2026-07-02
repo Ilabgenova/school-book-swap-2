@@ -192,7 +192,18 @@ export const Header = () => {
               <>
                 <Link to="/my-books" onClick={() => setMobileMenuOpen(false)}>
                   <Button variant="ghost" className="w-full justify-start">
-                    My Books
+                    {t.nav.myBooks}
+                  </Button>
+                </Link>
+                <Link to="/messages" onClick={() => setMobileMenuOpen(false)}>
+                  <Button variant="ghost" className="w-full justify-start gap-2">
+                    <MessageCircle className="h-4 w-4" />
+                    {t.nav.messages}
+                    {unread > 0 && (
+                      <Badge className="ml-auto h-5 min-w-5 rounded-full px-1.5 text-[10px]">
+                        {unread}
+                      </Badge>
+                    )}
                   </Button>
                 </Link>
                 <Button
