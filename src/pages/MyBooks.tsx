@@ -255,22 +255,64 @@ const MyBooksContent = () => {
     loadAll();
   };
 
-  const markListingSold = async (id: string) => {
-    const confirmMsg =
-      "Are you sure this book has been sold? It will no longer appear on the Buy side.\n\nSei sicuro che questo libro sia stato venduto? Non sarà più visibile nella sezione Compra.";
-    if (!confirm(confirmMsg)) return;
-    const { error } = await supabase
-      .from("listings")
-      .update({ status: "sold" })
-      .eq("id", id)
-      .eq("seller_id", user!.id);
+  const openSoldDialog = async (l: ListingRow) => {
+    setSoldTarget(l);
+    setSoldThrough("unknown_buyer");
+    setSoldBuyerId("");
+    setSoldBuyers([]);
+    // Load buyers who contacted this seller for this listing
+    const { data: convs } = await supabase
+      .from("conversations")
+      .select("buyer_id")
+      .eq("listing_id", l.id);
+    const buyerIds = Array.from(new Set((convs || []).map((c: any) => c.buyer_id)));
+    if (buyerIds.length) {
+      const { data: profs } = await supabase
+        .from("profiles")
+        .select("user_id, first_name, last_name")
+        .in("user_id", buyerIds);
+      setSoldBuyers(
+        (profs || []).map((p: any) => ({
+          user_id: p.user_id,
+          name: formatSellerName(p.first_name, p.last_name),
+        })),
+      );
+    }
+  };
+
+  const confirmMarkSold = async () => {
+    if (!soldTarget) return;
+    setSoldSubmitting(true);
+    const buyer =
+      soldThrough === "buyer_selected" && soldBuyerId ? soldBuyerId : null;
+    const throughDisbook =
+      soldThrough === "outside" ? false : soldThrough === "buyer_selected" || soldThrough === "unknown_buyer" ? true : null;
+    const { error } = await supabase.rpc("seller_mark_listing_sold", {
+      _listing_id: soldTarget.id,
+      _buyer_id: buyer,
+      _sold_through_disbook: throughDisbook,
+    });
+    setSoldSubmitting(false);
     if (error) {
-      toast({ title: "Could not update", description: error.message, variant: "destructive" });
+      toast({
+        title: language === "it" ? "Impossibile aggiornare" : "Could not update",
+        description: error.message,
+        variant: "destructive",
+      });
       return;
     }
-    toast({ title: "Marked as sold" });
+    toast({
+      title:
+        language === "it" ? "Segnato come venduto" : "Marked as sold",
+      description:
+        language === "it"
+          ? "Grazie! Contribuisci a misurare la CO₂ evitata dalla comunità DISbook."
+          : "Thank you! You are helping measure the CO₂ avoided by the DISbook community.",
+    });
+    setSoldTarget(null);
     loadAll();
   };
+
 
 
   const deleteListing = async (id: string) => {
