@@ -469,6 +469,25 @@ const MessagesContent = () => {
                       )}
                     </p>
                   </div>
+                  {selected.conv.seller_id === user.id &&
+                    selected.listing?.status === "active" && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setMarkSoldOpen(true)}
+                        className="gap-1"
+                      >
+                        <Check className="h-3.5 w-3.5" />
+                        <span className="hidden sm:inline">
+                          {language === "it"
+                            ? "Segna questo annuncio come venduto"
+                            : "Mark this listing as sold"}
+                        </span>
+                        <span className="sm:hidden">
+                          {language === "it" ? "Venduto" : "Sold"}
+                        </span>
+                      </Button>
+                    )}
                 </div>
 
                 <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-2 bg-muted/10">
