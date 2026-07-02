@@ -51,6 +51,8 @@ type ListingRow = {
   status: string;
   listing_type: string;
   condition: string;
+  notes: string | null;
+  admin_review_note: string | null;
   created_at: string;
 };
 
