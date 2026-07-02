@@ -129,11 +129,12 @@ const ListingsPanel = () => {
           <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All</SelectItem>
-            <SelectItem value="pending_review">Pending review</SelectItem>
-            <SelectItem value="active">Active</SelectItem>
+            <SelectItem value="pending_review">Pending approval</SelectItem>
+            <SelectItem value="active">Approved</SelectItem>
             <SelectItem value="sold">Sold</SelectItem>
             <SelectItem value="reserved">Reserved</SelectItem>
-            <SelectItem value="archived">Archived</SelectItem>
+            <SelectItem value="archived">Removed</SelectItem>
+
           </SelectContent>
         </Select>
         <Button variant="outline" size="sm" onClick={load}>Refresh</Button>
@@ -146,7 +147,7 @@ const ListingsPanel = () => {
               <div className="min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <p className="font-medium truncate">{l.title}</p>
-                  <Badge variant="outline">{l.status}</Badge>
+                  <Badge variant="outline">{{ pending_review: "Pending approval", active: "Approved", sold: "Sold", reserved: "Reserved", archived: "Removed" }[l.status] ?? l.status}</Badge>
                   {l.program && <Badge variant="secondary">{l.program} {l.class_year}</Badge>}
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">

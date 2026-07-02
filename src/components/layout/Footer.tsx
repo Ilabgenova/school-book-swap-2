@@ -46,7 +46,7 @@ export const Footer = () => {
             </h4>
             <ul className="space-y-2.5 text-sm">
               <li>
-                <Link to="/browse" className="text-primary-foreground/80 hover:text-[hsl(var(--electric-glow))] transition-colors">
+                <Link to="/buy" className="text-primary-foreground/80 hover:text-[hsl(var(--electric-glow))] transition-colors">
                   {t.nav.browse}
                 </Link>
               </li>

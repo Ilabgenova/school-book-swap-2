@@ -82,10 +82,21 @@ type BoughtRow = {
 };
 
 const statusVariant = (s: string): "default" | "secondary" | "outline" => {
-  if (s === "completed") return "default";
+  if (s === "completed" || s === "active") return "default";
   if (s === "archived") return "outline";
   return "secondary";
 };
+
+const STATUS_LABELS: Record<string, string> = {
+  pending_review: "Pending approval",
+  active: "Approved",
+  sold: "Sold",
+  reserved: "Reserved",
+  archived: "Removed",
+  completed: "Completed",
+};
+const statusLabel = (s: string) => STATUS_LABELS[s] ?? s;
+
 
 const MyBooksContent = () => {
   const { user, loading: authLoading } = useAuth();
@@ -291,7 +302,8 @@ const MyBooksContent = () => {
                     classYear={l.class_year}
                     badges={[
                       <Badge key="t" variant="outline">{l.listing_type}</Badge>,
-                      <Badge key="s" variant={statusVariant(l.status)}>{l.status}</Badge>,
+                      <Badge key="s" variant={statusVariant(l.status)}>{statusLabel(l.status)}</Badge>,
+
                     ]}
                     meta={
                       <>

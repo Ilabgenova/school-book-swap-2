@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,8 +12,9 @@ import {
 import { BookListItem } from "./BookListItem";
 import { ListingsModal } from "./ListingsModal";
 import { SummerReadingSection } from "./SummerReadingSection";
-import { officialBooks, mockListings, OfficialBook, isSellableItem, LAST_SCHOOL_YEAR, NEW_SCHOOL_YEAR_AVAILABLE } from "@/data/officialBooks";
+import { officialBooks, OfficialBook, BookListing, isSellableItem, LAST_SCHOOL_YEAR, NEW_SCHOOL_YEAR_AVAILABLE } from "@/data/officialBooks";
 import { BuyNewNotice } from "@/components/buy-new/BuyNewNotice";
+import { supabase } from "@/integrations/supabase/client";
 
 const FOREIGN_LANGUAGE_SUBJECTS = ["Spanish", "German", "Chinese", "French", "Spanish B", "German B", "Chinese B", "French B"];
 
@@ -34,25 +35,68 @@ export const BookList = ({
 }: BookListProps) => {
   const { t } = useLanguage();
   const [selectedBook, setSelectedBook] = useState<OfficialBook | null>(null);
+  const [liveListings, setLiveListings] = useState<Record<string, BookListing[]>>({});
 
   // Filter books by selected grade, subjects (for DP), and language levels (for MYP)
-  const allBooks = officialBooks.filter((book) => {
+  const allBooks = useMemo(() => officialBooks.filter((book) => {
     if (book.grade !== selectedGrade || book.isSummerReading) return false;
     if (!isSellableItem(book)) return false;
-    // For DP program with selected subjects, filter by subject
     if (selectedProgram === "DP" && selectedSubjects && selectedSubjects.length > 0) {
       return selectedSubjects.includes(book.subject);
     }
-    // For MYP, filter by foreign language: show core books + selected foreign language books
     if (selectedProgram === "MYP" && selectedLanguages?.foreignLanguage) {
       const foreignLang = selectedLanguages.foreignLanguage;
       const isForeignLangBook = book.subject === foreignLang || book.subject === `${foreignLang} B`;
       const isCoreForeignLang = FOREIGN_LANGUAGE_SUBJECTS.includes(book.subject);
-      // If it's a foreign language book, only show if it matches selection
       if (isCoreForeignLang) return isForeignLangBook;
     }
     return true;
-  });
+  }), [selectedGrade, selectedProgram, selectedSubjects, selectedLanguages]);
+
+  // Fetch approved live listings from the database (status = 'active').
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const bookIds = allBooks.map((b) => b.id);
+      if (bookIds.length === 0) { setLiveListings({}); return; }
+      const { data: rows, error } = await supabase
+        .from("listings")
+        .select("id, book_id, seller_id, listing_type, price, condition")
+        .eq("status", "active")
+        .in("book_id", bookIds);
+      if (error || !rows || cancelled) { if (!cancelled) setLiveListings({}); return; }
+
+      const sellerIds = Array.from(new Set(rows.map((r: any) => r.seller_id)));
+      const { data: profs } = sellerIds.length
+        ? await supabase
+            .from("profiles")
+            .select("user_id, first_name, last_name, rating_average, rating_count, completed_transactions")
+            .in("user_id", sellerIds)
+        : { data: [] as any[] };
+      const profMap = new Map<string, any>((profs || []).map((p: any) => [p.user_id, p]));
+
+      const grouped: Record<string, BookListing[]> = {};
+      for (const r of rows as any[]) {
+        const p = profMap.get(r.seller_id);
+        const displayName = p
+          ? [p.first_name, p.last_name].filter(Boolean).join(" ").trim() || "DIS family"
+          : "DIS family";
+        const listing: BookListing = {
+          id: r.id,
+          type: r.listing_type,
+          price: r.price != null ? Number(r.price) : undefined,
+          condition: r.condition,
+          sellerId: r.seller_id,
+          sellerName: displayName,
+          sellerRating: Number(p?.rating_average ?? 0),
+          sellerCompletedExchanges: Number(p?.completed_transactions ?? 0),
+        };
+        (grouped[r.book_id] ||= []).push(listing);
+      }
+      if (!cancelled) setLiveListings(grouped);
+    })();
+    return () => { cancelled = true; };
+  }, [allBooks]);
 
   // For MYP, split into core and foreign language sections
   const isMYP = selectedProgram === "MYP";
@@ -67,7 +111,7 @@ export const BookList = ({
     total: allBooks.length,
     available: allBooks.filter(
       (b) =>
-        b.availableFromPreviousYear && (mockListings[b.id]?.length ?? 0) > 0
+        b.availableFromPreviousYear && (liveListings[b.id]?.length ?? 0) > 0
     ).length,
   };
 
@@ -77,12 +121,13 @@ export const BookList = ({
         <BookListItem
           key={book.id}
           book={book}
-          listings={mockListings[book.id] || []}
+          listings={liveListings[book.id] || []}
           onViewListings={setSelectedBook}
         />
       ))}
     </div>
   );
+
 
   return (
     <div className="space-y-6">
@@ -186,7 +231,7 @@ export const BookList = ({
       {selectedBook && (
         <ListingsModal
           book={selectedBook}
-          listings={mockListings[selectedBook.id] || []}
+          listings={liveListings[selectedBook.id] || []}
           onClose={() => setSelectedBook(null)}
         />
       )}
