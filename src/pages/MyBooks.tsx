@@ -98,16 +98,17 @@ const statusVariant = (s: string): "default" | "secondary" | "outline" => {
   return "secondary";
 };
 
-const STATUS_LABELS: Record<string, string> = {
-  pending_review: "Pending approval",
-  active: "Approved",
-  sold: "Sold",
-  reserved: "Reserved",
-  archived: "Removed by admin",
-  needs_correction: "Correction requested",
-  completed: "Completed",
+const STATUS_LABELS: Record<string, { en: string; it: string }> = {
+  pending_review: { en: "Pending approval", it: "In attesa di approvazione" },
+  active: { en: "Approved", it: "Approvato" },
+  sold: { en: "Sold", it: "Venduto" },
+  reserved: { en: "Reserved", it: "Riservato" },
+  archived: { en: "Removed by admin", it: "Rimosso dall'admin" },
+  needs_correction: { en: "Correction requested", it: "Correzione richiesta" },
+  completed: { en: "Completed", it: "Completato" },
 };
-const statusLabel = (s: string) => STATUS_LABELS[s] ?? s;
+const statusLabel = (s: string, lang: "it" | "en") =>
+  STATUS_LABELS[s] ? STATUS_LABELS[s][lang] : s;
 
 
 const MyBooksContent = () => {
@@ -222,10 +223,10 @@ const MyBooksContent = () => {
     });
     setSubmitting(false);
     if (error) {
-      toast({ title: "Could not save", description: error.message, variant: "destructive" });
+      toast({ title: language === "it" ? "Salvataggio non riuscito" : "Could not save", description: error.message, variant: "destructive" });
       return;
     }
-    toast({ title: "Added to Books Bought" });
+    toast({ title: language === "it" ? "Aggiunto ai libri acquistati" : "Added to Books Bought" });
     setAddOpen(false);
     setFormBookId("");
     setFormSeller("");
@@ -316,13 +317,16 @@ const MyBooksContent = () => {
 
 
   const deleteListing = async (id: string) => {
-    if (!confirm("Delete this listing permanently? This cannot be undone.")) return;
+    const confirmMsg = language === "it"
+      ? "Eliminare definitivamente questo annuncio? L'operazione non può essere annullata."
+      : "Delete this listing permanently? This cannot be undone.";
+    if (!confirm(confirmMsg)) return;
     const { error } = await supabase.from("listings").delete().eq("id", id);
     if (error) {
-      toast({ title: "Could not delete", description: error.message, variant: "destructive" });
+      toast({ title: language === "it" ? "Eliminazione non riuscita" : "Could not delete", description: error.message, variant: "destructive" });
       return;
     }
-    toast({ title: "Listing deleted" });
+    toast({ title: language === "it" ? "Annuncio eliminato" : "Listing deleted" });
     loadAll();
   };
 
@@ -338,7 +342,7 @@ const MyBooksContent = () => {
     setResubmitting(true);
     const priceNum = Number(editPrice);
     if (!Number.isFinite(priceNum) || priceNum < 0) {
-      toast({ title: "Please enter a valid price", variant: "destructive" });
+      toast({ title: language === "it" ? "Inserisci un prezzo valido" : "Please enter a valid price", variant: "destructive" });
       setResubmitting(false);
       return;
     }
@@ -352,7 +356,7 @@ const MyBooksContent = () => {
       .eq("id", correctionListing.id)
       .eq("seller_id", user!.id);
     if (updErr) {
-      toast({ title: "Could not save changes", description: updErr.message, variant: "destructive" });
+      toast({ title: language === "it" ? "Impossibile salvare le modifiche" : "Could not save changes", description: updErr.message, variant: "destructive" });
       setResubmitting(false);
       return;
     }
@@ -361,10 +365,10 @@ const MyBooksContent = () => {
     });
     setResubmitting(false);
     if (rpcErr) {
-      toast({ title: "Could not resubmit", description: rpcErr.message, variant: "destructive" });
+      toast({ title: language === "it" ? "Impossibile reinviare" : "Could not resubmit", description: rpcErr.message, variant: "destructive" });
       return;
     }
-    toast({ title: "Sent for admin approval / Inviato per approvazione" });
+    toast({ title: language === "it" ? "Inviato per approvazione" : "Sent for admin approval" });
     setCorrectionListing(null);
     loadAll();
   };
@@ -385,10 +389,13 @@ const MyBooksContent = () => {
     <MainLayout>
       <div className="container max-w-4xl py-8">
         <div className="mb-6">
-          <h1 className="font-display text-2xl font-bold">My Books</h1>
+          <h1 className="font-display text-2xl font-bold">
+            {language === "it" ? "I miei libri" : "My Books"}
+          </h1>
           <p className="text-sm text-muted-foreground">
-            Manage the books you listed, the books you are looking for, and the books you bought
-            through DISbook.
+            {language === "it"
+              ? "Gestisci i libri che hai pubblicato, quelli che stai cercando e quelli che hai acquistato su DISbook."
+              : "Manage the books you listed, the books you are looking for, and the books you bought through DISbook."}
           </p>
         </div>
 
@@ -398,7 +405,7 @@ const MyBooksContent = () => {
               <div className="flex items-center gap-2">
                 <Bell className="h-4 w-4 text-primary" />
                 <h2 className="font-medium text-sm">
-                  Notifications / Notifiche
+                  {language === "it" ? "Notifiche" : "Notifications"}
                   {notifUnread > 0 && (
                     <Badge variant="default" className="ml-2">{notifUnread}</Badge>
                   )}
@@ -406,7 +413,7 @@ const MyBooksContent = () => {
               </div>
               {notifUnread > 0 && (
                 <Button variant="ghost" size="sm" onClick={markAllRead}>
-                  Mark all read
+                  {language === "it" ? "Segna tutte come lette" : "Mark all read"}
                 </Button>
               )}
             </div>
@@ -440,19 +447,18 @@ const MyBooksContent = () => {
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="listed" className="gap-2">
               <BookOpen className="h-4 w-4" />
-              <span className="hidden sm:inline">Listed</span>
-              <span className="sm:hidden">Listed</span>
+              <span>{language === "it" ? "Pubblicati" : "Listed"}</span>
               <Badge variant="secondary" className="ml-1">{listings.length}</Badge>
             </TabsTrigger>
             <TabsTrigger value="wanted" className="gap-2">
               <Heart className="h-4 w-4" />
-              <span className="hidden sm:inline">Looking For</span>
-              <span className="sm:hidden">Wanted</span>
+              <span className="hidden sm:inline">{language === "it" ? "Cercati" : "Looking For"}</span>
+              <span className="sm:hidden">{language === "it" ? "Cercati" : "Wanted"}</span>
               <Badge variant="secondary" className="ml-1">{wanted.length}</Badge>
             </TabsTrigger>
             <TabsTrigger value="bought" className="gap-2">
               <ShoppingBag className="h-4 w-4" />
-              <span>Bought</span>
+              <span>{language === "it" ? "Acquistati" : "Bought"}</span>
               <Badge variant="secondary" className="ml-1">{bought.length}</Badge>
             </TabsTrigger>
           </TabsList>
@@ -472,8 +478,8 @@ const MyBooksContent = () => {
             ) : listings.length === 0 ? (
               <EmptyState
                 icon={<BookOpen className="h-8 w-8 opacity-50" />}
-                text="You have not listed any books yet."
-                cta={{ label: "List a book", href: "/sell?intent=sell&mode=sell" }}
+                text={language === "it" ? "Non hai ancora pubblicato nessun libro." : "You have not listed any books yet."}
+                cta={{ label: language === "it" ? "Pubblica un libro" : "List a book", href: "/sell?intent=sell&mode=sell" }}
               />
             ) : (
               <div className="space-y-3">
@@ -492,7 +498,7 @@ const MyBooksContent = () => {
                         variant={l.status === "needs_correction" ? "destructive" : statusVariant(l.status)}
                       >
                         {l.status === "needs_correction" && <AlertTriangle className="h-3 w-3 mr-1 inline" />}
-                        {statusLabel(l.status)}
+                        {statusLabel(l.status, language)}
                       </Badge>,
                     ]}
                     meta={
@@ -510,7 +516,7 @@ const MyBooksContent = () => {
                         {l.status === "needs_correction" && (
                           <Button variant="default" size="sm" onClick={() => openCorrection(l)}>
                             <AlertTriangle className="h-3.5 w-3.5" />
-                            Edit &amp; resubmit
+                            {language === "it" ? "Correggi e reinvia" : "Edit & resubmit"}
                           </Button>
                         )}
                         {l.status === "active" && (
@@ -522,7 +528,7 @@ const MyBooksContent = () => {
                         {l.status !== "archived" && l.status !== "sold" && l.status !== "needs_correction" && (
                           <Button variant="ghost" size="sm" onClick={() => archiveListing(l.id)}>
                             <Archive className="h-3.5 w-3.5" />
-                            Archive
+                            {language === "it" ? "Archivia" : "Archive"}
                           </Button>
                         )}
                         {l.status !== "sold" && (
@@ -533,7 +539,7 @@ const MyBooksContent = () => {
                             className="text-destructive hover:text-destructive"
                           >
                             <Trash2 className="h-3.5 w-3.5" />
-                            Delete
+                            {language === "it" ? "Elimina" : "Delete"}
                           </Button>
                         )}
                       </>
@@ -552,8 +558,8 @@ const MyBooksContent = () => {
             ) : wanted.length === 0 ? (
               <EmptyState
                 icon={<Heart className="h-8 w-8 opacity-50" />}
-                text="You have not added any books to your wanted list yet."
-                cta={{ label: "Browse books", href: "/browse" }}
+                text={language === "it" ? "Non hai ancora aggiunto libri alla lista dei cercati." : "You have not added any books to your wanted list yet."}
+                cta={{ label: language === "it" ? "Sfoglia libri" : "Browse books", href: "/browse" }}
               />
             ) : (
               <div className="space-y-3">
@@ -565,11 +571,11 @@ const MyBooksContent = () => {
                     subject={w.subject}
                     program={w.program}
                     classYear={w.class_year}
-                    badges={[<Badge key="w" variant="secondary">Looking for</Badge>]}
+                    badges={[<Badge key="w" variant="secondary">{language === "it" ? "Cercato" : "Looking for"}</Badge>]}
                     actions={
                       <Button variant="ghost" size="sm" onClick={() => removeWanted(w.id)}>
                         <Trash2 className="h-3.5 w-3.5" />
-                        Remove
+                        {language === "it" ? "Rimuovi" : "Remove"}
                       </Button>
                     }
                   />
@@ -584,19 +590,19 @@ const MyBooksContent = () => {
               <Dialog open={addOpen} onOpenChange={setAddOpen}>
                 <DialogTrigger asChild>
                   <Button size="sm" className="gap-1">
-                    <Plus className="h-4 w-4" /> Add Bought Book Manually
+                    <Plus className="h-4 w-4" /> {language === "it" ? "Aggiungi libro acquistato" : "Add Bought Book Manually"}
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-md">
                   <DialogHeader>
-                    <DialogTitle>Add a bought book</DialogTitle>
+                    <DialogTitle>{language === "it" ? "Aggiungi un libro acquistato" : "Add a bought book"}</DialogTitle>
                   </DialogHeader>
                   <div className="space-y-3">
                     <div>
-                      <Label>Book</Label>
+                      <Label>{language === "it" ? "Libro" : "Book"}</Label>
                       <Select value={formBookId} onValueChange={setFormBookId}>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select a book" />
+                          <SelectValue placeholder={language === "it" ? "Seleziona un libro" : "Select a book"} />
                         </SelectTrigger>
                         <SelectContent className="max-h-72">
                           {selectableBooks.map((b) => (
@@ -608,12 +614,12 @@ const MyBooksContent = () => {
                       </Select>
                     </div>
                     <div>
-                      <Label>Seller name (optional)</Label>
+                      <Label>{language === "it" ? "Nome venditore (facoltativo)" : "Seller name (optional)"}</Label>
                       <Input value={formSeller} onChange={(e) => setFormSeller(e.target.value)} />
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <Label>Price paid (€)</Label>
+                        <Label>{language === "it" ? "Prezzo pagato (€)" : "Price paid (€)"}</Label>
                         <Input
                           type="number"
                           step="0.01"
@@ -622,7 +628,7 @@ const MyBooksContent = () => {
                         />
                       </div>
                       <div>
-                        <Label>Date bought</Label>
+                        <Label>{language === "it" ? "Data acquisto" : "Date bought"}</Label>
                         <Input
                           type="date"
                           value={formDate}
@@ -631,7 +637,7 @@ const MyBooksContent = () => {
                       </div>
                     </div>
                     <div>
-                      <Label>Notes (optional)</Label>
+                      <Label>{language === "it" ? "Note (facoltativo)" : "Notes (optional)"}</Label>
                       <Textarea
                         rows={2}
                         value={formNotes}
@@ -640,9 +646,9 @@ const MyBooksContent = () => {
                     </div>
                   </div>
                   <DialogFooter>
-                    <Button variant="ghost" onClick={() => setAddOpen(false)}>Cancel</Button>
+                    <Button variant="ghost" onClick={() => setAddOpen(false)}>{language === "it" ? "Annulla" : "Cancel"}</Button>
                     <Button onClick={handleAddBought} disabled={!formBookId || submitting}>
-                      {submitting && <Loader2 className="h-4 w-4 animate-spin" />} Save
+                      {submitting && <Loader2 className="h-4 w-4 animate-spin" />} {language === "it" ? "Salva" : "Save"}
                     </Button>
                   </DialogFooter>
                 </DialogContent>
@@ -654,8 +660,8 @@ const MyBooksContent = () => {
             ) : bought.length === 0 ? (
               <EmptyState
                 icon={<ShoppingBag className="h-8 w-8 opacity-50" />}
-                text="You have not marked any books as bought yet."
-                cta={{ label: "Browse Books", href: "/browse" }}
+                text={language === "it" ? "Non hai ancora segnato alcun libro come acquistato." : "You have not marked any books as bought yet."}
+                cta={{ label: language === "it" ? "Sfoglia libri" : "Browse Books", href: "/browse" }}
               />
             ) : (
               <div className="space-y-3">
@@ -673,9 +679,9 @@ const MyBooksContent = () => {
                     ]}
                     meta={
                       <>
-                        {b.seller_name ? `From ${b.seller_name} · ` : ""}
+                        {b.seller_name ? `${language === "it" ? "Da" : "From"} ${b.seller_name} · ` : ""}
                         {b.price_paid != null ? `€${Number(b.price_paid).toFixed(2)} · ` : ""}
-                        {new Date(b.date_bought).toLocaleDateString()}
+                        {new Date(b.date_bought).toLocaleDateString(language === "it" ? "it-IT" : "en-GB")}
                         {b.notes ? ` · ${b.notes}` : ""}
                       </>
                     }
@@ -684,13 +690,13 @@ const MyBooksContent = () => {
                         {b.listing_id && (
                           <Link to={`/browse?listing=${b.listing_id}`}>
                             <Button variant="ghost" size="sm">
-                              <ExternalLink className="h-3.5 w-3.5" /> Listing
+                              <ExternalLink className="h-3.5 w-3.5" /> {language === "it" ? "Annuncio" : "Listing"}
                             </Button>
                           </Link>
                         )}
                         {b.status !== "archived" && (
                           <Button variant="ghost" size="sm" onClick={() => archiveBought(b.id)}>
-                            <Archive className="h-3.5 w-3.5" /> Archive
+                            <Archive className="h-3.5 w-3.5" /> {language === "it" ? "Archivia" : "Archive"}
                           </Button>
                         )}
                         <Button variant="ghost" size="sm" onClick={() => removeBought(b.id)}>
@@ -792,12 +798,12 @@ const MyBooksContent = () => {
       <Dialog open={!!correctionListing} onOpenChange={(o) => !o && setCorrectionListing(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Edit &amp; resubmit / Correggi e reinvia</DialogTitle>
+            <DialogTitle>{language === "it" ? "Correggi e reinvia" : "Edit & resubmit"}</DialogTitle>
           </DialogHeader>
           {correctionListing && (
             <div className="space-y-3">
               <div className="rounded-md bg-destructive/10 border border-destructive/30 p-3 text-xs text-destructive">
-                <p className="font-medium mb-1">Admin note</p>
+                <p className="font-medium mb-1">{language === "it" ? "Nota admin" : "Admin note"}</p>
                 <p className="whitespace-pre-line">{correctionListing.admin_review_note ?? "—"}</p>
               </div>
               <div>
@@ -805,7 +811,7 @@ const MyBooksContent = () => {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label>Price (€)</Label>
+                  <Label>{language === "it" ? "Prezzo (€)" : "Price (€)"}</Label>
                   <Input
                     type="number"
                     step="0.01"
@@ -814,39 +820,40 @@ const MyBooksContent = () => {
                   />
                 </div>
                 <div>
-                  <Label>Condition</Label>
+                  <Label>{language === "it" ? "Condizione" : "Condition"}</Label>
                   <Select value={editCondition} onValueChange={setEditCondition}>
-                    <SelectTrigger><SelectValue placeholder="Condition" /></SelectTrigger>
+                    <SelectTrigger><SelectValue placeholder={language === "it" ? "Condizione" : "Condition"} /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="new">New</SelectItem>
-                      <SelectItem value="like_new">Like new</SelectItem>
-                      <SelectItem value="good">Good</SelectItem>
-                      <SelectItem value="fair">Fair</SelectItem>
-                      <SelectItem value="poor">Poor</SelectItem>
+                      <SelectItem value="new">{language === "it" ? "Nuovo" : "New"}</SelectItem>
+                      <SelectItem value="like_new">{language === "it" ? "Come nuovo" : "Like new"}</SelectItem>
+                      <SelectItem value="good">{language === "it" ? "Buono" : "Good"}</SelectItem>
+                      <SelectItem value="fair">{language === "it" ? "Discreto" : "Fair"}</SelectItem>
+                      <SelectItem value="poor">{language === "it" ? "Scarso" : "Poor"}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               </div>
               <div>
-                <Label>Notes</Label>
+                <Label>{language === "it" ? "Note" : "Notes"}</Label>
                 <Textarea
                   rows={3}
                   value={editNotes}
                   onChange={(e) => setEditNotes(e.target.value)}
-                  placeholder="Describe the condition, missing pages, etc."
+                  placeholder={language === "it" ? "Descrivi condizione, pagine mancanti, ecc." : "Describe the condition, missing pages, etc."}
                 />
               </div>
               <p className="text-xs text-muted-foreground">
-                To replace or add photos, please contact the admin. Resubmitting will send the
-                listing back to pending approval.
+                {language === "it"
+                  ? "Per sostituire o aggiungere foto, contatta l'admin. Il reinvio riporterà l'annuncio in attesa di approvazione."
+                  : "To replace or add photos, please contact the admin. Resubmitting will send the listing back to pending approval."}
               </p>
             </div>
           )}
           <DialogFooter>
-            <Button variant="ghost" onClick={() => setCorrectionListing(null)}>Cancel</Button>
+            <Button variant="ghost" onClick={() => setCorrectionListing(null)}>{language === "it" ? "Annulla" : "Cancel"}</Button>
             <Button onClick={submitResubmit} disabled={resubmitting}>
               {resubmitting && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
-              Resubmit for approval
+              {language === "it" ? "Reinvia per approvazione" : "Resubmit for approval"}
             </Button>
           </DialogFooter>
         </DialogContent>
