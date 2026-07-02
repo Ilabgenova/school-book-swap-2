@@ -12,7 +12,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Trash2, Check, Archive, Plus, ShieldAlert, Loader2, MessageSquareWarning } from "lucide-react";
+import { Trash2, Check, Archive, Plus, ShieldAlert, Loader2, MessageSquareWarning, Eye, ArrowLeft, ImageOff } from "lucide-react";
 import { BookImportPanel } from "@/components/admin/BookImportPanel";
 import { UsersPanel as UsersModerationPanel } from "@/components/admin/UsersPanel";
 import { ModerationPanel } from "@/components/admin/ModerationPanel";
@@ -34,6 +34,8 @@ type Listing = {
   id: string; title: string; subject: string | null; price: number; status: string;
   seller_id: string; created_at: string; program: string | null; class_year: string | null;
   isbn: string | null; condition: string; school_year: string; admin_review_note: string | null;
+  notes: string | null; images: string[] | null; item_type: string | null; listing_type: string | null;
+  book_id: string | null;
 };
 type AmazonLink = {
   id: string; title: string; isbn: string | null; amazon_url: string | null;
@@ -133,6 +135,9 @@ const ListingsPanel = () => {
   const [deleteTarget, setDeleteTarget] = useState<Listing | null>(null);
   const [deleteReason, setDeleteReason] = useState("");
   const [deleteSubmitting, setDeleteSubmitting] = useState(false);
+
+  const [previewTarget, setPreviewTarget] = useState<Listing | null>(null);
+  const [lightbox, setLightbox] = useState<string | null>(null);
 
   const load = async () => {
     setLoading(true);
