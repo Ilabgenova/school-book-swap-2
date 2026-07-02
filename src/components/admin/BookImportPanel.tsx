@@ -25,7 +25,7 @@ type ImportHistory = {
 export const BookImportPanel = () => {
   const [rows, setRows] = useState<ParsedRow[]>([]);
   const [fileName, setFileName] = useState("");
-  const [schoolYear, setSchoolYear] = useState("2025-2026");
+  const [schoolYear, setSchoolYear] = useState("2026-2027");
   const [busy, setBusy] = useState(false);
   const [enriching, setEnriching] = useState(false);
   const [history, setHistory] = useState<ImportHistory[]>([]);
