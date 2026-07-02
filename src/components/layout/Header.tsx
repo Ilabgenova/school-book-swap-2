@@ -17,6 +17,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
+import { useAdminPendingCount } from "@/hooks/useAdminPendingCount";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import {
