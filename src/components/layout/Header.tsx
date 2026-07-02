@@ -207,15 +207,25 @@ export const Header = () => {
             <>
               <Link to="/my-books" aria-label={t.nav.myBooks}>
                 <Button
-                  variant="ghost"
+                  variant={isActive("/my-books") ? "default" : "outline"}
                   size="sm"
                   className={cn(
-                    "gap-1.5 px-2",
-                    isActive("/my-books") ? "text-accent bg-accent/10" : ""
+                    "gap-1.5 h-10 px-3 font-semibold relative border-accent/40",
+                    isActive("/my-books")
+                      ? "bg-accent text-accent-foreground border-accent shadow-soft"
+                      : "text-accent hover:bg-accent/10"
                   )}
                 >
-                  <BookOpen className="h-4 w-4" />
-                  <span className="hidden xs:inline text-xs">{t.nav.myBooks}</span>
+                  <BookMarked className="h-4 w-4" strokeWidth={2.5} />
+                  <span className="text-xs">{t.nav.myBooks}</span>
+                  {myBooksAttention > 0 && (
+                    <Badge
+                      variant="destructive"
+                      className="ml-0.5 h-4 min-w-4 rounded-full px-1 text-[10px]"
+                    >
+                      {myBooksAttention}
+                    </Badge>
+                  )}
                 </Button>
               </Link>
               <Link to="/messages" aria-label={t.nav.messages}>
