@@ -330,7 +330,13 @@ const MyBooksContent = () => {
                     }
                     actions={
                       <>
-                        {l.status !== "archived" && (
+                        {l.status === "active" && (
+                          <Button variant="default" size="sm" onClick={() => markListingSold(l.id)}>
+                            <Check className="h-3.5 w-3.5" />
+                            Mark as sold
+                          </Button>
+                        )}
+                        {l.status !== "archived" && l.status !== "sold" && (
                           <Button variant="ghost" size="sm" onClick={() => archiveListing(l.id)}>
                             <Archive className="h-3.5 w-3.5" />
                             Archive
@@ -347,6 +353,7 @@ const MyBooksContent = () => {
                         </Button>
                       </>
                     }
+
 
                   />
                 ))}
