@@ -96,7 +96,8 @@ const STATUS_LABELS: Record<string, string> = {
   active: "Approved",
   sold: "Sold",
   reserved: "Reserved",
-  archived: "Removed",
+  archived: "Removed by admin",
+  needs_correction: "Correction requested",
   completed: "Completed",
 };
 const statusLabel = (s: string) => STATUS_LABELS[s] ?? s;
