@@ -37,7 +37,10 @@ import {
   Trash2,
   ExternalLink,
   Check,
+  AlertTriangle,
+  Bell,
 } from "lucide-react";
+import { useNotifications } from "@/hooks/useNotifications";
 
 
 type ListingRow = {
@@ -51,6 +54,8 @@ type ListingRow = {
   status: string;
   listing_type: string;
   condition: string;
+  notes: string | null;
+  admin_review_note: string | null;
   created_at: string;
 };
 
@@ -94,7 +99,8 @@ const STATUS_LABELS: Record<string, string> = {
   active: "Approved",
   sold: "Sold",
   reserved: "Reserved",
-  archived: "Removed",
+  archived: "Removed by admin",
+  needs_correction: "Correction requested",
   completed: "Completed",
 };
 const statusLabel = (s: string) => STATUS_LABELS[s] ?? s;
@@ -113,6 +119,15 @@ const MyBooksContent = () => {
   const [bought, setBought] = useState<BoughtRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [addOpen, setAddOpen] = useState(false);
+
+  // Correction / resubmit dialog state
+  const [correctionListing, setCorrectionListing] = useState<ListingRow | null>(null);
+  const [editPrice, setEditPrice] = useState("");
+  const [editCondition, setEditCondition] = useState("");
+  const [editNotes, setEditNotes] = useState("");
+  const [resubmitting, setResubmitting] = useState(false);
+
+  const { items: notifications, unreadCount: notifUnread, markRead, markAllRead } = useNotifications();
 
   // Manual add form state
   const [formBookId, setFormBookId] = useState<string>("");
@@ -136,7 +151,7 @@ const MyBooksContent = () => {
     const [listingsRes, wantedRes, boughtRes] = await Promise.all([
       supabase
         .from("listings")
-        .select("id,title,isbn,subject,program,class_year,price,status,listing_type,condition,created_at")
+        .select("id,title,isbn,subject,program,class_year,price,status,listing_type,condition,notes,admin_review_note,created_at")
         .eq("seller_id", user.id)
         .order("created_at", { ascending: false }),
       supabase
@@ -257,6 +272,50 @@ const MyBooksContent = () => {
     loadAll();
   };
 
+  const openCorrection = (l: ListingRow) => {
+    setCorrectionListing(l);
+    setEditPrice(String(l.price ?? ""));
+    setEditCondition(l.condition ?? "");
+    setEditNotes(l.notes ?? "");
+  };
+
+  const submitResubmit = async () => {
+    if (!correctionListing) return;
+    setResubmitting(true);
+    const priceNum = Number(editPrice);
+    if (!Number.isFinite(priceNum) || priceNum < 0) {
+      toast({ title: "Please enter a valid price", variant: "destructive" });
+      setResubmitting(false);
+      return;
+    }
+    const { error: updErr } = await supabase
+      .from("listings")
+      .update({
+        price: priceNum,
+        condition: editCondition as any,
+        notes: editNotes || null,
+      })
+      .eq("id", correctionListing.id)
+      .eq("seller_id", user!.id);
+    if (updErr) {
+      toast({ title: "Could not save changes", description: updErr.message, variant: "destructive" });
+      setResubmitting(false);
+      return;
+    }
+    const { error: rpcErr } = await supabase.rpc("seller_resubmit_listing", {
+      _listing_id: correctionListing.id,
+    });
+    setResubmitting(false);
+    if (rpcErr) {
+      toast({ title: "Could not resubmit", description: rpcErr.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: "Sent for admin approval / Inviato per approvazione" });
+    setCorrectionListing(null);
+    loadAll();
+  };
+
+
 
   if (authLoading || !user) {
     return (
@@ -278,6 +337,50 @@ const MyBooksContent = () => {
             through DISbook.
           </p>
         </div>
+
+        {notifications.length > 0 && (
+          <div className="mb-6 rounded-xl border border-border bg-card p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Bell className="h-4 w-4 text-primary" />
+                <h2 className="font-medium text-sm">
+                  Notifications / Notifiche
+                  {notifUnread > 0 && (
+                    <Badge variant="default" className="ml-2">{notifUnread}</Badge>
+                  )}
+                </h2>
+              </div>
+              {notifUnread > 0 && (
+                <Button variant="ghost" size="sm" onClick={markAllRead}>
+                  Mark all read
+                </Button>
+              )}
+            </div>
+            <div className="space-y-2 max-h-64 overflow-auto">
+              {notifications.slice(0, 10).map((n) => (
+                <div
+                  key={n.id}
+                  className={`rounded-md border p-3 text-sm ${n.read_at ? "bg-background" : "bg-muted/40 border-primary/40"}`}
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="font-medium">{n.title}</p>
+                      <p className="mt-1 whitespace-pre-line text-muted-foreground text-xs">{n.body}</p>
+                      <p className="mt-1 text-[10px] text-muted-foreground">
+                        {new Date(n.created_at).toLocaleString()}
+                      </p>
+                    </div>
+                    {!n.read_at && (
+                      <Button size="sm" variant="ghost" onClick={() => markRead(n.id)}>
+                        <Check className="h-3.5 w-3.5" />
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         <Tabs value={tab} onValueChange={setTab}>
           <TabsList className="grid w-full grid-cols-3">
@@ -322,23 +425,39 @@ const MyBooksContent = () => {
                     classYear={l.class_year}
                     badges={[
                       <Badge key="t" variant="outline">{l.listing_type}</Badge>,
-                      <Badge key="s" variant={statusVariant(l.status)}>{statusLabel(l.status)}</Badge>,
-
+                      <Badge
+                        key="s"
+                        variant={l.status === "needs_correction" ? "destructive" : statusVariant(l.status)}
+                      >
+                        {l.status === "needs_correction" && <AlertTriangle className="h-3 w-3 mr-1 inline" />}
+                        {statusLabel(l.status)}
+                      </Badge>,
                     ]}
                     meta={
                       <>
                         {l.condition} · €{Number(l.price).toFixed(2)}
+                        {l.admin_review_note && (
+                          <span className="mt-2 block rounded-md bg-destructive/10 border border-destructive/30 p-2 text-destructive text-xs">
+                            <span className="font-medium">Admin: </span>{l.admin_review_note}
+                          </span>
+                        )}
                       </>
                     }
                     actions={
                       <>
+                        {l.status === "needs_correction" && (
+                          <Button variant="default" size="sm" onClick={() => openCorrection(l)}>
+                            <AlertTriangle className="h-3.5 w-3.5" />
+                            Edit &amp; resubmit
+                          </Button>
+                        )}
                         {l.status === "active" && (
                           <Button variant="default" size="sm" onClick={() => markListingSold(l.id)}>
                             <Check className="h-3.5 w-3.5" />
                             Mark as sold
                           </Button>
                         )}
-                        {l.status !== "archived" && l.status !== "sold" && (
+                        {l.status !== "archived" && l.status !== "sold" && l.status !== "needs_correction" && (
                           <Button variant="ghost" size="sm" onClick={() => archiveListing(l.id)}>
                             <Archive className="h-3.5 w-3.5" />
                             Archive
@@ -355,13 +474,12 @@ const MyBooksContent = () => {
                         </Button>
                       </>
                     }
-
-
                   />
                 ))}
               </div>
             )}
           </TabsContent>
+
 
           {/* WANTED */}
           <TabsContent value="wanted" className="mt-6">
@@ -523,6 +641,69 @@ const MyBooksContent = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      <Dialog open={!!correctionListing} onOpenChange={(o) => !o && setCorrectionListing(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit &amp; resubmit / Correggi e reinvia</DialogTitle>
+          </DialogHeader>
+          {correctionListing && (
+            <div className="space-y-3">
+              <div className="rounded-md bg-destructive/10 border border-destructive/30 p-3 text-xs text-destructive">
+                <p className="font-medium mb-1">Admin note</p>
+                <p className="whitespace-pre-line">{correctionListing.admin_review_note ?? "—"}</p>
+              </div>
+              <div>
+                <Label>{correctionListing.title}</Label>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label>Price (€)</Label>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    value={editPrice}
+                    onChange={(e) => setEditPrice(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label>Condition</Label>
+                  <Select value={editCondition} onValueChange={setEditCondition}>
+                    <SelectTrigger><SelectValue placeholder="Condition" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="new">New</SelectItem>
+                      <SelectItem value="like_new">Like new</SelectItem>
+                      <SelectItem value="good">Good</SelectItem>
+                      <SelectItem value="fair">Fair</SelectItem>
+                      <SelectItem value="poor">Poor</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div>
+                <Label>Notes</Label>
+                <Textarea
+                  rows={3}
+                  value={editNotes}
+                  onChange={(e) => setEditNotes(e.target.value)}
+                  placeholder="Describe the condition, missing pages, etc."
+                />
+              </div>
+              <p className="text-xs text-muted-foreground">
+                To replace or add photos, please contact the admin. Resubmitting will send the
+                listing back to pending approval.
+              </p>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setCorrectionListing(null)}>Cancel</Button>
+            <Button onClick={submitResubmit} disabled={resubmitting}>
+              {resubmitting && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
+              Resubmit for approval
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </MainLayout>
   );
 };

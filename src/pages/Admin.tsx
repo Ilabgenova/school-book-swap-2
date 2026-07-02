@@ -12,18 +12,26 @@ import { useAuth } from "@/hooks/useAuth";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Trash2, Check, Archive, Plus, ShieldAlert, Loader2 } from "lucide-react";
+import { Trash2, Check, Archive, Plus, ShieldAlert, Loader2, MessageSquareWarning } from "lucide-react";
 import { BookImportPanel } from "@/components/admin/BookImportPanel";
 import { UsersPanel as UsersModerationPanel } from "@/components/admin/UsersPanel";
 import { ModerationPanel } from "@/components/admin/ModerationPanel";
 import { ReuseReviewPanel } from "@/components/admin/ReuseReviewPanel";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { formatSellerName } from "@/lib/sellerName";
 
 
 type Listing = {
   id: string; title: string; subject: string | null; price: number; status: string;
   seller_id: string; created_at: string; program: string | null; class_year: string | null;
-  isbn: string | null; condition: string; school_year: string;
+  isbn: string | null; condition: string; school_year: string; admin_review_note: string | null;
 };
 type AmazonLink = {
   id: string; title: string; isbn: string | null; amazon_url: string | null;
@@ -97,11 +105,28 @@ const Admin = () => {
 };
 
 /* ---------- Listings moderation ---------- */
+const STATUS_LABEL_MAP: Record<string, string> = {
+  pending_review: "Pending approval",
+  active: "Approved",
+  sold: "Sold",
+  reserved: "Reserved",
+  archived: "Removed",
+  needs_correction: "Correction requested",
+};
+
 const ListingsPanel = () => {
   const [items, setItems] = useState<Listing[]>([]);
   const [sellers, setSellers] = useState<Record<string, { first_name: string | null; last_name: string | null }>>({});
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>("all");
+
+  const [correctionTarget, setCorrectionTarget] = useState<Listing | null>(null);
+  const [correctionNote, setCorrectionNote] = useState("");
+  const [correctionSubmitting, setCorrectionSubmitting] = useState(false);
+
+  const [deleteTarget, setDeleteTarget] = useState<Listing | null>(null);
+  const [deleteReason, setDeleteReason] = useState("");
+  const [deleteSubmitting, setDeleteSubmitting] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -128,31 +153,59 @@ const ListingsPanel = () => {
   useEffect(() => { load(); /* eslint-disable-next-line */ }, [filter]);
 
 
-  const setStatus = async (id: string, status: string) => {
-    const { error } = await supabase.from("listings").update({ status: status as any }).eq("id", id);
+  const approve = async (id: string) => {
+    const { error } = await supabase
+      .from("listings")
+      .update({ status: "active" as any, admin_review_note: null })
+      .eq("id", id);
     if (error) return toast.error(error.message);
-    toast.success(`Marked ${status}`); load();
+    toast.success("Approved"); load();
   };
-  const remove = async (id: string) => {
-    if (!confirm("Permanently delete this listing?")) return;
-    const { error } = await supabase.from("listings").delete().eq("id", id);
+
+  const submitCorrection = async () => {
+    if (!correctionTarget) return;
+    if (!correctionNote.trim()) return toast.error("Please write a note for the seller");
+    setCorrectionSubmitting(true);
+    const { error } = await supabase.rpc("admin_request_listing_correction", {
+      _listing_id: correctionTarget.id,
+      _note: correctionNote.trim(),
+    });
+    setCorrectionSubmitting(false);
     if (error) return toast.error(error.message);
-    toast.success("Deleted"); load();
+    toast.success("Correction requested. Seller notified.");
+    setCorrectionTarget(null);
+    setCorrectionNote("");
+    load();
+  };
+
+  const submitDelete = async () => {
+    if (!deleteTarget) return;
+    setDeleteSubmitting(true);
+    const { error } = await supabase.rpc("admin_delete_listing_with_reason", {
+      _listing_id: deleteTarget.id,
+      _reason: deleteReason.trim() || "—",
+    });
+    setDeleteSubmitting(false);
+    if (error) return toast.error(error.message);
+    toast.success("Listing deleted. Seller notified.");
+    setDeleteTarget(null);
+    setDeleteReason("");
+    load();
   };
 
   return (
     <div>
       <div className="flex items-center gap-3 mb-4">
         <Select value={filter} onValueChange={setFilter}>
-          <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="w-56"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All</SelectItem>
             <SelectItem value="pending_review">Pending approval</SelectItem>
+            <SelectItem value="needs_correction">Correction requested</SelectItem>
             <SelectItem value="active">Approved</SelectItem>
             <SelectItem value="sold">Sold</SelectItem>
             <SelectItem value="reserved">Reserved</SelectItem>
             <SelectItem value="archived">Removed</SelectItem>
-
           </SelectContent>
         </Select>
         <Button variant="outline" size="sm" onClick={load}>Refresh</Button>
@@ -161,31 +214,107 @@ const ListingsPanel = () => {
         <div className="space-y-3">
           {items.length === 0 && <p className="text-sm text-muted-foreground">No listings.</p>}
           {items.map(l => (
-            <Card key={l.id} className="p-4 flex flex-col md:flex-row gap-3 md:items-center justify-between">
+            <Card key={l.id} className="p-4 flex flex-col md:flex-row gap-3 md:items-start justify-between">
               <div className="min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <p className="font-medium truncate">{l.title}</p>
-                  <Badge variant="outline">{{ pending_review: "Pending approval", active: "Approved", sold: "Sold", reserved: "Reserved", archived: "Removed" }[l.status] ?? l.status}</Badge>
+                  <Badge variant="outline">{STATUS_LABEL_MAP[l.status] ?? l.status}</Badge>
                   {l.program && <Badge variant="secondary">{l.program} {l.class_year}</Badge>}
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">
                   €{l.price} · {l.condition} · {l.school_year} · ISBN {l.isbn || "—"}
                 </p>
-                <p className="text-[11px] text-muted-foreground">Seller: {formatSellerName(sellers[l.seller_id]?.first_name, sellers[l.seller_id]?.last_name)} · {new Date(l.created_at).toLocaleDateString()}</p>
+                <p className="text-[11px] text-muted-foreground">
+                  Seller: {formatSellerName(sellers[l.seller_id]?.first_name, sellers[l.seller_id]?.last_name)} · {new Date(l.created_at).toLocaleDateString()}
+                </p>
+                {l.admin_review_note && (
+                  <p className="mt-2 text-xs bg-muted rounded p-2 text-muted-foreground">
+                    <span className="font-medium text-foreground">Admin note:</span> {l.admin_review_note}
+                  </p>
+                )}
               </div>
               <div className="flex gap-2 flex-wrap">
-                {l.status !== "active" && (
-                  <Button size="sm" variant="outline" onClick={() => setStatus(l.id, "active")}><Check className="h-4 w-4 mr-1" />Approve</Button>
+                {l.status !== "active" && l.status !== "sold" && (
+                  <Button size="sm" variant="outline" onClick={() => approve(l.id)}>
+                    <Check className="h-4 w-4 mr-1" />Approve
+                  </Button>
                 )}
-                {l.status !== "archived" && (
-                  <Button size="sm" variant="outline" onClick={() => setStatus(l.id, "archived")}><Archive className="h-4 w-4 mr-1" />Archive</Button>
+                {l.status !== "archived" && l.status !== "sold" && (
+                  <Button size="sm" variant="outline" onClick={() => { setCorrectionTarget(l); setCorrectionNote(l.admin_review_note ?? ""); }}>
+                    <MessageSquareWarning className="h-4 w-4 mr-1" />Request correction
+                  </Button>
                 )}
-                <Button size="sm" variant="destructive" onClick={() => remove(l.id)}><Trash2 className="h-4 w-4" /></Button>
+                <Button size="sm" variant="destructive" onClick={() => { setDeleteTarget(l); setDeleteReason(""); }}>
+                  <Trash2 className="h-4 w-4 mr-1" />Delete
+                </Button>
               </div>
             </Card>
           ))}
         </div>
       )}
+
+      {/* Request correction dialog */}
+      <Dialog open={!!correctionTarget} onOpenChange={(o) => !o && setCorrectionTarget(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Request correction / Richiedi correzione</DialogTitle>
+            <DialogDescription>
+              Explain what the seller must fix. The listing will be hidden from the Buy side and
+              the seller will receive an in-app notification.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Textarea
+              rows={5}
+              placeholder="e.g. Photos are unclear, price is missing, book does not match photos…"
+              value={correctionNote}
+              onChange={(e) => setCorrectionNote(e.target.value)}
+            />
+            <p className="text-xs text-muted-foreground">
+              Listing: <span className="font-medium">{correctionTarget?.title}</span>
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setCorrectionTarget(null)}>Cancel</Button>
+            <Button onClick={submitCorrection} disabled={correctionSubmitting || !correctionNote.trim()}>
+              {correctionSubmitting && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
+              Send correction request
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete dialog */}
+      <Dialog open={!!deleteTarget} onOpenChange={(o) => !o && setDeleteTarget(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete listing / Elimina annuncio</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this listing? The seller will be notified.
+              <br />
+              Sei sicuro di voler eliminare questo annuncio? Il venditore riceverà una notifica.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Textarea
+              rows={4}
+              placeholder="Reason (shown to the seller) / Motivo (mostrato al venditore)"
+              value={deleteReason}
+              onChange={(e) => setDeleteReason(e.target.value)}
+            />
+            <p className="text-xs text-muted-foreground">
+              Listing: <span className="font-medium">{deleteTarget?.title}</span>
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setDeleteTarget(null)}>Cancel</Button>
+            <Button variant="destructive" onClick={submitDelete} disabled={deleteSubmitting}>
+              {deleteSubmitting && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
+              Delete listing
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
