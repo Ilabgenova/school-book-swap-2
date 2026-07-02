@@ -855,6 +855,20 @@ export type Database = {
         Returns: undefined
       }
       current_user_is_admin: { Args: never; Returns: boolean }
+      get_active_listing_cards: {
+        Args: { _book_ids: string[] }
+        Returns: {
+          book_id: string
+          condition: string
+          id: string
+          listing_type: string
+          price: number
+          seller_completed_exchanges: number
+          seller_display_name: string
+          seller_id: string
+          seller_rating: number
+        }[]
+      }
     }
     Enums: {
       amazon_link_status: "coming_soon" | "available" | "not_available"

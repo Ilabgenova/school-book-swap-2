@@ -15,10 +15,15 @@ import { SummerReadingSection } from "./SummerReadingSection";
 import { officialBooks, OfficialBook, BookListing, isSellableItem, LAST_SCHOOL_YEAR, NEW_SCHOOL_YEAR_AVAILABLE } from "@/data/officialBooks";
 import { BuyNewNotice } from "@/components/buy-new/BuyNewNotice";
 import { supabase } from "@/integrations/supabase/client";
-import { formatSellerName } from "@/lib/sellerName";
 
 
 const FOREIGN_LANGUAGE_SUBJECTS = ["Spanish", "German", "Chinese", "French", "Spanish B", "German B", "Chinese B", "French B"];
+
+const mapListingCondition = (condition: string): BookListing["condition"] => {
+  if (condition === "new") return "new";
+  if (condition === "like_new") return "asNew";
+  return "used";
+};
 
 interface BookListProps {
   selectedGrade: string;
@@ -61,36 +66,22 @@ export const BookList = ({
     (async () => {
       const bookIds = allBooks.map((b) => b.id);
       if (bookIds.length === 0) { setLiveListings({}); return; }
-      const { data: rows, error } = await supabase
-        .from("listings")
-        .select("id, book_id, seller_id, listing_type, price, condition")
-        .eq("status", "active")
-        .in("book_id", bookIds);
+      const { data: rows, error } = await supabase.rpc("get_active_listing_cards", {
+        _book_ids: bookIds,
+      });
       if (error || !rows || cancelled) { if (!cancelled) setLiveListings({}); return; }
-
-      const sellerIds = Array.from(new Set(rows.map((r: any) => r.seller_id)));
-      const { data: profs } = sellerIds.length
-        ? await supabase
-            .from("profiles")
-            .select("user_id, first_name, last_name, rating_average, rating_count, completed_transactions")
-            .in("user_id", sellerIds)
-        : { data: [] as any[] };
-      const profMap = new Map<string, any>((profs || []).map((p: any) => [p.user_id, p]));
 
       const grouped: Record<string, BookListing[]> = {};
       for (const r of rows as any[]) {
-        const p = profMap.get(r.seller_id);
-        const displayName = formatSellerName(p?.first_name, p?.last_name);
-
         const listing: BookListing = {
           id: r.id,
           type: r.listing_type,
           price: r.price != null ? Number(r.price) : undefined,
-          condition: r.condition,
+          condition: mapListingCondition(r.condition),
           sellerId: r.seller_id,
-          sellerName: displayName,
-          sellerRating: Number(p?.rating_average ?? 0),
-          sellerCompletedExchanges: Number(p?.completed_transactions ?? 0),
+          sellerName: r.seller_display_name || "DISbook user",
+          sellerRating: Number(r.seller_rating ?? 0),
+          sellerCompletedExchanges: Number(r.seller_completed_exchanges ?? 0),
         };
         (grouped[r.book_id] ||= []).push(listing);
       }
