@@ -69,6 +69,9 @@ const MessagesContent = () => {
   const [sending, setSending] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  const [markSoldOpen, setMarkSoldOpen] = useState(false);
+  const [markSoldSubmitting, setMarkSoldSubmitting] = useState(false);
+
   const listingParam = searchParams.get("listing");
 
   // Ensure a conversation exists for ?listing=xxx (buyer opens contact)
