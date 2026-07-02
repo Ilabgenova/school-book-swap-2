@@ -75,6 +75,7 @@ export const AMAZON_LINKS_BY_ISBN: Record<string, string> = {
   "9788833143699": "https://amzn.to/4vaHSF8",
   "9788842653332": "https://amzn.to/4vaQrzM",
   "9788842653349": "https://amzn.to/4gN5sUY",
+  "9788842653356": "https://amzn.to/4aA4pUy",
   "9788843423958": "https://amzn.to/4gewRPt",
   "9788851159184": "https://amzn.to/4gjf4Xw",
   "9788851159191": "https://amzn.to/4vkjXn2",
