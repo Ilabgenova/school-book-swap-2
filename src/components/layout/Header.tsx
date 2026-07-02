@@ -11,6 +11,7 @@ import {
   ShoppingBag,
   Tag,
   Shield,
+  LifeBuoy,
   MoreHorizontal,
 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -137,6 +138,19 @@ export const Header = () => {
                   )}
                 </Button>
               </Link>
+              <Link to="/help-feedback">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={cn(
+                    "gap-1.5",
+                    isActive("/help-feedback") ? "text-accent bg-accent/10" : ""
+                  )}
+                >
+                  <LifeBuoy className="h-4 w-4" />
+                  {t.nav.help}
+                </Button>
+              </Link>
               {isAdmin && (
                 <Link to="/admin">
                   <Button
@@ -256,6 +270,12 @@ export const Header = () => {
                 <BookOpen className="h-4 w-4 mr-2" />
                 {t.nav.wanted}
               </DropdownMenuItem>
+              {user && (
+                <DropdownMenuItem onClick={() => navigate("/help-feedback")}>
+                  <LifeBuoy className="h-4 w-4 mr-2" />
+                  {t.nav.help}
+                </DropdownMenuItem>
+              )}
               {user && isAdmin && (
                 <>
                   <DropdownMenuSeparator />

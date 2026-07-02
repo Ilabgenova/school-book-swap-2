@@ -15,6 +15,7 @@ export const translations = {
       register: "Registrati",
       logout: "Esci",
       more: "Altro",
+      help: "Aiuto e segnalazioni",
     },
 
     // Landing Page
@@ -323,6 +324,7 @@ export const translations = {
       register: "Register",
       logout: "Logout",
       more: "More",
+      help: "Help & Feedback",
     },
 
     // Landing Page
