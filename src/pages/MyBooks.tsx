@@ -114,6 +114,7 @@ const MyBooksContent = () => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { language } = useLanguage();
   const [searchParams, setSearchParams] = useSearchParams();
   const initialTab = searchParams.get("tab") ?? "listed";
 
@@ -123,6 +124,13 @@ const MyBooksContent = () => {
   const [bought, setBought] = useState<BoughtRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [addOpen, setAddOpen] = useState(false);
+
+  // Sold dialog state
+  const [soldTarget, setSoldTarget] = useState<ListingRow | null>(null);
+  const [soldThrough, setSoldThrough] = useState<"unknown_buyer" | "buyer_selected" | "outside">("unknown_buyer");
+  const [soldBuyerId, setSoldBuyerId] = useState<string>("");
+  const [soldBuyers, setSoldBuyers] = useState<{ user_id: string; name: string }[]>([]);
+  const [soldSubmitting, setSoldSubmitting] = useState(false);
 
   // Correction / resubmit dialog state
   const [correctionListing, setCorrectionListing] = useState<ListingRow | null>(null);
