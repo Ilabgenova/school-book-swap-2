@@ -82,8 +82,9 @@ const Admin = () => {
           <p className="text-muted-foreground text-sm">Moderation & housekeeping for DISbook</p>
         </div>
         <Tabs defaultValue="listings">
-          <TabsList className="grid grid-cols-3 md:grid-cols-9 w-full md:w-auto">
+          <TabsList className="grid grid-cols-3 md:grid-cols-10 w-full md:w-auto">
             <TabsTrigger value="listings">Listings</TabsTrigger>
+            <TabsTrigger value="impact">Impact</TabsTrigger>
             <TabsTrigger value="feedback">Feedback</TabsTrigger>
             <TabsTrigger value="import">Book import</TabsTrigger>
             <TabsTrigger value="reuse">Reuse review</TabsTrigger>
@@ -94,6 +95,7 @@ const Admin = () => {
             <TabsTrigger value="roles">Roles</TabsTrigger>
           </TabsList>
           <TabsContent value="listings" className="mt-6"><ListingsPanel /></TabsContent>
+          <TabsContent value="impact" className="mt-6"><ImpactPanel /></TabsContent>
           <TabsContent value="feedback" className="mt-6"><FeedbackPanel /></TabsContent>
           <TabsContent value="import" className="mt-6"><BookImportPanel /></TabsContent>
           <TabsContent value="reuse" className="mt-6"><ReuseReviewPanel /></TabsContent>
