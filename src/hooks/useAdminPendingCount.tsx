@@ -3,22 +3,26 @@ import { supabase } from "@/integrations/supabase/client";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 
 /**
- * Number of listings that require admin attention:
- * - pending_review (new submission)
- * - needs_correction just resubmitted (moved back to pending_review by seller_resubmit_listing)
- *
- * Both currently share the `pending_review` status after resubmission.
+ * Attention count for the Admin section:
+ * - listings with status = 'pending_review' (new + seller-resubmitted)
+ * - feedback_reports with status = 'open'
  */
 export const useAdminPendingCount = () => {
   const { isAdmin } = useIsAdmin();
   const [count, setCount] = useState(0);
 
   const load = async () => {
-    const { count: c } = await supabase
-      .from("listings")
-      .select("id", { count: "exact", head: true })
-      .eq("status", "pending_review");
-    setCount(c || 0);
+    const [listingsRes, feedbackRes] = await Promise.all([
+      supabase
+        .from("listings")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "pending_review"),
+      supabase
+        .from("feedback_reports")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "open"),
+    ]);
+    setCount((listingsRes.count || 0) + (feedbackRes.count || 0));
   };
 
   useEffect(() => {
@@ -28,10 +32,15 @@ export const useAdminPendingCount = () => {
     }
     load();
     const ch = supabase
-      .channel("admin-pending-listings")
+      .channel("admin-attention")
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "listings" },
+        () => load()
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "feedback_reports" },
         () => load()
       )
       .subscribe();
