@@ -246,6 +246,9 @@ const ListingsPanel = () => {
                 )}
               </div>
               <div className="flex gap-2 flex-wrap">
+                <Button size="sm" variant="secondary" onClick={() => setPreviewTarget(l)}>
+                  <Eye className="h-4 w-4 mr-1" />Preview listing / Anteprima
+                </Button>
                 {l.status !== "active" && l.status !== "sold" && (
                   <Button size="sm" variant="outline" onClick={() => approve(l.id)}>
                     <Check className="h-4 w-4 mr-1" />Approve
