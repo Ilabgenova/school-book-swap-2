@@ -330,9 +330,134 @@ const ListingsPanel = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Full listing preview dialog */}
+      <Dialog open={!!previewTarget} onOpenChange={(o) => { if (!o) { setPreviewTarget(null); setLightbox(null); } }}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Listing preview / Anteprima annuncio</DialogTitle>
+            <DialogDescription>
+              Full listing as it would appear to buyers. Review all photos and details before acting.
+              <br />
+              Annuncio completo come lo vedrebbero gli acquirenti. Controlla foto e dettagli prima di decidere.
+            </DialogDescription>
+          </DialogHeader>
+          {previewTarget && (
+            <div className="space-y-4">
+              {/* Photos */}
+              <div>
+                <p className="text-xs uppercase tracking-wide text-muted-foreground mb-2">Photos / Foto</p>
+                {previewTarget.images && previewTarget.images.length > 0 ? (
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                    {previewTarget.images.map((src, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => setLightbox(src)}
+                        className="relative aspect-square overflow-hidden rounded-md border bg-muted hover:opacity-90"
+                      >
+                        <img
+                          src={src}
+                          alt={`Listing photo ${i + 1}`}
+                          className="w-full h-full object-cover"
+                          onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+                        />
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="rounded-md border border-dashed p-6 text-center text-sm text-muted-foreground flex flex-col items-center gap-1">
+                    <ImageOff className="h-5 w-5" />
+                    No photos uploaded / Nessuna foto caricata
+                  </div>
+                )}
+              </div>
+
+              {/* Details grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2 text-sm">
+                <PreviewField label="Title / Titolo" value={previewTarget.title} />
+                <PreviewField label="Item type / Tipo" value={previewTarget.item_type || "book"} />
+                <PreviewField label="Listing type" value={previewTarget.listing_type || "—"} />
+                <PreviewField label="Status" value={STATUS_LABEL_MAP[previewTarget.status] ?? previewTarget.status} />
+                <PreviewField label="Class / Classe" value={[previewTarget.program, previewTarget.class_year].filter(Boolean).join(" ") || "—"} />
+                <PreviewField label="Subject / Materia" value={previewTarget.subject || "—"} />
+                <PreviewField label="ISBN" value={previewTarget.isbn || "—"} />
+                <PreviewField label="Condition / Condizione" value={previewTarget.condition} />
+                <PreviewField label="Price / Prezzo" value={previewTarget.price != null ? `€${previewTarget.price}` : "—"} />
+                <PreviewField label="School year" value={previewTarget.school_year} />
+                <PreviewField
+                  label="Seller / Venditore"
+                  value={formatSellerName(sellers[previewTarget.seller_id]?.first_name, sellers[previewTarget.seller_id]?.last_name)}
+                />
+                <PreviewField label="Submitted / Inviato" value={new Date(previewTarget.created_at).toLocaleString()} />
+                <PreviewField label="Book ID" value={previewTarget.book_id || "—"} />
+              </div>
+
+              {/* Notes */}
+              <div>
+                <p className="text-xs uppercase tracking-wide text-muted-foreground mb-1">Seller notes / Note del venditore</p>
+                <div className="rounded-md bg-muted p-3 text-sm whitespace-pre-wrap min-h-[3rem]">
+                  {previewTarget.notes?.trim() || <span className="text-muted-foreground italic">No notes / Nessuna nota</span>}
+                </div>
+              </div>
+
+              {previewTarget.admin_review_note && (
+                <div>
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground mb-1">Previous admin note</p>
+                  <div className="rounded-md bg-amber-50 border border-amber-200 p-3 text-sm text-amber-900">
+                    {previewTarget.admin_review_note}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+          <DialogFooter className="flex-wrap gap-2">
+            <Button variant="ghost" onClick={() => setPreviewTarget(null)}>
+              <ArrowLeft className="h-4 w-4 mr-1" />Back to admin list / Torna alla lista admin
+            </Button>
+            {previewTarget && previewTarget.status !== "archived" && previewTarget.status !== "sold" && (
+              <Button
+                variant="outline"
+                onClick={() => { setCorrectionTarget(previewTarget); setCorrectionNote(previewTarget.admin_review_note ?? ""); setPreviewTarget(null); }}
+              >
+                <MessageSquareWarning className="h-4 w-4 mr-1" />Request correction / Richiedi correzione
+              </Button>
+            )}
+            {previewTarget && (
+              <Button
+                variant="destructive"
+                onClick={() => { setDeleteTarget(previewTarget); setDeleteReason(""); setPreviewTarget(null); }}
+              >
+                <Trash2 className="h-4 w-4 mr-1" />Delete / Elimina
+              </Button>
+            )}
+            {previewTarget && previewTarget.status !== "active" && previewTarget.status !== "sold" && (
+              <Button onClick={() => approve(previewTarget.id)}>
+                <Check className="h-4 w-4 mr-1" />Approve listing / Approva annuncio
+              </Button>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Photo lightbox */}
+      <Dialog open={!!lightbox} onOpenChange={(o) => !o && setLightbox(null)}>
+        <DialogContent className="max-w-4xl p-2 bg-black/95">
+          {lightbox && (
+            <img src={lightbox} alt="Listing photo" className="w-full h-auto max-h-[85vh] object-contain" />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
+
+const PreviewField = ({ label, value }: { label: string; value: string }) => (
+  <div className="flex flex-col">
+    <span className="text-[11px] uppercase tracking-wide text-muted-foreground">{label}</span>
+    <span className="font-medium break-words">{value}</span>
+  </div>
+);
 
 /* ---------- Amazon links ---------- */
 const AmazonPanel = () => {
