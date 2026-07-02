@@ -166,11 +166,11 @@ export const translations = {
       exchanges: "scambi",
       // New buying mode translations
       chooseHowToBuy: "Come vuoi procedere?",
-      buyAllNew: "Compra Tutto Nuovo — In arrivo",
-      buyAllNewDescription: "Funzione futura. DISbook al momento si concentra solo sui libri usati.",
+      buyAllNew: "Compra Nuovo su Amazon",
+      buyAllNewDescription: "Vedi la lista libri ufficiale con i link Amazon (affiliati) per acquistare nuovo.",
       seeUsedOptions: "Cerca Usato",
       seeUsedOptionsDescription: "Vedi gli annunci di libri usati della comunità DIS",
-      affiliateLink: "Eventuali link esterni futuri saranno chiaramente segnalati.",
+      affiliateLink: "Alcuni link Amazon sono affiliati: DISbook può ricevere un piccolo contributo, senza costi extra per te.",
       saveMoney: "Risparmia",
       ecoFriendly: "Ecosostenibile",
 
@@ -475,11 +475,11 @@ export const translations = {
       exchanges: "exchanges",
       // New buying mode translations
       chooseHowToBuy: "How do you want to proceed?",
-      buyAllNew: "Buy New — Coming Soon",
-      buyAllNewDescription: "Future option. DISbook currently focuses on used books only.",
+      buyAllNew: "Buy New on Amazon",
+      buyAllNewDescription: "See the official book list with Amazon (affiliate) links to buy new.",
       seeUsedOptions: "See Used Options",
       seeUsedOptionsDescription: "See used book listings from the DIS community",
-      affiliateLink: "Future external purchase links, if added, will be clearly marked and disclosed.",
+      affiliateLink: "Some Amazon links are affiliate links: DISbook may earn a small contribution at no extra cost to you.",
       saveMoney: "Save Money",
       ecoFriendly: "Eco-friendly",
 

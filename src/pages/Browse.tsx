@@ -26,13 +26,13 @@ const BrowseContent = () => {
   };
 
   const handleSelectMode = (mode: "new" | "used") => {
-    if (mode === "used") {
-      if (selectedProgram === "MYP") {
-        setStep("mypLanguage");
-      } else {
-        // DP (and any other program) skip subject selection — show all books for the class
-        setStep("books");
-      }
+    // Both "new" (Amazon affiliate) and "used" (community listings) share the
+    // same book list. MYP needs a foreign-language pick first; DP goes straight
+    // to the full class list.
+    if (selectedProgram === "MYP") {
+      setStep("mypLanguage");
+    } else {
+      setStep("books");
     }
   };
 

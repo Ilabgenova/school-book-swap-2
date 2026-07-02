@@ -1,7 +1,7 @@
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ShoppingBag, Recycle, ArrowLeft, Construction } from "lucide-react";
+import { ShoppingBag, Recycle, ArrowLeft } from "lucide-react";
 
 interface BuyingModeSelectorProps {
   selectedGrade: string;
@@ -45,23 +45,17 @@ export const BuyingModeSelector = ({
 
       {/* Mode Selection Cards */}
       <div className="grid md:grid-cols-2 gap-6">
-        {/* Buy All New — Coming Soon (disabled) */}
-        <div
-          aria-disabled="true"
-          className="group relative p-6 rounded-2xl border-2 border-dashed border-border bg-muted/30 text-left opacity-70 cursor-not-allowed"
+        {/* Buy New on Amazon (affiliate links) */}
+        <button
+          onClick={() => onSelectMode("new")}
+          className="group relative p-6 rounded-2xl border-2 border-border bg-card hover:border-primary hover:shadow-lg transition-all text-left"
         >
-          <div className="absolute top-4 right-4">
-            <Badge variant="outline" className="border-amber-300 text-amber-600 bg-amber-50 gap-1">
-              <Construction className="h-3 w-3" />
-              {t.browse.inProgress}
-            </Badge>
-          </div>
           <div className="space-y-4">
             <div className="h-14 w-14 rounded-xl bg-primary/10 flex items-center justify-center">
               <ShoppingBag className="h-7 w-7 text-primary" />
             </div>
             <div>
-              <h3 className="font-display text-lg font-bold text-foreground">
+              <h3 className="font-display text-lg font-bold text-foreground group-hover:text-primary transition-colors">
                 {t.browse.buyAllNew}
               </h3>
               <p className="text-sm text-muted-foreground mt-1">
@@ -72,7 +66,7 @@ export const BuyingModeSelector = ({
               {t.browse.affiliateLink}
             </p>
           </div>
-        </div>
+        </button>
 
 
         {/* See Used Options */}
