@@ -18,6 +18,7 @@ import { UsersPanel as UsersModerationPanel } from "@/components/admin/UsersPane
 import { ModerationPanel } from "@/components/admin/ModerationPanel";
 import { ReuseReviewPanel } from "@/components/admin/ReuseReviewPanel";
 import { FeedbackPanel } from "@/components/admin/FeedbackPanel";
+import { ImpactPanel } from "@/components/admin/ImpactPanel";
 import {
   Dialog,
   DialogContent,
