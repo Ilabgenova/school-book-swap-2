@@ -31,7 +31,7 @@ import { formatSellerName } from "@/lib/sellerName";
 type Listing = {
   id: string; title: string; subject: string | null; price: number; status: string;
   seller_id: string; created_at: string; program: string | null; class_year: string | null;
-  isbn: string | null; condition: string; school_year: string;
+  isbn: string | null; condition: string; school_year: string; admin_review_note: string | null;
 };
 type AmazonLink = {
   id: string; title: string; isbn: string | null; amazon_url: string | null;
