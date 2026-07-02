@@ -7,6 +7,7 @@ import { Heart, Loader2, BookPlus, Users } from "lucide-react";
 import { BookCover } from "@/components/book/BookCover";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 interface AggregatedWanted {
   book_id: string;
@@ -20,6 +21,7 @@ interface AggregatedWanted {
 
 const WantedContent = () => {
   const { user, loading: authLoading } = useAuth();
+  const { language } = useLanguage();
   const [items, setItems] = useState<AggregatedWanted[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -53,16 +55,25 @@ const WantedContent = () => {
             <Heart className="h-5 w-5" />
           </div>
           <div>
-            <h1 className="font-display text-2xl font-bold">Wanted books</h1>
+            <h1 className="font-display text-2xl font-bold">
+              {language === "it" ? "Libri cercati" : "Wanted books"}
+            </h1>
             <p className="text-sm text-muted-foreground">
-              Books other DIS families are looking for. If you have one, list it for sale, exchange or donation.
+              {language === "it"
+                ? "Libri che altre famiglie DIS stanno cercando. Se ne hai uno, pubblicalo in vendita, scambio o donazione."
+                : "Books other DIS families are looking for. If you have one, list it for sale, exchange or donation."}
             </p>
           </div>
         </div>
 
         {!user && (
           <div className="mb-4 rounded-lg border border-border bg-muted/40 p-3 text-sm text-muted-foreground">
-            <Link to="/login" className="text-primary underline">Sign in</Link> to add books to your wanted list.
+            <Link to="/login" className="text-primary underline">
+              {language === "it" ? "Accedi" : "Sign in"}
+            </Link>{" "}
+            {language === "it"
+              ? "per aggiungere libri alla tua lista dei cercati."
+              : "to add books to your wanted list."}
           </div>
         )}
 
@@ -73,8 +84,12 @@ const WantedContent = () => {
         ) : items.length === 0 ? (
           <div className="rounded-xl border border-dashed border-border p-10 text-center text-muted-foreground">
             <Heart className="mx-auto mb-3 h-8 w-8 opacity-50" />
-            <p>No wanted books yet.</p>
-            <p className="mt-1 text-xs">When buyers mark a book as wanted, it shows up here for sellers.</p>
+            <p>{language === "it" ? "Nessun libro cercato al momento." : "No wanted books yet."}</p>
+            <p className="mt-1 text-xs">
+              {language === "it"
+                ? "Quando gli acquirenti segnano un libro come cercato, appare qui per i venditori."
+                : "When buyers mark a book as wanted, it shows up here for sellers."}
+            </p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -104,14 +119,21 @@ const WantedContent = () => {
                   </p>
                   <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
                     <Users className="h-3 w-3" />
-                    {item.requesters} {item.requesters === 1 ? "person wants this" : "people want this"}
+                    {item.requesters}{" "}
+                    {language === "it"
+                      ? item.requesters === 1
+                        ? "persona lo cerca"
+                        : "persone lo cercano"
+                      : item.requesters === 1
+                      ? "person wants this"
+                      : "people want this"}
                   </div>
                 </div>
                 <div className="flex items-start">
                   <Link to={`/sell?intent=sell&mode=sell&bookId=${encodeURIComponent(item.book_id)}${item.class_year ? `&grade=${encodeURIComponent(item.class_year)}` : ""}`}>
                     <Button size="sm" className="gap-1">
                       <BookPlus className="h-3 w-3" />
-                      List this book
+                      {language === "it" ? "Pubblica questo libro" : "List this book"}
                     </Button>
                   </Link>
                 </div>

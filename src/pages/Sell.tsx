@@ -21,6 +21,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 const grades = {
   MYP: ["MYP 1", "MYP 2", "MYP 3", "MYP 4", "MYP 5"],
@@ -51,15 +52,14 @@ const getListingTypeFromParam = (type: string | null): ListingType => {
   return "sale";
 };
 
-const stepItems = [
-  "Choose class",
-  "Select book",
-  "Add condition and photos",
-  "Publish listing",
-];
+const STEP_LABELS = {
+  en: ["Choose class", "Select book", "Add condition and photos", "Publish listing"],
+  it: ["Scegli la classe", "Seleziona il libro", "Aggiungi condizione e foto", "Pubblica annuncio"],
+};
 
-const SellProgress = ({ step, submitting }: { step: SellStep; submitting: boolean }) => {
+const SellProgress = ({ step, submitting, language }: { step: SellStep; submitting: boolean; language: "it" | "en" }) => {
   const activeIndex = submitting ? 3 : step === "grade" ? 0 : step === "book" ? 1 : 2;
+  const stepItems = STEP_LABELS[language];
 
   return (
     <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -104,6 +104,7 @@ interface PhotoUploadProps {
   required?: boolean;
   value: PhotoState;
   onChange: (next: PhotoState) => void;
+  language: "it" | "en";
 }
 
 const isHeicLike = (f: File) => {
@@ -112,24 +113,29 @@ const isHeicLike = (f: File) => {
   return t.includes("heic") || t.includes("heif") || n.endsWith(".heic") || n.endsWith(".heif");
 };
 
-const PhotoUpload = ({ label, hint, warning, required, value, onChange }: PhotoUploadProps) => {
+const PhotoUpload = ({ label, hint, warning, required, value, onChange, language }: PhotoUploadProps) => {
+  const isIT = language === "it";
   const handleFile = (e: ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
     e.target.value = "";
     if (!f) return;
     if (f.size > MAX_BYTES) {
-      toast.error("Image must be 5 MB or smaller");
+      toast.error(isIT ? "L'immagine deve essere di 5 MB o meno" : "Image must be 5 MB or smaller");
       return;
     }
     const typeOk = ACCEPTED.includes((f.type || "").toLowerCase()) || isHeicLike(f);
     if (!typeOk) {
-      toast.error("Please upload JPG, PNG or WEBP images.");
+      toast.error(isIT ? "Carica immagini JPG, PNG o WEBP." : "Please upload JPG, PNG or WEBP images.");
       return;
     }
     if (isHeicLike(f)) {
-      // Browsers cannot preview HEIC; accept but warn — server/admin can transcode later.
       const img = new Image();
-      img.onerror = () => toast.message("HEIC photo uploaded. It may not preview here, but admins will see it.");
+      img.onerror = () =>
+        toast.message(
+          isIT
+            ? "Foto HEIC caricata. Potrebbe non vedersi in anteprima qui, ma gli admin la vedranno."
+            : "HEIC photo uploaded. It may not preview here, but admins will see it."
+        );
       try { img.src = URL.createObjectURL(f); } catch {}
     }
     onChange({ file: f, preview: URL.createObjectURL(f) });
@@ -155,7 +161,7 @@ const PhotoUpload = ({ label, hint, warning, required, value, onChange }: PhotoU
               type="button"
               onClick={() => { URL.revokeObjectURL(value.preview); onChange(null); }}
               className="absolute right-1.5 top-1.5 rounded-full bg-background/90 p-1 shadow-md hover:bg-background"
-              aria-label="Remove photo"
+              aria-label={isIT ? "Rimuovi foto" : "Remove photo"}
             >
               <X className="h-3.5 w-3.5" />
             </button>
@@ -163,7 +169,9 @@ const PhotoUpload = ({ label, hint, warning, required, value, onChange }: PhotoU
         ) : (
           <div className="flex flex-col items-center gap-2 p-3 text-center">
             <Camera className="h-6 w-6 text-muted-foreground" />
-            <span className="text-[11px] text-muted-foreground">Take a new photo or upload one</span>
+            <span className="text-[11px] text-muted-foreground">
+              {isIT ? "Scatta una foto o caricane una" : "Take a new photo or upload one"}
+            </span>
           </div>
         )}
       </div>
@@ -171,7 +179,7 @@ const PhotoUpload = ({ label, hint, warning, required, value, onChange }: PhotoU
       <div className="grid grid-cols-2 gap-1.5">
         <label className="flex cursor-pointer items-center justify-center gap-1.5 rounded-md border border-border bg-background px-2 py-1.5 text-xs font-medium hover:bg-muted">
           <Camera className="h-3.5 w-3.5" />
-          {value ? "Retake" : "Take Photo"}
+          {value ? (isIT ? "Rifai" : "Retake") : (isIT ? "Scatta foto" : "Take Photo")}
           <input
             type="file"
             accept={ACCEPT_ATTR}
@@ -182,7 +190,7 @@ const PhotoUpload = ({ label, hint, warning, required, value, onChange }: PhotoU
         </label>
         <label className="flex cursor-pointer items-center justify-center gap-1.5 rounded-md border border-border bg-background px-2 py-1.5 text-xs font-medium hover:bg-muted">
           <Upload className="h-3.5 w-3.5" />
-          {value ? "Replace" : "Upload"}
+          {value ? (isIT ? "Sostituisci" : "Replace") : (isIT ? "Carica" : "Upload")}
           <input
             type="file"
             accept={ACCEPT_ATTR}
@@ -199,6 +207,8 @@ const PhotoUpload = ({ label, hint, warning, required, value, onChange }: PhotoU
 
 const SellContent = () => {
   const { user, loading: authLoading } = useAuth();
+  const { language } = useLanguage();
+  const isIT = language === "it";
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -323,14 +333,16 @@ const SellContent = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!selectedBook) { toast.error("Please select a book"); return; }
+    if (!selectedBook) { toast.error(isIT ? "Seleziona un libro" : "Please select a book"); return; }
     if (!photosValid) {
-      toast.error("Please upload at least a front cover photo and one inside photo before publishing your listing.");
+      toast.error(isIT
+        ? "Carica almeno una foto della copertina e una delle pagine interne prima di pubblicare."
+        : "Please upload at least a front cover photo and one inside photo before publishing your listing.");
       return;
     }
     const priceValue = listingType === "sale" ? parseFloat(price) : 0;
     if (listingType === "sale" && (isNaN(priceValue) || priceValue < 0)) {
-      toast.error("Please enter a valid price");
+      toast.error(isIT ? "Inserisci un prezzo valido" : "Please enter a valid price");
       return;
     }
 
@@ -363,10 +375,10 @@ const SellContent = () => {
         status: "pending_review",
       }]);
       if (error) throw error;
-      toast.success("Listing submitted for review!");
+      toast.success(isIT ? "Annuncio inviato per la revisione!" : "Listing submitted for review!");
       navigate("/browse");
     } catch (err: any) {
-      toast.error(err.message || "Could not publish listing");
+      toast.error(err.message || (isIT ? "Impossibile pubblicare l'annuncio" : "Could not publish listing"));
     } finally {
       setSubmitting(false);
     }
@@ -376,7 +388,7 @@ const SellContent = () => {
     <MainLayout>
       <div className="container py-8 max-w-2xl">
         <Button variant="ghost" size="sm" onClick={handleBack} className="mb-4 gap-2">
-          <ArrowLeft className="h-4 w-4" /> Back
+          <ArrowLeft className="h-4 w-4" /> {isIT ? "Indietro" : "Back"}
         </Button>
 
         <div className="flex items-center gap-3 mb-6">
@@ -384,15 +396,19 @@ const SellContent = () => {
             <BookPlus className="h-5 w-5" />
           </div>
           <div>
-            <h1 className="font-display text-2xl font-bold">Create your listing</h1>
+            <h1 className="font-display text-2xl font-bold">
+              {isIT ? "Crea il tuo annuncio" : "Create your listing"}
+            </h1>
             <p className="text-sm text-muted-foreground">
-              Choose the class, select the book, then add condition details and photos.
+              {isIT
+                ? "Scegli la classe, seleziona il libro, poi aggiungi condizione e foto."
+                : "Choose the class, select the book, then add condition details and photos."}
             </p>
           </div>
         </div>
 
         <div className="mb-6">
-          <SellProgress step={step} submitting={submitting} />
+          <SellProgress step={step} submitting={submitting} language={language} />
         </div>
 
         {step === "grade" && (
@@ -400,10 +416,14 @@ const SellContent = () => {
             <div className="text-center">
               <GraduationCap className="mx-auto mb-4 h-12 w-12 text-primary" />
               <h2 className="font-display text-2xl font-bold text-foreground">
-                Choose the class/year of the book you want to list
+                {isIT
+                  ? "Scegli la classe del libro che vuoi pubblicare"
+                  : "Choose the class/year of the book you want to list"}
               </h2>
               <p className="mt-2 text-muted-foreground">
-                This starts the selling flow and will not show available listings to buy.
+                {isIT
+                  ? "Questo avvia il flusso di vendita e non mostrerà annunci disponibili per l'acquisto."
+                  : "This starts the selling flow and will not show available listings to buy."}
               </p>
             </div>
 
@@ -447,18 +467,23 @@ const SellContent = () => {
                   <span className="font-display text-xl font-bold text-foreground">{grade}</span>
                 </div>
                 <h2 className="font-display text-2xl font-bold text-foreground">
-                  Select the book you want to sell, donate or exchange
+                  {isIT
+                    ? "Seleziona il libro che vuoi vendere, donare o scambiare"
+                    : "Select the book you want to sell, donate or exchange"}
                 </h2>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Choose one book from the reference list for this class/year to create a listing.
+                  {isIT
+                    ? "Scegli un libro dall'elenco di riferimento per questa classe per creare un annuncio."
+                    : "Choose one book from the reference list for this class/year to create a listing."}
                 </p>
                 <p className="mt-2 text-xs text-muted-foreground">
-                  Showing the {LAST_SCHOOL_YEAR} reference list. The new school year book list is coming soon.
-                  Only real books (plus Keyboard and Sphero) are shown — PDFs, photocopies and downloadable materials are excluded.
+                  {isIT
+                    ? `Elenco di riferimento ${LAST_SCHOOL_YEAR}. L'elenco del nuovo anno scolastico è in arrivo. Sono mostrati solo libri reali (più Keyboard e Sphero) — PDF, fotocopie e materiali digitali sono esclusi.`
+                    : `Showing the ${LAST_SCHOOL_YEAR} reference list. The new school year book list is coming soon. Only real books (plus Keyboard and Sphero) are shown — PDFs, photocopies and downloadable materials are excluded.`}
                 </p>
               </div>
               <Button type="button" variant="outline" size="sm" onClick={() => setStep("grade")}>
-                Change class
+                {isIT ? "Cambia classe" : "Change class"}
               </Button>
             </div>
 
@@ -489,7 +514,7 @@ const SellContent = () => {
                 ))
               ) : (
                 <div className="rounded-lg border border-border bg-muted/30 p-4 text-sm text-muted-foreground">
-                  No books found for this class/year.
+                  {isIT ? "Nessun libro trovato per questa classe." : "No books found for this class/year."}
                 </div>
               )}
             </div>
@@ -506,7 +531,9 @@ const SellContent = () => {
                 iconClassName="h-6 w-6"
               />
               <div className="min-w-0 flex-1">
-                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Create your listing</p>
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  {isIT ? "Crea il tuo annuncio" : "Create your listing"}
+                </p>
                 <h2 className="mt-1 font-display text-xl font-bold text-foreground">{selectedBook.title}</h2>
                 <p className="mt-1 text-sm text-muted-foreground">
                   {selectedBook.grade} • {selectedBook.subject}{selectedBook.isbn ? ` • ISBN: ${selectedBook.isbn}` : ""}
@@ -516,26 +543,26 @@ const SellContent = () => {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Listing type</Label>
+                <Label>{isIT ? "Tipo di annuncio" : "Listing type"}</Label>
                 <Select value={listingType} onValueChange={(v) => handleListingTypeChange(v as ListingType)}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="sale">Sell</SelectItem>
-                    <SelectItem value="exchange">Exchange</SelectItem>
-                    <SelectItem value="donation">Donate</SelectItem>
+                    <SelectItem value="sale">{isIT ? "Vendita" : "Sell"}</SelectItem>
+                    <SelectItem value="exchange">{isIT ? "Scambio" : "Exchange"}</SelectItem>
+                    <SelectItem value="donation">{isIT ? "Donazione" : "Donate"}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Condition</Label>
+                <Label>{isIT ? "Condizione" : "Condition"}</Label>
                 <Select value={condition} onValueChange={(v) => setCondition(v as Condition)}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="new">New</SelectItem>
-                    <SelectItem value="like_new">Like new</SelectItem>
-                    <SelectItem value="good">Good</SelectItem>
-                    <SelectItem value="fair">Fair</SelectItem>
-                    <SelectItem value="poor">Poor</SelectItem>
+                    <SelectItem value="new">{isIT ? "Nuovo" : "New"}</SelectItem>
+                    <SelectItem value="like_new">{isIT ? "Come nuovo" : "Like new"}</SelectItem>
+                    <SelectItem value="good">{isIT ? "Buono" : "Good"}</SelectItem>
+                    <SelectItem value="fair">{isIT ? "Discreto" : "Fair"}</SelectItem>
+                    <SelectItem value="poor">{isIT ? "Scarso" : "Poor"}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -543,7 +570,7 @@ const SellContent = () => {
 
             {listingType === "sale" && (
               <div className="space-y-2">
-                <Label htmlFor="price">Price (€)</Label>
+                <Label htmlFor="price">{isIT ? "Prezzo (€)" : "Price (€)"}</Label>
                 <Input id="price" type="number" min="0" step="0.50" placeholder="0.00"
                   value={price} onChange={(e) => setPrice(e.target.value)} required />
               </div>
@@ -552,93 +579,125 @@ const SellContent = () => {
             {/* Photos */}
             <div className="space-y-3 border-t border-border pt-2">
               <div>
-                <Label className="font-display text-base">Book photos</Label>
+                <Label className="font-display text-base">{isIT ? "Foto del libro" : "Book photos"}</Label>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  You can take a new photo now or upload an existing image from your gallery.
+                  {isIT
+                    ? "Puoi scattare una foto ora oppure caricarne una dalla tua galleria."
+                    : "You can take a new photo now or upload an existing image from your gallery."}
                 </p>
               </div>
 
               <div className="flex gap-2 rounded-lg border border-primary/30 bg-primary/5 p-3 text-xs text-foreground">
                 <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                 <p>
-                  Please upload real photos of the exact book you are listing. Photos must clearly show the book cover and inside pages.
-                  Do not upload unrelated images, screenshots, memes, stock photos or photos of a different book.
+                  {isIT
+                    ? "Carica foto reali del libro esatto che stai vendendo. Le foto devono mostrare chiaramente la copertina e le pagine interne. Non caricare immagini non pertinenti, screenshot, meme, foto stock o di un libro diverso."
+                    : "Please upload real photos of the exact book you are listing. Photos must clearly show the book cover and inside pages. Do not upload unrelated images, screenshots, memes, stock photos or photos of a different book."}
                 </p>
               </div>
 
               <Collapsible>
                 <CollapsibleTrigger className="flex w-full items-center justify-between rounded-lg border border-border bg-muted/30 px-3 py-2 text-sm font-medium hover:bg-muted/50">
-                  <span className="flex items-center gap-2"><Info className="h-4 w-4" /> Photo Guidelines</span>
+                  <span className="flex items-center gap-2"><Info className="h-4 w-4" /> {isIT ? "Linee guida foto" : "Photo Guidelines"}</span>
                   <ChevronDown className="h-4 w-4 transition-transform data-[state=open]:rotate-180" />
                 </CollapsibleTrigger>
                 <CollapsibleContent className="rounded-b-lg border border-t-0 border-border bg-muted/20 px-4 py-3 text-xs text-muted-foreground">
                   <ul className="list-disc space-y-1 pl-4">
-                    <li>Use real photos of the exact book you are listing</li>
-                    <li>Show the full front cover</li>
-                    <li>Show at least one inside page to demonstrate condition</li>
-                    <li>Make sure the title and book condition are visible</li>
-                    <li>Avoid blurry, dark or cropped photos</li>
-                    <li>Do not upload stock photos, screenshots, memes or unrelated images</li>
-                    <li>Do not upload photos of a different book</li>
-                    <li>Do not include children, faces, addresses, phone numbers, school documents or private information</li>
+                    {(isIT
+                      ? [
+                          "Usa foto reali del libro esatto che stai vendendo",
+                          "Mostra tutta la copertina anteriore",
+                          "Mostra almeno una pagina interna per far vedere la condizione",
+                          "Assicurati che titolo e condizione del libro siano visibili",
+                          "Evita foto sfocate, scure o tagliate",
+                          "Non caricare foto stock, screenshot, meme o immagini non pertinenti",
+                          "Non caricare foto di un libro diverso",
+                          "Non includere bambini, volti, indirizzi, numeri di telefono, documenti scolastici o informazioni private",
+                        ]
+                      : [
+                          "Use real photos of the exact book you are listing",
+                          "Show the full front cover",
+                          "Show at least one inside page to demonstrate condition",
+                          "Make sure the title and book condition are visible",
+                          "Avoid blurry, dark or cropped photos",
+                          "Do not upload stock photos, screenshots, memes or unrelated images",
+                          "Do not upload photos of a different book",
+                          "Do not include children, faces, addresses, phone numbers, school documents or private information",
+                        ]).map((g) => <li key={g}>{g}</li>)}
                   </ul>
                 </CollapsibleContent>
               </Collapsible>
 
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                 <PhotoUpload
-                  label="Front cover"
+                  language={language}
+                  label={isIT ? "Copertina" : "Front cover"}
                   required
-                  warning="Upload the actual front cover of this book."
+                  warning={isIT ? "Carica la copertina reale di questo libro." : "Upload the actual front cover of this book."}
                   value={front}
                   onChange={setFront}
                 />
                 <PhotoUpload
-                  label="Inside pages"
+                  language={language}
+                  label={isIT ? "Pagine interne" : "Inside pages"}
                   required
-                  hint="Show writing, marks, page condition"
-                  warning="Upload a real inside-page photo showing the condition of this book."
+                  hint={isIT ? "Mostra scritte, segni, condizione delle pagine" : "Show writing, marks, page condition"}
+                  warning={isIT ? "Carica una foto reale delle pagine interne che mostri la condizione." : "Upload a real inside-page photo showing the condition of this book."}
                   value={inside}
                   onChange={setInside}
                 />
-                <PhotoUpload label="Back cover" value={back} onChange={setBack} />
-                <PhotoUpload label="Extra photo" value={extra1} onChange={setExtra1} />
-                <PhotoUpload label="Extra photo" value={extra2} onChange={setExtra2} />
+                <PhotoUpload language={language} label={isIT ? "Retro copertina" : "Back cover"} value={back} onChange={setBack} />
+                <PhotoUpload language={language} label={isIT ? "Foto extra" : "Extra photo"} value={extra1} onChange={setExtra1} />
+                <PhotoUpload language={language} label={isIT ? "Foto extra" : "Extra photo"} value={extra2} onChange={setExtra2} />
               </div>
 
               <div className="flex gap-2 rounded-lg border border-border bg-muted/50 p-3 text-xs text-muted-foreground">
                 <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
                 <div className="space-y-1">
                   <p>
-                    Please make sure photos do not contain children, faces, addresses, phone numbers, school documents or other private information.
+                    {isIT
+                      ? "Assicurati che le foto non contengano bambini, volti, indirizzi, numeri di telefono, documenti scolastici o altre informazioni private."
+                      : "Please make sure photos do not contain children, faces, addresses, phone numbers, school documents or other private information."}
                   </p>
                   <p>
-                    Photos should be clear, well-lit and readable. Blurry or unrelated photos may cause the listing to be rejected by DISbook admins.
+                    {isIT
+                      ? "Le foto devono essere chiare, ben illuminate e leggibili. Foto sfocate o non pertinenti possono causare il rifiuto dell'annuncio da parte degli admin DISbook."
+                      : "Photos should be clear, well-lit and readable. Blurry or unrelated photos may cause the listing to be rejected by DISbook admins."}
                   </p>
-                  <p>Accepted formats: JPG, PNG, WEBP, HEIC/HEIF · Max 5 MB per image.</p>
+                  <p>
+                    {isIT
+                      ? "Formati accettati: JPG, PNG, WEBP, HEIC/HEIF · Max 5 MB per immagine."
+                      : "Accepted formats: JPG, PNG, WEBP, HEIC/HEIF · Max 5 MB per image."}
+                  </p>
                 </div>
               </div>
 
               {!photosValid && (
                 <div className="flex gap-2 rounded-lg border border-amber-300/60 bg-amber-50 p-3 text-xs text-amber-900 dark:bg-amber-950/30 dark:text-amber-200">
                   <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
-                  <p>Please upload at least a front cover photo and one inside photo before publishing your listing.</p>
+                  <p>
+                    {isIT
+                      ? "Carica almeno una foto della copertina e una delle pagine interne prima di pubblicare."
+                      : "Please upload at least a front cover photo and one inside photo before publishing your listing."}
+                  </p>
                 </div>
               )}
             </div>
 
 
             <div className="space-y-2">
-              <Label htmlFor="notes">Notes (optional)</Label>
-              <Textarea id="notes" placeholder="Anything the buyer should know (highlighting, missing pages, etc.)"
+              <Label htmlFor="notes">{isIT ? "Note (facoltativo)" : "Notes (optional)"}</Label>
+              <Textarea id="notes" placeholder={isIT ? "Cosa dovrebbe sapere l'acquirente (sottolineature, pagine mancanti, ecc.)" : "Anything the buyer should know (highlighting, missing pages, etc.)"}
                 value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} />
             </div>
 
             <Button type="submit" className="w-full" size="lg" disabled={!canSubmit}>
-              {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Publish listing"}
+              {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : (isIT ? "Pubblica annuncio" : "Publish listing")}
             </Button>
             <p className="text-center text-xs text-muted-foreground">
-              DISbook is an independent student-created project and is not the official DIS app. Always check the official DIS book list before finalising your purchase.
+              {isIT
+                ? "DISbook è un progetto indipendente creato dagli studenti e non è l'app ufficiale DIS. Controlla sempre l'elenco libri ufficiale DIS prima di finalizzare l'acquisto."
+                : "DISbook is an independent student-created project and is not the official DIS app. Always check the official DIS book list before finalising your purchase."}
             </p>
           </form>
         )}

@@ -31,7 +31,7 @@ const GoogleIcon = () => (
 );
 
 const RegisterContent = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { user } = useAuth();
   const navigate = useNavigate();
   const nextPath = new URLSearchParams(window.location.search).get("next");
@@ -68,11 +68,11 @@ const RegisterContent = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      toast.error("Passwords don't match");
+      toast.error(language === "it" ? "Le password non coincidono" : "Passwords don't match");
       return;
     }
     if (password.length < 8) {
-      toast.error("Password must be at least 8 characters");
+      toast.error(language === "it" ? "La password deve avere almeno 8 caratteri" : "Password must be at least 8 characters");
       return;
     }
     setLoading(true);
@@ -93,7 +93,9 @@ const RegisterContent = () => {
       const msg = error.message?.toLowerCase() || "";
       if (msg.includes("pwned") || msg.includes("compromised") || msg.includes("breach") || msg.includes("weak")) {
         toast.error(
-          "This password has appeared in known data breaches. Please choose a different password (it doesn't need to be complex — just not a commonly used one).",
+          language === "it"
+            ? "Questa password è comparsa in fughe di dati note. Scegline un'altra (non serve che sia complessa, basta che non sia molto comune)."
+            : "This password has appeared in known data breaches. Please choose a different password (it doesn't need to be complex — just not a commonly used one).",
           { duration: 8000 }
         );
       } else {
@@ -115,7 +117,7 @@ const RegisterContent = () => {
         .eq("user_id", data.user.id);
     }
     setLoading(false);
-    toast.success("Account created! Check your email to confirm.");
+    toast.success(language === "it" ? "Account creato! Controlla la tua email per confermare." : "Account created! Check your email to confirm.");
     navigate(redirectTo);
   };
 
@@ -123,7 +125,7 @@ const RegisterContent = () => {
     const result = await lovable.auth.signInWithOAuth("google", {
       redirect_uri: `${window.location.origin}/register?next=${encodeURIComponent(redirectTo)}`,
     });
-    if (result.error) toast.error("Google sign-in failed");
+    if (result.error) toast.error(language === "it" ? "Accesso con Google non riuscito" : "Google sign-in failed");
   };
 
   const originChosen = isFromDIS !== null;
@@ -138,11 +140,13 @@ const RegisterContent = () => {
               <BookOpen className="h-7 w-7" />
             </div>
             <h1 className="font-display text-2xl font-bold text-foreground">{t.nav.register}</h1>
-            <p className="text-muted-foreground mt-2">Join the DIS community project</p>
+            <p className="text-muted-foreground mt-2">
+              {language === "it" ? "Unisciti al progetto della comunità DIS" : "Join the DIS community project"}
+            </p>
             <p className="text-[11px] text-muted-foreground/80 mt-3 italic leading-relaxed border-l-2 border-accent/40 pl-2 text-left">
-              DISbook is an independent student-created project for the DIS community.
-              It is not an official platform of Deledda International School and is not
-              managed, approved or endorsed by the school.
+              {language === "it"
+                ? "DISbook è un progetto indipendente creato dagli studenti per la comunità DIS. Non è una piattaforma ufficiale della Deledda International School e non è gestita, approvata o supportata dalla scuola."
+                : "DISbook is an independent student-created project for the DIS community. It is not an official platform of Deledda International School and is not managed, approved or endorsed by the school."}
             </p>
           </div>
 
@@ -151,7 +155,9 @@ const RegisterContent = () => {
             <div className="space-y-3">
               <Label className="flex items-center gap-2">
                 <School className="h-4 w-4 text-primary" />
-                <span className="text-xs uppercase tracking-wide text-muted-foreground mr-1">Step 1</span>
+                <span className="text-xs uppercase tracking-wide text-muted-foreground mr-1">
+                  {language === "it" ? "Passo 1" : "Step 1"}
+                </span>
                 {t.browse.schoolOriginQuestion}
               </Label>
               <div className="grid grid-cols-2 gap-3">
@@ -180,9 +186,9 @@ const RegisterContent = () => {
 
             {isFromDIS && (
               <div className="space-y-2">
-                <Label>Previous Grade (Last Year)</Label>
+                <Label>{language === "it" ? "Classe precedente (anno scorso)" : "Previous Grade (Last Year)"}</Label>
                 <Select onValueChange={handleGradeSelect} value={previousGrade}>
-                  <SelectTrigger><SelectValue placeholder="Select your previous grade" /></SelectTrigger>
+                  <SelectTrigger><SelectValue placeholder={language === "it" ? "Seleziona la tua classe precedente" : "Select your previous grade"} /></SelectTrigger>
                   <SelectContent>
                     {Object.entries(grades).map(([, programGrades]) =>
                       programGrades.map((grade) => (
@@ -192,15 +198,17 @@ const RegisterContent = () => {
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-muted-foreground">
-                  We'll suggest which books from last year you can list now.
+                  {language === "it"
+                    ? "Ti suggeriremo quali libri dell'anno scorso puoi pubblicare ora."
+                    : "We'll suggest which books from last year you can list now."}
                 </p>
               </div>
             )}
             {isFromDIS && previousGrade && (
               <div className="space-y-2">
-                <Label>New Class/Year (2026-2027)</Label>
+                <Label>{language === "it" ? "Nuova classe (2026-2027)" : "New Class/Year (2026-2027)"}</Label>
                 <Select onValueChange={setNewGrade} value={newGrade}>
-                  <SelectTrigger><SelectValue placeholder="Select your new class/year" /></SelectTrigger>
+                  <SelectTrigger><SelectValue placeholder={language === "it" ? "Seleziona la tua nuova classe" : "Select your new class/year"} /></SelectTrigger>
                   <SelectContent>
                     {Object.entries(grades).map(([, programGrades]) =>
                       programGrades.map((grade) => (
@@ -222,31 +230,31 @@ const RegisterContent = () => {
           {originChosen && (
             <div className={`mt-6 bg-card rounded-2xl border border-border p-6 shadow-lg transition-opacity ${canShowAuth ? "opacity-100" : "opacity-50 pointer-events-none"}`}>
               <p className="text-xs uppercase tracking-wide text-muted-foreground mb-3">
-                Step 2 — Create your account
+                {language === "it" ? "Passo 2 — Crea il tuo account" : "Step 2 — Create your account"}
               </p>
               {!canShowAuth && (
                 <p className="text-sm text-muted-foreground mb-3">
-                  Select your previous grade above to continue.
+                  {language === "it" ? "Seleziona la classe precedente qui sopra per continuare." : "Select your previous grade above to continue."}
                 </p>
               )}
               <Button type="button" variant="outline" className="w-full mb-4" onClick={handleGoogle} disabled={!canShowAuth}>
-                <GoogleIcon /> Continue with Google
+                <GoogleIcon /> {language === "it" ? "Continua con Google" : "Continue with Google"}
               </Button>
               <div className="relative my-4">
                 <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
                 <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-card px-2 text-muted-foreground">or</span>
+                  <span className="bg-card px-2 text-muted-foreground">{language === "it" ? "oppure" : "or"}</span>
                 </div>
               </div>
 
               <form className="space-y-4" onSubmit={handleSubmit}>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="firstName">First Name</Label>
+                    <Label htmlFor="firstName">{language === "it" ? "Nome" : "First Name"}</Label>
                     <Input id="firstName" type="text" placeholder="Mario" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="lastName">Last Name</Label>
+                    <Label htmlFor="lastName">{language === "it" ? "Cognome" : "Last Name"}</Label>
                     <Input id="lastName" type="text" placeholder="Rossi" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
                   </div>
                 </div>
@@ -262,7 +270,7 @@ const RegisterContent = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Confirm Password</Label>
+                  <Label htmlFor="confirmPassword">{language === "it" ? "Conferma password" : "Confirm Password"}</Label>
                   <Input id="confirmPassword" type="password" placeholder="••••••••" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
                 </div>
 
@@ -273,7 +281,7 @@ const RegisterContent = () => {
 
               <div className="mt-6 text-center text-sm">
                 <p className="text-muted-foreground">
-                  Already have an account?{" "}
+                  {language === "it" ? "Hai già un account?" : "Already have an account?"}{" "}
                   <Link to="/login" className="text-primary font-medium hover:underline">{t.nav.login}</Link>
                 </p>
               </div>

@@ -18,7 +18,7 @@ const GoogleIcon = () => (
 );
 
 const LoginContent = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { user } = useAuth();
   const navigate = useNavigate();
   const nextPath = new URLSearchParams(window.location.search).get("next");
@@ -40,7 +40,7 @@ const LoginContent = () => {
       toast.error(error.message);
       return;
     }
-    toast.success("Welcome back!");
+    toast.success(language === "it" ? "Bentornato!" : "Welcome back!");
     navigate(redirectTo);
   };
 
@@ -48,7 +48,7 @@ const LoginContent = () => {
     const result = await lovable.auth.signInWithOAuth("google", {
       redirect_uri: `${window.location.origin}/login?next=${encodeURIComponent(redirectTo)}`,
     });
-    if (result.error) toast.error("Google sign-in failed");
+    if (result.error) toast.error(language === "it" ? "Accesso con Google non riuscito" : "Google sign-in failed");
   };
 
   return (
@@ -60,17 +60,19 @@ const LoginContent = () => {
               <BookOpen className="h-7 w-7" />
             </div>
             <h1 className="font-display text-2xl font-bold text-foreground">{t.nav.login}</h1>
-            <p className="text-muted-foreground mt-2">Welcome back to DISbook</p>
+            <p className="text-muted-foreground mt-2">
+              {language === "it" ? "Bentornato su DISbook" : "Welcome back to DISbook"}
+            </p>
           </div>
 
           <div className="bg-card rounded-2xl border border-border p-6 shadow-lg">
             <Button type="button" variant="outline" className="w-full mb-4" onClick={handleGoogle}>
-              <GoogleIcon /> Continue with Google
+              <GoogleIcon /> {language === "it" ? "Continua con Google" : "Continue with Google"}
             </Button>
             <div className="relative my-4">
               <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-muted-foreground">or</span>
+                <span className="bg-card px-2 text-muted-foreground">{language === "it" ? "oppure" : "or"}</span>
               </div>
             </div>
 
@@ -92,7 +94,7 @@ const LoginContent = () => {
 
             <div className="mt-6 text-center text-sm">
               <p className="text-muted-foreground">
-                Don't have an account?{" "}
+                {language === "it" ? "Non hai un account?" : "Don't have an account?"}{" "}
                 <Link to={`/register?next=${encodeURIComponent(redirectTo)}`} className="text-primary font-medium hover:underline">{t.nav.register}</Link>
               </p>
             </div>
