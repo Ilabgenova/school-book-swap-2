@@ -231,7 +231,7 @@ export const BookList = ({
       {selectedBook && (
         <ListingsModal
           book={selectedBook}
-          listings={mockListings[selectedBook.id] || []}
+          listings={liveListings[selectedBook.id] || []}
           onClose={() => setSelectedBook(null)}
         />
       )}
