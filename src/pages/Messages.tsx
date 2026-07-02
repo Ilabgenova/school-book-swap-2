@@ -333,6 +333,30 @@ const MessagesContent = () => {
     }, 30);
   };
 
+  const handleMarkSold = async () => {
+    if (!selected || !user) return;
+    setMarkSoldSubmitting(true);
+    const buyerId = selected.conv.buyer_id;
+    const { error } = await supabase.rpc("seller_mark_listing_sold", {
+      _listing_id: selected.conv.listing_id,
+      _buyer_id: buyerId,
+      _sold_through_disbook: true,
+    });
+    setMarkSoldSubmitting(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success(
+      language === "it"
+        ? "Annuncio segnato come venduto"
+        : "Listing marked as sold"
+    );
+    setMarkSoldOpen(false);
+    loadThreads();
+  };
+
+
   if (authLoading) {
     return (
       <MainLayout>
