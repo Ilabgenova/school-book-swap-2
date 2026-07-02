@@ -276,6 +276,15 @@ export const translations = {
       perYear: "",
       free: "Gratis",
     },
+    // Listing status
+    listingStatus: {
+      pending_review: "In attesa di approvazione",
+      active: "Approvato",
+      sold: "Venduto",
+      reserved: "Riservato",
+      archived: "Rimosso",
+    },
+
     // Programs
     programs: {
       pyp: "PYP",
