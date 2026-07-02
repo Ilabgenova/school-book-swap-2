@@ -171,6 +171,7 @@ const ListingsPanel = () => {
       .eq("id", id);
     if (error) return toast.error(error.message);
     toast.success("Approved"); load();
+    setPreviewTarget(null);
   };
 
   const submitCorrection = async () => {
