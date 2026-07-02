@@ -17,6 +17,8 @@ import { BookImportPanel } from "@/components/admin/BookImportPanel";
 import { UsersPanel as UsersModerationPanel } from "@/components/admin/UsersPanel";
 import { ModerationPanel } from "@/components/admin/ModerationPanel";
 import { ReuseReviewPanel } from "@/components/admin/ReuseReviewPanel";
+import { formatSellerName } from "@/lib/sellerName";
+
 
 type Listing = {
   id: string; title: string; subject: string | null; price: number; status: string;
