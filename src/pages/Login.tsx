@@ -22,7 +22,9 @@ const LoginContent = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const nextPath = new URLSearchParams(window.location.search).get("next");
-  const redirectTo = nextPath?.startsWith("/") ? nextPath : "/browse";
+  const isSafeRedirect = (u: string | null): u is string =>
+    typeof u === "string" && u.startsWith("/") && !u.startsWith("//") && !u.startsWith("/\\");
+  const redirectTo = isSafeRedirect(nextPath) ? nextPath : "/browse";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
