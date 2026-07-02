@@ -8,6 +8,7 @@ import {
   Sparkles,
   MessageCircle,
   BookOpen,
+  BookMarked,
   ShoppingBag,
   Tag,
   Shield,
@@ -15,6 +16,7 @@ import {
   MoreHorizontal,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useMyBooksAttentionCount } from "@/hooks/useMyBooksAttentionCount";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
