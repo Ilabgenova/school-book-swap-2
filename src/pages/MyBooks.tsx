@@ -506,9 +506,9 @@ const MyBooksContent = () => {
                           </Button>
                         )}
                         {l.status === "active" && (
-                          <Button variant="default" size="sm" onClick={() => markListingSold(l.id)}>
+                          <Button variant="default" size="sm" onClick={() => openSoldDialog(l)}>
                             <Check className="h-3.5 w-3.5" />
-                            Mark as sold
+                            {language === "it" ? "Segna come venduto" : "Mark as sold"}
                           </Button>
                         )}
                         {l.status !== "archived" && l.status !== "sold" && l.status !== "needs_correction" && (
@@ -517,15 +517,17 @@ const MyBooksContent = () => {
                             Archive
                           </Button>
                         )}
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => deleteListing(l.id)}
-                          className="text-destructive hover:text-destructive"
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                          Delete
-                        </Button>
+                        {l.status !== "sold" && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => deleteListing(l.id)}
+                            className="text-destructive hover:text-destructive"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                            Delete
+                          </Button>
+                        )}
                       </>
                     }
                   />
