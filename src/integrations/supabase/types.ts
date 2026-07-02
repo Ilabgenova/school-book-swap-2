@@ -888,6 +888,7 @@ export type Database = {
         | "reserved"
         | "archived"
         | "pending_review"
+        | "needs_correction"
       listing_type: "sale" | "exchange" | "donation"
     }
     CompositeTypes: {
@@ -1025,6 +1026,7 @@ export const Constants = {
         "reserved",
         "archived",
         "pending_review",
+        "needs_correction",
       ],
       listing_type: ["sale", "exchange", "donation"],
     },
