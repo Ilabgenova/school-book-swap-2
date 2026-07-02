@@ -4,10 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Loader2, Upload, Sparkles, Save, Trash2 } from "lucide-react";
+import { Loader2, Upload, Sparkles, Save, Trash2, GitCompare } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { parseFile, enrichRowByISBN, type ParsedRow } from "@/lib/bookImport";
+import {
+  parseFile, enrichRowByISBN, compareRowsWithPreviousYear,
+  type ParsedRow, type PreviousCatalogEntry, type ReuseCheckStatus,
+} from "@/lib/bookImport";
 
 const STATUS_COLORS: Record<string, string> = {
   ready: "default", duplicate_db: "destructive", duplicate_file: "destructive",
@@ -16,11 +19,25 @@ const STATUS_COLORS: Record<string, string> = {
   skipped: "outline", failed: "destructive",
 };
 
+const REUSE_COLORS: Record<ReuseCheckStatus, string> = {
+  reusable: "default",
+  not_reusable: "outline",
+  needs_manual_review: "secondary",
+  no_previous_match: "destructive",
+  pending: "outline",
+};
+
 type ImportHistory = {
   id: string; file_name: string; created_at: string; total_rows: number;
   imported_rows: number; skipped_rows: number; failed_rows: number; status: string;
   school_year: string | null;
 };
+
+function prevYear(year: string): string {
+  const m = year.match(/^(\d{4})-(\d{4})$/);
+  if (!m) return year;
+  return `${parseInt(m[1], 10) - 1}-${parseInt(m[2], 10) - 1}`;
+}
 
 export const BookImportPanel = () => {
   const [rows, setRows] = useState<ParsedRow[]>([]);
@@ -28,6 +45,7 @@ export const BookImportPanel = () => {
   const [schoolYear, setSchoolYear] = useState("2026-2027");
   const [busy, setBusy] = useState(false);
   const [enriching, setEnriching] = useState(false);
+  const [comparing, setComparing] = useState(false);
   const [history, setHistory] = useState<ImportHistory[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -42,11 +60,12 @@ export const BookImportPanel = () => {
     setBusy(true);
     try {
       const { rows: parsed } = await parseFile(f);
-      // Check duplicates against DB (book_catalog by ISBN + school_year)
+      // Duplicates against DB (book_catalog by ISBN + academic_year)
       const isbns = parsed.map((r) => r.isbn).filter(Boolean) as string[];
       let existing = new Set<string>();
       if (isbns.length) {
-        const { data } = await supabase.from("book_catalog").select("isbn").eq("school_year", schoolYear).in("isbn", isbns);
+        const { data } = await supabase.from("book_catalog")
+          .select("isbn").eq("academic_year", schoolYear).in("isbn", isbns);
         existing = new Set(((data || []) as any[]).map((r) => r.isbn));
       }
       const withDupes = parsed.map((r) =>
@@ -54,9 +73,13 @@ export const BookImportPanel = () => {
           ? { ...r, import_status: "duplicate_db" as const, warning_message: "Already in DISbook catalog for this school year" }
           : r
       );
-      setRows(withDupes);
+      // Auto-run comparison against previous year
+      const previous = await fetchPreviousYear(schoolYear);
+      const compared = compareRowsWithPreviousYear(withDupes, previous);
+      setRows(compared);
       setFileName(f.name);
-      toast.success(`Parsed ${withDupes.length} rows`);
+      const reusable = compared.filter(r => r.reuse_check_status === "reusable").length;
+      toast.success(`Parsed ${compared.length} rows · ${reusable} strongly reusable`);
     } catch (e: any) {
       toast.error(e.message || "Failed to parse file");
     } finally {
@@ -64,11 +87,30 @@ export const BookImportPanel = () => {
     }
   };
 
+  const fetchPreviousYear = async (year: string): Promise<PreviousCatalogEntry[]> => {
+    const py = prevYear(year);
+    const { data } = await supabase.from("book_catalog")
+      .select("id, isbn, title, author, publisher, grade")
+      .or(`academic_year.eq.${py},school_year.eq.${py}`)
+      .limit(5000);
+    return (data as any) || [];
+  };
+
+  const runComparison = async () => {
+    setComparing(true);
+    try {
+      const previous = await fetchPreviousYear(schoolYear);
+      setRows((prev) => compareRowsWithPreviousYear(prev, previous));
+      toast.success(`Compared with ${previous.length} previous-year books`);
+    } catch (e: any) {
+      toast.error(e.message || "Comparison failed");
+    } finally { setComparing(false); }
+  };
+
   const enrichAll = async () => {
     setEnriching(true);
     const out: ParsedRow[] = [];
     for (const r of rows) {
-      // Only enrich ready or needs_review with valid ISBN
       if (r.isbn && (r.import_status === "ready" || r.import_status === "needs_review" || r.import_status === "duplicate_db")) {
         out.push(await enrichRowByISBN(r));
       } else out.push(r);
@@ -91,17 +133,17 @@ export const BookImportPanel = () => {
       const { data: userRes } = await supabase.auth.getUser();
       const uid = userRes.user?.id;
       if (!uid) throw new Error("Not authenticated");
-      // Create import record
       const { data: imp, error: impErr } = await supabase.from("book_imports" as any).insert({
         uploaded_by: uid, file_name: fileName, school_year: schoolYear, academic_year: schoolYear,
         total_rows: rows.length, status: "processed",
       }).select().single();
       if (impErr) throw impErr;
       const importId = (imp as any).id;
-      // Insert into book_catalog
+
       const catalogRows = toImport.map((r) => ({
         school_year: schoolYear,
         academic_year: schoolYear,
+        previous_year: prevYear(schoolYear),
         program: r.programme || (r.class_year?.startsWith("MYP") ? "MYP" : "DP"),
         grade: r.class_year!,
         subject: r.subject,
@@ -109,15 +151,17 @@ export const BookImportPanel = () => {
         author: r.author,
         publisher: r.publisher,
         isbn: r.isbn,
-        is_sellable: true,
+        is_sellable: r.purchasable_from_former_families === true,
+        purchasable_from_former_families: r.purchasable_from_former_families,
+        former_class_source: r.former_class_source,
+        reuse_check_status: r.reuse_check_status,
+        reuse_match_type: r.reuse_match_type,
+        reuse_notes: r.reuse_notes,
+        column_m_raw: r.column_m_raw,
       }));
-      const { error: catErr } = await supabase.from("book_catalog").upsert(catalogRows, { onConflict: "school_year,external_book_id" as any, ignoreDuplicates: false });
-      // Fallback: try plain insert for ones without external_book_id
-      if (catErr) {
-        const { error: catErr2 } = await supabase.from("book_catalog").insert(catalogRows);
-        if (catErr2) throw catErr2;
-      }
-      // Log rows
+      const { error: catErr } = await supabase.from("book_catalog").insert(catalogRows as any);
+      if (catErr) throw catErr;
+
       const importedRowsPayload = rows.map((r) => ({
         import_id: importId, row_number: r.row_number, raw_data: r.raw_data as any,
         isbn: r.isbn, title: r.title, author: r.author, publisher: r.publisher, edition: r.edition,
@@ -126,6 +170,13 @@ export const BookImportPanel = () => {
         lookup_status: r.lookup_status || null, validation_status: null,
         warning_message: r.warning_message,
         import_status: r.import_status === "ready" ? "imported" : r.import_status,
+        purchasable_from_former_families: r.purchasable_from_former_families,
+        former_class_source: r.former_class_source,
+        reuse_check_status: r.reuse_check_status,
+        reuse_match_type: r.reuse_match_type,
+        reuse_notes: r.reuse_notes,
+        column_m_raw: r.column_m_raw,
+        matched_previous_isbn: r.matched_previous_isbn,
       }));
       await supabase.from("book_import_rows" as any).insert(importedRowsPayload);
       await supabase.from("book_imports" as any).update({
@@ -139,15 +190,15 @@ export const BookImportPanel = () => {
       loadHistory();
     } catch (e: any) {
       toast.error(e.message || "Import failed");
-    } finally {
-      setBusy(false);
-    }
+    } finally { setBusy(false); }
   };
 
   const counts = {
     ready: rows.filter(r => r.import_status === "ready").length,
     warn: rows.filter(r => ["missing_isbn", "invalid_isbn", "missing_class", "unsupported_class", "duplicate_db", "duplicate_file", "needs_review"].includes(r.import_status)).length,
     skipped: rows.filter(r => r.import_status === "skipped").length,
+    reusable: rows.filter(r => r.reuse_check_status === "reusable").length,
+    review: rows.filter(r => r.reuse_check_status === "needs_manual_review" || r.reuse_check_status === "no_previous_match").length,
   };
 
   return (
@@ -158,12 +209,14 @@ export const BookImportPanel = () => {
           <p className="font-medium">Upload book list</p>
         </div>
         <p className="text-sm text-muted-foreground">
-          Upload the book list using the same format as the previous DISbook book list (CSV or Excel). Columns are detected automatically (ISBN, Title, Author, Publisher, Class/Year, Programme, Subject, Notes).
+          Upload the DIS book list (CSV or Excel, one sheet per class). Column M
+          <span className="font-mono mx-1">“Purchasable from former XXX families”</span>
+          is used to decide whether each book can be resold by former families.
         </p>
         <div className="grid md:grid-cols-3 gap-3">
           <div>
             <label className="text-xs text-muted-foreground">School year</label>
-            <Input value={schoolYear} onChange={e => setSchoolYear(e.target.value)} placeholder="2025-2026" />
+            <Input value={schoolYear} onChange={e => setSchoolYear(e.target.value)} placeholder="2026-2027" />
           </div>
           <div className="md:col-span-2 flex items-end gap-2">
             <input
@@ -187,8 +240,14 @@ export const BookImportPanel = () => {
               <Badge variant="secondary">Warnings: {counts.warn}</Badge>
               <Badge variant="outline">Skipped: {counts.skipped}</Badge>
               <Badge variant="outline">Total: {rows.length}</Badge>
+              <Badge className="bg-emerald-600 hover:bg-emerald-600">Reusable: {counts.reusable}</Badge>
+              <Badge variant="secondary">Need review: {counts.review}</Badge>
             </div>
             <div className="flex gap-2">
+              <Button variant="outline" size="sm" onClick={runComparison} disabled={comparing}>
+                {comparing ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <GitCompare className="h-4 w-4 mr-2" />}
+                Re-run comparison
+              </Button>
               <Button variant="outline" size="sm" onClick={enrichAll} disabled={enriching}>
                 {enriching ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Sparkles className="h-4 w-4 mr-2" />}
                 Enrich by ISBN
@@ -207,8 +266,11 @@ export const BookImportPanel = () => {
                   <TableHead>ISBN</TableHead>
                   <TableHead>Title</TableHead>
                   <TableHead>Class</TableHead>
-                  <TableHead>Subject</TableHead>
-                  <TableHead>Warning</TableHead>
+                  <TableHead>Col M</TableHead>
+                  <TableHead>Former class</TableHead>
+                  <TableHead>Match</TableHead>
+                  <TableHead>Reuse</TableHead>
+                  <TableHead>Notes / warning</TableHead>
                   <TableHead></TableHead>
                 </TableRow>
               </TableHeader>
@@ -228,10 +290,28 @@ export const BookImportPanel = () => {
                     <TableCell>
                       <Input value={r.class_year || ""} onChange={e => updateRow(i, { class_year: e.target.value })} className="h-7 text-xs w-20" />
                     </TableCell>
-                    <TableCell>
-                      <Input value={r.subject || ""} onChange={e => updateRow(i, { subject: e.target.value })} className="h-7 text-xs min-w-[140px]" />
+                    <TableCell className="text-[11px]">
+                      {r.purchasable_from_former_families === true ? (
+                        <Badge className="bg-emerald-600 hover:bg-emerald-600 text-[10px]">YES</Badge>
+                      ) : r.purchasable_from_former_families === false ? (
+                        <Badge variant="outline" className="text-[10px]">NO</Badge>
+                      ) : (
+                        <Badge variant="secondary" className="text-[10px]">{r.column_m_raw || "—"}</Badge>
+                      )}
                     </TableCell>
-                    <TableCell className="text-[11px] text-muted-foreground max-w-[200px]">{r.warning_message}</TableCell>
+                    <TableCell className="text-[11px]">{r.former_class_source || "—"}</TableCell>
+                    <TableCell className="text-[11px]">{r.reuse_match_type || "none"}</TableCell>
+                    <TableCell>
+                      {r.reuse_check_status && (
+                        <Badge variant={(REUSE_COLORS[r.reuse_check_status] as any) || "outline"} className="text-[10px]">
+                          {r.reuse_check_status}
+                        </Badge>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-[11px] text-muted-foreground max-w-[220px]">
+                      {r.warning_message ? <div>{r.warning_message}</div> : null}
+                      {r.reuse_notes ? <div className="opacity-70">{r.reuse_notes}</div> : null}
+                    </TableCell>
                     <TableCell>
                       <div className="flex gap-1">
                         {r.import_status !== "ready" && r.isbn && r.class_year && (
