@@ -84,7 +84,7 @@ export const ReuseReviewPanel = () => {
         : action === "reject"
         ? { reuse_check_status: "not_reusable", reuse_match_type: "none" }
         : { reuse_check_status: "needs_manual_review" };
-    const { error } = await supabase.from("book_catalog").update(p as any).eq("id", row.id);
+    const { error } = await (supabase.from("book_catalog") as any).update(p).eq("id", row.id);
     if (error) return toast.error(error.message);
     toast.success("Updated");
     load();
@@ -94,19 +94,19 @@ export const ReuseReviewPanel = () => {
     const isbn = prompt("Enter previous-year ISBN to link this book to:", row.isbn || "");
     if (!isbn) return;
     const clean = isbn.replace(/[^0-9Xx]/g, "");
-    const { data, error } = await supabase.from("book_catalog")
+    const { data, error } = await (supabase.from("book_catalog") as any)
       .select("id")
       .eq("isbn", clean)
       .eq("academic_year", row.previous_year || "")
       .maybeSingle();
     if (error) return toast.error(error.message);
     if (!data) return toast.error("No previous-year book found with that ISBN");
-    const { error: upErr } = await supabase.from("book_catalog").update({
+    const { error: upErr } = await (supabase.from("book_catalog") as any).update({
       previous_year_book_id: (data as any).id,
       reuse_check_status: "reusable",
       reuse_match_type: "manual",
       reuse_notes: `Manually linked to previous-year ISBN ${clean}`,
-    } as any).eq("id", row.id);
+    }).eq("id", row.id);
     if (upErr) return toast.error(upErr.message);
     toast.success("Linked");
     load();
