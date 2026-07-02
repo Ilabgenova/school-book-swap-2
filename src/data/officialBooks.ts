@@ -23,6 +23,14 @@ export interface BookListing {
   sellerRating: number;
   sellerName: string;
   sellerCompletedExchanges: number;
+  notes?: string | null;
+  images?: string[];
+  subject?: string | null;
+  classYear?: string | null;
+  isbn?: string | null;
+  title?: string | null;
+  createdAt?: string | null;
+  status?: string | null;
 }
 
 // DP Subject Groups for subject selection
