@@ -25,7 +25,7 @@ type ImportHistory = {
 export const BookImportPanel = () => {
   const [rows, setRows] = useState<ParsedRow[]>([]);
   const [fileName, setFileName] = useState("");
-  const [schoolYear, setSchoolYear] = useState("2025-2026");
+  const [schoolYear, setSchoolYear] = useState("2026-2027");
   const [busy, setBusy] = useState(false);
   const [enriching, setEnriching] = useState(false);
   const [history, setHistory] = useState<ImportHistory[]>([]);
@@ -93,7 +93,7 @@ export const BookImportPanel = () => {
       if (!uid) throw new Error("Not authenticated");
       // Create import record
       const { data: imp, error: impErr } = await supabase.from("book_imports" as any).insert({
-        uploaded_by: uid, file_name: fileName, school_year: schoolYear,
+        uploaded_by: uid, file_name: fileName, school_year: schoolYear, academic_year: schoolYear,
         total_rows: rows.length, status: "processed",
       }).select().single();
       if (impErr) throw impErr;
@@ -101,6 +101,7 @@ export const BookImportPanel = () => {
       // Insert into book_catalog
       const catalogRows = toImport.map((r) => ({
         school_year: schoolYear,
+        academic_year: schoolYear,
         program: r.programme || (r.class_year?.startsWith("MYP") ? "MYP" : "DP"),
         grade: r.class_year!,
         subject: r.subject,

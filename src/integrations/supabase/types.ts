@@ -84,6 +84,7 @@ export type Database = {
       }
       book_catalog: {
         Row: {
+          academic_year: string
           author: string | null
           created_at: string
           external_book_id: string | null
@@ -93,12 +94,14 @@ export type Database = {
           isbn: string | null
           program: string
           publisher: string | null
+          reusable_status: string | null
           school_year: string
           subject: string | null
           title: string
           updated_at: string
         }
         Insert: {
+          academic_year?: string
           author?: string | null
           created_at?: string
           external_book_id?: string | null
@@ -108,12 +111,14 @@ export type Database = {
           isbn?: string | null
           program: string
           publisher?: string | null
+          reusable_status?: string | null
           school_year: string
           subject?: string | null
           title: string
           updated_at?: string
         }
         Update: {
+          academic_year?: string
           author?: string | null
           created_at?: string
           external_book_id?: string | null
@@ -123,6 +128,7 @@ export type Database = {
           isbn?: string | null
           program?: string
           publisher?: string | null
+          reusable_status?: string | null
           school_year?: string
           subject?: string | null
           title?: string
@@ -212,6 +218,7 @@ export type Database = {
       }
       book_imports: {
         Row: {
+          academic_year: string
           created_at: string
           failed_rows: number
           file_name: string
@@ -226,6 +233,7 @@ export type Database = {
           uploaded_by: string
         }
         Insert: {
+          academic_year?: string
           created_at?: string
           failed_rows?: number
           file_name: string
@@ -240,6 +248,7 @@ export type Database = {
           uploaded_by: string
         }
         Update: {
+          academic_year?: string
           created_at?: string
           failed_rows?: number
           file_name?: string
