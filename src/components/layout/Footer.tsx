@@ -93,13 +93,32 @@ export const Footer = () => {
           </div>
         </div>
 
-        {/* Disclaimer */}
-        <div className="mt-10 pt-6 border-t border-primary-foreground/10">
+        {/* Disclaimers */}
+        <div className="mt-10 pt-6 border-t border-primary-foreground/10 space-y-3">
           <p className="text-xs text-primary-foreground/70 leading-relaxed max-w-3xl">
-            <span className="font-semibold text-primary-foreground">Disclaimer.</span>{" "}
-            DISbook is an independent student-created project for the DIS community.
-            It is not an official platform of Deledda International School and is not
-            managed, approved or endorsed by the school.
+            <span className="font-semibold text-primary-foreground">Independence.</span>{" "}
+            DISbook is an independent student-created project for the DIS community and is not an
+            official Deledda International School platform. It is not managed, approved or endorsed
+            by the school.
+            <br />
+            <span className="italic">
+              DISbook è un progetto indipendente creato da studenti per la comunità DIS e non è una
+              piattaforma ufficiale della Deledda International School.
+            </span>
+          </p>
+          <p className="text-xs text-primary-foreground/70 leading-relaxed max-w-3xl">
+            <span className="font-semibold text-primary-foreground">Amazon affiliate.</span>{" "}
+            Some Amazon links on DISbook are affiliate links. If you purchase through these links,
+            DISbook may receive a small contribution from Amazon, at no extra cost to you. This
+            helps us maintain and improve the app for the DIS community. Before purchasing, please
+            carefully check the book title, ISBN, edition, author, publisher, and class requirements.
+            <br />
+            <span className="italic">
+              Alcuni link Amazon presenti su DISbook sono link affiliati. Se acquisti tramite
+              questi link, DISbook può ricevere un piccolo contributo da Amazon, senza costi
+              aggiuntivi per te. Prima di acquistare, controlla titolo, ISBN, edizione, autore,
+              editore e requisiti della classe.
+            </span>
           </p>
         </div>
 
