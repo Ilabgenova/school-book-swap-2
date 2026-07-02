@@ -149,27 +149,22 @@ export const Header = () => {
       {mobileMenuOpen && (
         <div className="md:hidden border-t border-border bg-background animate-slide-up">
           <nav className="container flex flex-col gap-2 py-4">
-            <Link to="/browse" onClick={() => setMobileMenuOpen(false)}>
+            <Link to="/sell?intent=sell&mode=sell" onClick={() => setMobileMenuOpen(false)}>
               <Button variant="ghost" className="w-full justify-start">
-                {t.nav.browse}
+                {t.nav.list}
               </Button>
             </Link>
             <Link to="/buy" onClick={() => setMobileMenuOpen(false)}>
               <Button variant="ghost" className="w-full justify-start">
-                Buy a book
-              </Button>
-            </Link>
-
-            <Link to="/sell?intent=sell&mode=sell" onClick={() => setMobileMenuOpen(false)}>
-              <Button variant="ghost" className="w-full justify-start">
-                List a book
+                {t.nav.buy}
               </Button>
             </Link>
             <Link to="/wanted" onClick={() => setMobileMenuOpen(false)}>
               <Button variant="ghost" className="w-full justify-start">
-                Wanted
+                {t.nav.wanted}
               </Button>
             </Link>
+
 
             {user ? (
               <>
