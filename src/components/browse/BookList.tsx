@@ -82,6 +82,14 @@ export const BookList = ({
           sellerName: r.seller_display_name || "DISbook user",
           sellerRating: Number(r.seller_rating ?? 0),
           sellerCompletedExchanges: Number(r.seller_completed_exchanges ?? 0),
+          notes: r.notes ?? null,
+          images: Array.isArray(r.images) ? r.images : [],
+          subject: r.subject ?? null,
+          classYear: r.class_year ?? null,
+          isbn: r.isbn ?? null,
+          title: r.title ?? null,
+          createdAt: r.created_at ?? null,
+          status: r.status ?? null,
         };
         (grouped[r.book_id] ||= []).push(listing);
       }
