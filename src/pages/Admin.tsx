@@ -17,6 +17,8 @@ import { BookImportPanel } from "@/components/admin/BookImportPanel";
 import { UsersPanel as UsersModerationPanel } from "@/components/admin/UsersPanel";
 import { ModerationPanel } from "@/components/admin/ModerationPanel";
 import { ReuseReviewPanel } from "@/components/admin/ReuseReviewPanel";
+import { formatSellerName } from "@/lib/sellerName";
+
 
 type Listing = {
   id: string; title: string; subject: string | null; price: number; status: string;
@@ -97,6 +99,7 @@ const Admin = () => {
 /* ---------- Listings moderation ---------- */
 const ListingsPanel = () => {
   const [items, setItems] = useState<Listing[]>([]);
+  const [sellers, setSellers] = useState<Record<string, { first_name: string | null; last_name: string | null }>>({});
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>("all");
 
@@ -105,10 +108,25 @@ const ListingsPanel = () => {
     let q = supabase.from("listings").select("*").order("created_at", { ascending: false }).limit(200);
     if (filter !== "all") q = q.eq("status", filter as any);
     const { data, error } = await q;
-    if (error) toast.error(error.message); else setItems((data as any) || []);
+    if (error) { toast.error(error.message); setLoading(false); return; }
+    const list = (data as any[]) || [];
+    setItems(list as any);
+    const ids = Array.from(new Set(list.map((l) => l.seller_id).filter(Boolean)));
+    if (ids.length) {
+      const { data: profs } = await supabase
+        .from("profiles")
+        .select("user_id, first_name, last_name")
+        .in("user_id", ids);
+      const map: Record<string, any> = {};
+      (profs || []).forEach((p: any) => { map[p.user_id] = { first_name: p.first_name, last_name: p.last_name }; });
+      setSellers(map);
+    } else {
+      setSellers({});
+    }
     setLoading(false);
   };
   useEffect(() => { load(); /* eslint-disable-next-line */ }, [filter]);
+
 
   const setStatus = async (id: string, status: string) => {
     const { error } = await supabase.from("listings").update({ status: status as any }).eq("id", id);
@@ -153,7 +171,7 @@ const ListingsPanel = () => {
                 <p className="text-xs text-muted-foreground mt-1">
                   €{l.price} · {l.condition} · {l.school_year} · ISBN {l.isbn || "—"}
                 </p>
-                <p className="text-[11px] text-muted-foreground">Seller: {l.seller_id.slice(0, 8)}… · {new Date(l.created_at).toLocaleDateString()}</p>
+                <p className="text-[11px] text-muted-foreground">Seller: {formatSellerName(sellers[l.seller_id]?.first_name, sellers[l.seller_id]?.last_name)} · {new Date(l.created_at).toLocaleDateString()}</p>
               </div>
               <div className="flex gap-2 flex-wrap">
                 {l.status !== "active" && (

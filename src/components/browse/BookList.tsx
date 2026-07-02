@@ -15,6 +15,8 @@ import { SummerReadingSection } from "./SummerReadingSection";
 import { officialBooks, OfficialBook, BookListing, isSellableItem, LAST_SCHOOL_YEAR, NEW_SCHOOL_YEAR_AVAILABLE } from "@/data/officialBooks";
 import { BuyNewNotice } from "@/components/buy-new/BuyNewNotice";
 import { supabase } from "@/integrations/supabase/client";
+import { formatSellerName } from "@/lib/sellerName";
+
 
 const FOREIGN_LANGUAGE_SUBJECTS = ["Spanish", "German", "Chinese", "French", "Spanish B", "German B", "Chinese B", "French B"];
 
@@ -78,9 +80,8 @@ export const BookList = ({
       const grouped: Record<string, BookListing[]> = {};
       for (const r of rows as any[]) {
         const p = profMap.get(r.seller_id);
-        const displayName = p
-          ? [p.first_name, p.last_name].filter(Boolean).join(" ").trim() || "DIS family"
-          : "DIS family";
+        const displayName = formatSellerName(p?.first_name, p?.last_name);
+
         const listing: BookListing = {
           id: r.id,
           type: r.listing_type,
