@@ -261,7 +261,12 @@ export const Header = () => {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => navigate("/admin")}>
                     <Shield className="h-4 w-4 mr-2" />
-                    Admin
+                    <span>Admin</span>
+                    {adminPending > 0 && (
+                      <Badge variant="destructive" className="ml-auto h-5 min-w-5 rounded-full px-1.5 text-[10px]">
+                        {adminPending}
+                      </Badge>
+                    )}
                   </DropdownMenuItem>
                 </>
               )}
