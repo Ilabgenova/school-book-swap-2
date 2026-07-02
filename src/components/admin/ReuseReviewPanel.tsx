@@ -49,13 +49,13 @@ export const ReuseReviewPanel = () => {
 
   const load = async () => {
     setLoading(true);
-    let q = supabase.from("book_catalog")
+    let q: any = supabase.from("book_catalog")
       .select("*")
       .eq("academic_year", year)
       .order("grade")
       .order("subject")
       .limit(1000);
-    if (status !== "all") q = q.eq("reuse_check_status" as any, status);
+    if (status !== "all") q = q.eq("reuse_check_status", status);
     const { data, error } = await q;
     if (error) toast.error(error.message);
     else setRows(((data as any) || []).filter((r: CatalogRow) => !(r.grade || "").startsWith("PYP")));
