@@ -4,13 +4,20 @@ import { MainLayout } from "@/components/layout/MainLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Send, MessageCircle, ArrowLeft } from "lucide-react";
+import { Loader2, Send, MessageCircle, ArrowLeft, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { formatSellerName } from "@/lib/sellerName";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 type ConversationRow = {
   id: string;
@@ -61,6 +68,9 @@ const MessagesContent = () => {
   const [body, setBody] = useState("");
   const [sending, setSending] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  const [markSoldOpen, setMarkSoldOpen] = useState(false);
+  const [markSoldSubmitting, setMarkSoldSubmitting] = useState(false);
 
   const listingParam = searchParams.get("listing");
 
@@ -323,6 +333,30 @@ const MessagesContent = () => {
     }, 30);
   };
 
+  const handleMarkSold = async () => {
+    if (!selected || !user) return;
+    setMarkSoldSubmitting(true);
+    const buyerId = selected.conv.buyer_id;
+    const { error } = await supabase.rpc("seller_mark_listing_sold", {
+      _listing_id: selected.conv.listing_id,
+      _buyer_id: buyerId,
+      _sold_through_disbook: true,
+    });
+    setMarkSoldSubmitting(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success(
+      language === "it"
+        ? "Annuncio segnato come venduto"
+        : "Listing marked as sold"
+    );
+    setMarkSoldOpen(false);
+    loadThreads();
+  };
+
+
   if (authLoading) {
     return (
       <MainLayout>
@@ -459,6 +493,25 @@ const MessagesContent = () => {
                       )}
                     </p>
                   </div>
+                  {selected.conv.seller_id === user.id &&
+                    selected.listing?.status === "active" && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setMarkSoldOpen(true)}
+                        className="gap-1"
+                      >
+                        <Check className="h-3.5 w-3.5" />
+                        <span className="hidden sm:inline">
+                          {language === "it"
+                            ? "Segna questo annuncio come venduto"
+                            : "Mark this listing as sold"}
+                        </span>
+                        <span className="sm:hidden">
+                          {language === "it" ? "Venduto" : "Sold"}
+                        </span>
+                      </Button>
+                    )}
                 </div>
 
                 <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-2 bg-muted/10">
@@ -531,6 +584,30 @@ const MessagesContent = () => {
           </section>
         </div>
       </div>
+
+      <Dialog open={markSoldOpen} onOpenChange={setMarkSoldOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {language === "it" ? "Segna come venduto" : "Mark as sold"}
+            </DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            {language === "it"
+              ? `Confermi che "${selected?.listing?.title ?? ""}" è stato venduto a ${selected?.otherName ?? ""}? Sarà rimosso dalla sezione Compra ma resterà registrato per le statistiche di impatto DISbook.`
+              : `Confirm that "${selected?.listing?.title ?? ""}" has been sold to ${selected?.otherName ?? ""}? It will be removed from the Buy section but kept for DISbook impact statistics.`}
+          </p>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setMarkSoldOpen(false)}>
+              {language === "it" ? "Annulla" : "Cancel"}
+            </Button>
+            <Button onClick={handleMarkSold} disabled={markSoldSubmitting}>
+              {markSoldSubmitting && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
+              {language === "it" ? "Sì, segna come venduto" : "Yes, mark as sold"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </MainLayout>
   );
 };

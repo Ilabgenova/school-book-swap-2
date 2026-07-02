@@ -39,8 +39,12 @@ import {
   Check,
   AlertTriangle,
   Bell,
+  Leaf,
 } from "lucide-react";
 import { useNotifications } from "@/hooks/useNotifications";
+import { useLanguage } from "@/i18n/LanguageContext";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { formatSellerName } from "@/lib/sellerName";
 
 
 type ListingRow = {
@@ -110,6 +114,7 @@ const MyBooksContent = () => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { language } = useLanguage();
   const [searchParams, setSearchParams] = useSearchParams();
   const initialTab = searchParams.get("tab") ?? "listed";
 
@@ -119,6 +124,13 @@ const MyBooksContent = () => {
   const [bought, setBought] = useState<BoughtRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [addOpen, setAddOpen] = useState(false);
+
+  // Sold dialog state
+  const [soldTarget, setSoldTarget] = useState<ListingRow | null>(null);
+  const [soldThrough, setSoldThrough] = useState<"unknown_buyer" | "buyer_selected" | "outside">("unknown_buyer");
+  const [soldBuyerId, setSoldBuyerId] = useState<string>("");
+  const [soldBuyers, setSoldBuyers] = useState<{ user_id: string; name: string }[]>([]);
+  const [soldSubmitting, setSoldSubmitting] = useState(false);
 
   // Correction / resubmit dialog state
   const [correctionListing, setCorrectionListing] = useState<ListingRow | null>(null);
@@ -243,22 +255,64 @@ const MyBooksContent = () => {
     loadAll();
   };
 
-  const markListingSold = async (id: string) => {
-    const confirmMsg =
-      "Are you sure this book has been sold? It will no longer appear on the Buy side.\n\nSei sicuro che questo libro sia stato venduto? Non sarà più visibile nella sezione Compra.";
-    if (!confirm(confirmMsg)) return;
-    const { error } = await supabase
-      .from("listings")
-      .update({ status: "sold" })
-      .eq("id", id)
-      .eq("seller_id", user!.id);
+  const openSoldDialog = async (l: ListingRow) => {
+    setSoldTarget(l);
+    setSoldThrough("unknown_buyer");
+    setSoldBuyerId("");
+    setSoldBuyers([]);
+    // Load buyers who contacted this seller for this listing
+    const { data: convs } = await supabase
+      .from("conversations")
+      .select("buyer_id")
+      .eq("listing_id", l.id);
+    const buyerIds = Array.from(new Set((convs || []).map((c: any) => c.buyer_id)));
+    if (buyerIds.length) {
+      const { data: profs } = await supabase
+        .from("profiles")
+        .select("user_id, first_name, last_name")
+        .in("user_id", buyerIds);
+      setSoldBuyers(
+        (profs || []).map((p: any) => ({
+          user_id: p.user_id,
+          name: formatSellerName(p.first_name, p.last_name),
+        })),
+      );
+    }
+  };
+
+  const confirmMarkSold = async () => {
+    if (!soldTarget) return;
+    setSoldSubmitting(true);
+    const buyer =
+      soldThrough === "buyer_selected" && soldBuyerId ? soldBuyerId : null;
+    const throughDisbook =
+      soldThrough === "outside" ? false : soldThrough === "buyer_selected" || soldThrough === "unknown_buyer" ? true : null;
+    const { error } = await supabase.rpc("seller_mark_listing_sold", {
+      _listing_id: soldTarget.id,
+      _buyer_id: buyer,
+      _sold_through_disbook: throughDisbook,
+    });
+    setSoldSubmitting(false);
     if (error) {
-      toast({ title: "Could not update", description: error.message, variant: "destructive" });
+      toast({
+        title: language === "it" ? "Impossibile aggiornare" : "Could not update",
+        description: error.message,
+        variant: "destructive",
+      });
       return;
     }
-    toast({ title: "Marked as sold" });
+    toast({
+      title:
+        language === "it" ? "Segnato come venduto" : "Marked as sold",
+      description:
+        language === "it"
+          ? "Grazie! Contribuisci a misurare la CO₂ evitata dalla comunità DISbook."
+          : "Thank you! You are helping measure the CO₂ avoided by the DISbook community.",
+    });
+    setSoldTarget(null);
     loadAll();
   };
+
 
 
   const deleteListing = async (id: string) => {
@@ -405,6 +459,14 @@ const MyBooksContent = () => {
 
           {/* LISTED */}
           <TabsContent value="listed" className="mt-6">
+            <div className="mb-4 flex items-start gap-3 rounded-xl border border-success/30 bg-success/5 p-3 text-sm text-foreground">
+              <Leaf className="h-4 w-4 mt-0.5 text-success shrink-0" />
+              <p>
+                {language === "it"
+                  ? "Hai venduto il libro? Segnalo come venduto: ci aiuta a contare quanti libri vengono riutilizzati e a stimare la CO₂ evitata dalla comunità DISbook."
+                  : "Sold your book? Mark it as sold — this helps us count how many books are reused and estimate the CO₂ avoided by the DISbook community."}
+              </p>
+            </div>
             {loading ? (
               <Loader2 className="mx-auto my-12 h-6 w-6 animate-spin text-primary" />
             ) : listings.length === 0 ? (
@@ -452,9 +514,9 @@ const MyBooksContent = () => {
                           </Button>
                         )}
                         {l.status === "active" && (
-                          <Button variant="default" size="sm" onClick={() => markListingSold(l.id)}>
+                          <Button variant="default" size="sm" onClick={() => openSoldDialog(l)}>
                             <Check className="h-3.5 w-3.5" />
-                            Mark as sold
+                            {language === "it" ? "Segna come venduto" : "Mark as sold"}
                           </Button>
                         )}
                         {l.status !== "archived" && l.status !== "sold" && l.status !== "needs_correction" && (
@@ -463,15 +525,17 @@ const MyBooksContent = () => {
                             Archive
                           </Button>
                         )}
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => deleteListing(l.id)}
-                          className="text-destructive hover:text-destructive"
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                          Delete
-                        </Button>
+                        {l.status !== "sold" && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => deleteListing(l.id)}
+                            className="text-destructive hover:text-destructive"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                            Delete
+                          </Button>
+                        )}
                       </>
                     }
                   />
@@ -641,6 +705,89 @@ const MyBooksContent = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Sold confirmation dialog */}
+      <Dialog open={!!soldTarget} onOpenChange={(o) => !o && setSoldTarget(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {language === "it" ? "Segna come venduto" : "Mark as sold"}
+            </DialogTitle>
+          </DialogHeader>
+          {soldTarget && (
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                {language === "it"
+                  ? `Confermi che "${soldTarget.title}" è stato venduto? Sarà rimosso dalla sezione Compra ma resterà registrato per le statistiche di impatto DISbook.`
+                  : `Confirm that "${soldTarget.title}" has been sold? It will be removed from the Buy section but kept for DISbook impact statistics.`}
+              </p>
+              <div className="space-y-2">
+                <Label>
+                  {language === "it"
+                    ? "È stato venduto a un acquirente che ti ha contattato tramite DISbook?"
+                    : "Was this sold to a buyer who contacted you through DISbook?"}
+                </Label>
+                <RadioGroup value={soldThrough} onValueChange={(v) => setSoldThrough(v as any)}>
+                  {soldBuyers.length > 0 && (
+                    <div className="flex items-start gap-2">
+                      <RadioGroupItem value="buyer_selected" id="sold-buyer-sel" className="mt-1" />
+                      <div className="flex-1">
+                        <Label htmlFor="sold-buyer-sel" className="font-normal">
+                          {language === "it"
+                            ? "Sì, seleziona acquirente dai messaggi"
+                            : "Yes, select buyer from messages"}
+                        </Label>
+                        {soldThrough === "buyer_selected" && (
+                          <Select value={soldBuyerId} onValueChange={setSoldBuyerId}>
+                            <SelectTrigger className="mt-1">
+                              <SelectValue placeholder={language === "it" ? "Scegli acquirente" : "Choose buyer"} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {soldBuyers.map((b) => (
+                                <SelectItem key={b.user_id} value={b.user_id}>
+                                  {b.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-2">
+                    <RadioGroupItem value="unknown_buyer" id="sold-unknown" />
+                    <Label htmlFor="sold-unknown" className="font-normal">
+                      {language === "it"
+                        ? "Sì, ma non so quale utente"
+                        : "Yes, but I do not know which user"}
+                    </Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <RadioGroupItem value="outside" id="sold-outside" />
+                    <Label htmlFor="sold-outside" className="font-normal">
+                      {language === "it"
+                        ? "No / venduto fuori da DISbook"
+                        : "No / sold outside DISbook"}
+                    </Label>
+                  </div>
+                </RadioGroup>
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setSoldTarget(null)}>
+              {language === "it" ? "Annulla" : "Cancel"}
+            </Button>
+            <Button
+              onClick={confirmMarkSold}
+              disabled={soldSubmitting || (soldThrough === "buyer_selected" && !soldBuyerId)}
+            >
+              {soldSubmitting && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
+              {language === "it" ? "Sì, segna come venduto" : "Yes, mark as sold"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={!!correctionListing} onOpenChange={(o) => !o && setCorrectionListing(null)}>
         <DialogContent>
