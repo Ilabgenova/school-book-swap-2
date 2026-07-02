@@ -40,8 +40,9 @@ export const BooksToSellSuggestion = ({
           Books you may be able to list
         </CardTitle>
         <CardDescription>
-          Some books from your previous class/year may still be used by students in {NEW_SCHOOL_YEAR}.
-          You can list them for sale, donation or exchange so other families can reuse them.
+          Based on the new {NEW_SCHOOL_YEAR} book reference list (column M — “Purchasable from former families”),
+          these titles from your previous class may be useful to families next year. If you still have them,
+          you can list them for sale, donation or exchange.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
