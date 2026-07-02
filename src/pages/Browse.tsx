@@ -107,9 +107,7 @@ const BrowseContent = () => {
             selectedSubjects={selectedSubjects}
             selectedLanguages={selectedLanguages}
             onBack={
-              selectedProgram === "DP"
-                ? handleBackToDPSubjects
-                : selectedProgram === "MYP"
+              selectedProgram === "MYP"
                 ? handleBackToMYPLanguage
                 : handleBackToMode
             }
