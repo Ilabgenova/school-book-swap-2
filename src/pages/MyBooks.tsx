@@ -36,7 +36,9 @@ import {
   Archive,
   Trash2,
   ExternalLink,
+  Check,
 } from "lucide-react";
+
 
 type ListingRow = {
   id: string;
@@ -226,6 +228,24 @@ const MyBooksContent = () => {
     loadAll();
   };
 
+  const markListingSold = async (id: string) => {
+    const confirmMsg =
+      "Are you sure this book has been sold? It will no longer appear on the Buy side.\n\nSei sicuro che questo libro sia stato venduto? Non sarà più visibile nella sezione Compra.";
+    if (!confirm(confirmMsg)) return;
+    const { error } = await supabase
+      .from("listings")
+      .update({ status: "sold" })
+      .eq("id", id)
+      .eq("seller_id", user!.id);
+    if (error) {
+      toast({ title: "Could not update", description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: "Marked as sold" });
+    loadAll();
+  };
+
+
   const deleteListing = async (id: string) => {
     if (!confirm("Delete this listing permanently? This cannot be undone.")) return;
     const { error } = await supabase.from("listings").delete().eq("id", id);
@@ -312,7 +332,13 @@ const MyBooksContent = () => {
                     }
                     actions={
                       <>
-                        {l.status !== "archived" && (
+                        {l.status === "active" && (
+                          <Button variant="default" size="sm" onClick={() => markListingSold(l.id)}>
+                            <Check className="h-3.5 w-3.5" />
+                            Mark as sold
+                          </Button>
+                        )}
+                        {l.status !== "archived" && l.status !== "sold" && (
                           <Button variant="ghost" size="sm" onClick={() => archiveListing(l.id)}>
                             <Archive className="h-3.5 w-3.5" />
                             Archive
@@ -329,6 +355,7 @@ const MyBooksContent = () => {
                         </Button>
                       </>
                     }
+
 
                   />
                 ))}
