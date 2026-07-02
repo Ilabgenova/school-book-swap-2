@@ -86,15 +86,23 @@ export type Database = {
         Row: {
           academic_year: string
           author: string | null
+          column_m_raw: string | null
           created_at: string
           external_book_id: string | null
+          former_class_source: string | null
           grade: string
           id: string
           is_sellable: boolean
           isbn: string | null
+          previous_year: string | null
+          previous_year_book_id: string | null
           program: string
           publisher: string | null
+          purchasable_from_former_families: boolean | null
           reusable_status: string | null
+          reuse_check_status: string | null
+          reuse_match_type: string | null
+          reuse_notes: string | null
           school_year: string
           subject: string | null
           title: string
@@ -103,15 +111,23 @@ export type Database = {
         Insert: {
           academic_year?: string
           author?: string | null
+          column_m_raw?: string | null
           created_at?: string
           external_book_id?: string | null
+          former_class_source?: string | null
           grade: string
           id?: string
           is_sellable?: boolean
           isbn?: string | null
+          previous_year?: string | null
+          previous_year_book_id?: string | null
           program: string
           publisher?: string | null
+          purchasable_from_former_families?: boolean | null
           reusable_status?: string | null
+          reuse_check_status?: string | null
+          reuse_match_type?: string | null
+          reuse_notes?: string | null
           school_year: string
           subject?: string | null
           title: string
@@ -120,15 +136,23 @@ export type Database = {
         Update: {
           academic_year?: string
           author?: string | null
+          column_m_raw?: string | null
           created_at?: string
           external_book_id?: string | null
+          former_class_source?: string | null
           grade?: string
           id?: string
           is_sellable?: boolean
           isbn?: string | null
+          previous_year?: string | null
+          previous_year_book_id?: string | null
           program?: string
           publisher?: string | null
+          purchasable_from_former_families?: boolean | null
           reusable_status?: string | null
+          reuse_check_status?: string | null
+          reuse_match_type?: string | null
+          reuse_notes?: string | null
           school_year?: string
           subject?: string | null
           title?: string
@@ -140,19 +164,27 @@ export type Database = {
         Row: {
           author: string | null
           class_year: string | null
+          column_m_raw: string | null
           created_at: string
           edition: string | null
+          former_class_source: string | null
           id: string
           import_id: string
           import_status: string
           isbn: string | null
           lookup_status: string | null
+          matched_previous_isbn: string | null
           notes: string | null
+          previous_year_book_id: string | null
           programme: string | null
           publication_year: string | null
           publisher: string | null
+          purchasable_from_former_families: boolean | null
           raw_data: Json | null
           required_optional: string | null
+          reuse_check_status: string | null
+          reuse_match_type: string | null
+          reuse_notes: string | null
           row_number: number
           subject: string | null
           title: string | null
@@ -163,19 +195,27 @@ export type Database = {
         Insert: {
           author?: string | null
           class_year?: string | null
+          column_m_raw?: string | null
           created_at?: string
           edition?: string | null
+          former_class_source?: string | null
           id?: string
           import_id: string
           import_status?: string
           isbn?: string | null
           lookup_status?: string | null
+          matched_previous_isbn?: string | null
           notes?: string | null
+          previous_year_book_id?: string | null
           programme?: string | null
           publication_year?: string | null
           publisher?: string | null
+          purchasable_from_former_families?: boolean | null
           raw_data?: Json | null
           required_optional?: string | null
+          reuse_check_status?: string | null
+          reuse_match_type?: string | null
+          reuse_notes?: string | null
           row_number: number
           subject?: string | null
           title?: string | null
@@ -186,19 +226,27 @@ export type Database = {
         Update: {
           author?: string | null
           class_year?: string | null
+          column_m_raw?: string | null
           created_at?: string
           edition?: string | null
+          former_class_source?: string | null
           id?: string
           import_id?: string
           import_status?: string
           isbn?: string | null
           lookup_status?: string | null
+          matched_previous_isbn?: string | null
           notes?: string | null
+          previous_year_book_id?: string | null
           programme?: string | null
           publication_year?: string | null
           publisher?: string | null
+          purchasable_from_former_families?: boolean | null
           raw_data?: Json | null
           required_optional?: string | null
+          reuse_check_status?: string | null
+          reuse_match_type?: string | null
+          reuse_notes?: string | null
           row_number?: number
           subject?: string | null
           title?: string | null
