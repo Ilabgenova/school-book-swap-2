@@ -15,6 +15,7 @@ import { SummerReadingSection } from "./SummerReadingSection";
 import { officialBooks, OfficialBook, BookListing, isSellableItem, LAST_SCHOOL_YEAR, NEW_SCHOOL_YEAR_AVAILABLE } from "@/data/officialBooks";
 import { BuyNewNotice } from "@/components/buy-new/BuyNewNotice";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 
 const FOREIGN_LANGUAGE_SUBJECTS = ["Spanish", "German", "Chinese", "French", "Spanish B", "German B", "Chinese B", "French B"];
@@ -41,6 +42,7 @@ export const BookList = ({
   onBack,
 }: BookListProps) => {
   const { t } = useLanguage();
+  const { user } = useAuth();
   const [selectedBook, setSelectedBook] = useState<OfficialBook | null>(null);
   const [liveListings, setLiveListings] = useState<Record<string, BookListing[]>>({});
 
@@ -61,8 +63,10 @@ export const BookList = ({
   }), [selectedGrade, selectedProgram, selectedSubjects, selectedLanguages]);
 
   // Fetch approved live listings from the database (status = 'active').
+  // Only signed-in users can query listings; anonymous visitors see an empty state.
   useEffect(() => {
     let cancelled = false;
+    if (!user) { setLiveListings({}); return; }
     (async () => {
       const bookIds = allBooks.map((b) => b.id);
       if (bookIds.length === 0) { setLiveListings({}); return; }
@@ -96,7 +100,7 @@ export const BookList = ({
       if (!cancelled) setLiveListings(grouped);
     })();
     return () => { cancelled = true; };
-  }, [allBooks]);
+  }, [allBooks, user]);
 
   // For MYP, split into core and foreign language sections
   const isMYP = selectedProgram === "MYP";
