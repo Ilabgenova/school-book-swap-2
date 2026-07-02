@@ -27,11 +27,10 @@ const BrowseContent = () => {
 
   const handleSelectMode = (mode: "new" | "used") => {
     if (mode === "used") {
-      if (selectedProgram === "DP") {
-        setStep("dpSubjects");
-      } else if (selectedProgram === "MYP") {
+      if (selectedProgram === "MYP") {
         setStep("mypLanguage");
       } else {
+        // DP (and any other program) skip subject selection — show all books for the class
         setStep("books");
       }
     }
@@ -108,9 +107,7 @@ const BrowseContent = () => {
             selectedSubjects={selectedSubjects}
             selectedLanguages={selectedLanguages}
             onBack={
-              selectedProgram === "DP"
-                ? handleBackToDPSubjects
-                : selectedProgram === "MYP"
+              selectedProgram === "MYP"
                 ? handleBackToMYPLanguage
                 : handleBackToMode
             }
