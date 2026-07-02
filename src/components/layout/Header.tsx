@@ -57,31 +57,22 @@ export const Header = () => {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-1">
-          <Link to="/browse">
-            <Button
-              variant="ghost"
-              size="sm"
-              className={isActive("/browse") ? "text-accent bg-accent/10" : ""}
-            >
-              {t.nav.browse}
-            </Button>
-          </Link>
           <Link to="/sell?intent=sell&mode=sell">
             <Button
               variant="ghost"
               size="sm"
               className={isActive("/sell") ? "text-accent bg-accent/10" : ""}
             >
-              List a book
+              {t.nav.list}
             </Button>
           </Link>
           <Link to="/buy">
             <Button
               variant="ghost"
               size="sm"
-              className={isActive("/buy") ? "text-accent bg-accent/10" : ""}
+              className={isActive("/buy") || isActive("/browse") ? "text-accent bg-accent/10" : ""}
             >
-              Buy a book
+              {t.nav.buy}
             </Button>
           </Link>
           <Link to="/wanted">
@@ -90,9 +81,10 @@ export const Header = () => {
               size="sm"
               className={isActive("/wanted") ? "text-accent bg-accent/10" : ""}
             >
-              Wanted
+              {t.nav.wanted}
             </Button>
           </Link>
+
           <div className="mx-1 h-5 w-px bg-border" />
           <LanguageSwitcher />
           {user ? (
