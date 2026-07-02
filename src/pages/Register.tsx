@@ -194,11 +194,26 @@ const RegisterContent = () => {
                 </p>
               </div>
             )}
+            {isFromDIS && previousGrade && (
+              <div className="space-y-2">
+                <Label>New Class/Year (2026-2027)</Label>
+                <Select onValueChange={setNewGrade} value={newGrade}>
+                  <SelectTrigger><SelectValue placeholder="Select your new class/year" /></SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(grades).map(([, programGrades]) =>
+                      programGrades.map((grade) => (
+                        <SelectItem key={`new-${grade}`} value={grade}>{grade}</SelectItem>
+                      ))
+                    )}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
           </div>
 
           {/* Previous-year sellable suggestion (before account creation) */}
           {isFromDIS && previousGrade && previousProgram && (
-            <BooksToSellSuggestion previousGrade={previousGrade} previousProgram={previousProgram} />
+            <BooksToSellSuggestion previousGrade={previousGrade} previousProgram={previousProgram} newGrade={newGrade || undefined} />
           )}
 
           {/* Step 2 — Account creation, gated */}
