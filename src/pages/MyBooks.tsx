@@ -706,6 +706,89 @@ const MyBooksContent = () => {
         </Tabs>
       </div>
 
+      {/* Sold confirmation dialog */}
+      <Dialog open={!!soldTarget} onOpenChange={(o) => !o && setSoldTarget(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {language === "it" ? "Segna come venduto" : "Mark as sold"}
+            </DialogTitle>
+          </DialogHeader>
+          {soldTarget && (
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                {language === "it"
+                  ? `Confermi che "${soldTarget.title}" è stato venduto? Sarà rimosso dalla sezione Compra ma resterà registrato per le statistiche di impatto DISbook.`
+                  : `Confirm that "${soldTarget.title}" has been sold? It will be removed from the Buy section but kept for DISbook impact statistics.`}
+              </p>
+              <div className="space-y-2">
+                <Label>
+                  {language === "it"
+                    ? "È stato venduto a un acquirente che ti ha contattato tramite DISbook?"
+                    : "Was this sold to a buyer who contacted you through DISbook?"}
+                </Label>
+                <RadioGroup value={soldThrough} onValueChange={(v) => setSoldThrough(v as any)}>
+                  {soldBuyers.length > 0 && (
+                    <div className="flex items-start gap-2">
+                      <RadioGroupItem value="buyer_selected" id="sold-buyer-sel" className="mt-1" />
+                      <div className="flex-1">
+                        <Label htmlFor="sold-buyer-sel" className="font-normal">
+                          {language === "it"
+                            ? "Sì, seleziona acquirente dai messaggi"
+                            : "Yes, select buyer from messages"}
+                        </Label>
+                        {soldThrough === "buyer_selected" && (
+                          <Select value={soldBuyerId} onValueChange={setSoldBuyerId}>
+                            <SelectTrigger className="mt-1">
+                              <SelectValue placeholder={language === "it" ? "Scegli acquirente" : "Choose buyer"} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {soldBuyers.map((b) => (
+                                <SelectItem key={b.user_id} value={b.user_id}>
+                                  {b.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-2">
+                    <RadioGroupItem value="unknown_buyer" id="sold-unknown" />
+                    <Label htmlFor="sold-unknown" className="font-normal">
+                      {language === "it"
+                        ? "Sì, ma non so quale utente"
+                        : "Yes, but I do not know which user"}
+                    </Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <RadioGroupItem value="outside" id="sold-outside" />
+                    <Label htmlFor="sold-outside" className="font-normal">
+                      {language === "it"
+                        ? "No / venduto fuori da DISbook"
+                        : "No / sold outside DISbook"}
+                    </Label>
+                  </div>
+                </RadioGroup>
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setSoldTarget(null)}>
+              {language === "it" ? "Annulla" : "Cancel"}
+            </Button>
+            <Button
+              onClick={confirmMarkSold}
+              disabled={soldSubmitting || (soldThrough === "buyer_selected" && !soldBuyerId)}
+            >
+              {soldSubmitting && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
+              {language === "it" ? "Sì, segna come venduto" : "Yes, mark as sold"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <Dialog open={!!correctionListing} onOpenChange={(o) => !o && setCorrectionListing(null)}>
         <DialogContent>
           <DialogHeader>
