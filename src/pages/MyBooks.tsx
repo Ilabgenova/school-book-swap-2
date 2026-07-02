@@ -757,7 +757,7 @@ const Card = ({
         )}
         {badges}
       </div>
-      <h3 className="font-medium text-foreground line-clamp-2">{title}</h3>
+      <h3 className="font-medium text-foreground break-words md:line-clamp-2">{title}</h3>
       <p className="mt-0.5 text-sm text-muted-foreground">
         {subject}
         {isbn ? ` • ISBN: ${isbn}` : ""}

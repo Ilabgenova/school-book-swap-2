@@ -117,7 +117,7 @@ export const ListingsModal = ({
                 <ArrowLeft className="h-4 w-4" />
               </Button>
             )}
-            <span className="truncate">{book.title}</span>
+            <span className="break-words">{book.title}</span>
           </DialogTitle>
           <p className="text-sm text-muted-foreground">
             {book.subject} • {book.publisher}

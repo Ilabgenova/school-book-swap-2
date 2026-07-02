@@ -217,7 +217,7 @@ const ListingsPanel = () => {
             <Card key={l.id} className="p-4 flex flex-col md:flex-row gap-3 md:items-start justify-between">
               <div className="min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <p className="font-medium truncate">{l.title}</p>
+                  <p className="font-medium break-words md:truncate">{l.title}</p>
                   <Badge variant="outline">{STATUS_LABEL_MAP[l.status] ?? l.status}</Badge>
                   {l.program && <Badge variant="secondary">{l.program} {l.class_year}</Badge>}
                 </div>
@@ -378,7 +378,7 @@ const AmazonPanel = () => {
           {items.map(a => (
             <Card key={a.id} className="p-3 flex flex-col md:flex-row md:items-center justify-between gap-2">
               <div className="min-w-0">
-                <p className="font-medium truncate">{a.title}</p>
+                <p className="font-medium break-words md:truncate">{a.title}</p>
                 <p className="text-xs text-muted-foreground">ISBN {a.isbn || "—"} · {a.status}</p>
               </div>
               <div className="flex gap-2">
@@ -463,7 +463,7 @@ const CatalogPanel = () => {
           {items.map(b => (
             <Card key={b.id} className="p-3 flex items-center justify-between gap-2">
               <div className="min-w-0">
-                <p className="font-medium truncate">{b.title}</p>
+                <p className="font-medium break-words md:truncate">{b.title}</p>
                 <p className="text-xs text-muted-foreground">
                   {b.program} {b.grade} · {b.subject || "—"} · {b.school_year} · ISBN {b.isbn || "—"} {b.is_sellable ? "" : "· not sellable"}
                 </p>

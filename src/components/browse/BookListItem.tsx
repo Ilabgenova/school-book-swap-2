@@ -45,7 +45,7 @@ export const BookListItem = ({
         {/* Book info */}
         <div className="flex-1 min-w-0">
           <div className="min-w-0">
-            <h3 className="font-medium text-foreground line-clamp-2">
+            <h3 className="font-medium text-foreground break-words md:line-clamp-2">
               {book.title}
             </h3>
             <p className="text-sm text-muted-foreground mt-1">
