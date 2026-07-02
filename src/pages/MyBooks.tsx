@@ -291,7 +291,8 @@ const MyBooksContent = () => {
                     classYear={l.class_year}
                     badges={[
                       <Badge key="t" variant="outline">{l.listing_type}</Badge>,
-                      <Badge key="s" variant={statusVariant(l.status)}>{l.status}</Badge>,
+                      <Badge key="s" variant={statusVariant(l.status)}>{statusLabel(l.status)}</Badge>,
+
                     ]}
                     meta={
                       <>
