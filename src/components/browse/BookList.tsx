@@ -78,9 +78,8 @@ export const BookList = ({
       const grouped: Record<string, BookListing[]> = {};
       for (const r of rows as any[]) {
         const p = profMap.get(r.seller_id);
-        const displayName = p
-          ? [p.first_name, p.last_name].filter(Boolean).join(" ").trim() || "DIS family"
-          : "DIS family";
+        const displayName = formatSellerName(p?.first_name, p?.last_name);
+
         const listing: BookListing = {
           id: r.id,
           type: r.listing_type,
