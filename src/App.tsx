@@ -16,6 +16,7 @@ import MyBooks from "./pages/MyBooks";
 import NotFound from "./pages/NotFound";
 import Admin from "./pages/Admin";
 import Messages from "./pages/Messages";
+import HelpFeedback from "./pages/HelpFeedback";
 
 const queryClient = new QueryClient();
 
