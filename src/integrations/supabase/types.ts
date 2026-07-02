@@ -421,6 +421,59 @@ export type Database = {
           },
         ]
       }
+      feedback_reports: {
+        Row: {
+          admin_notes: string | null
+          category: string
+          created_at: string
+          description: string
+          id: string
+          related_listing_id: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: Database["public"]["Enums"]["feedback_report_status"]
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          category: string
+          created_at?: string
+          description: string
+          id?: string
+          related_listing_id?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["feedback_report_status"]
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_notes?: string | null
+          category?: string
+          created_at?: string
+          description?: string
+          id?: string
+          related_listing_id?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["feedback_report_status"]
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feedback_reports_related_listing_id_fkey"
+            columns: ["related_listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       listings: {
         Row: {
           admin_review_note: string | null
@@ -929,6 +982,7 @@ export type Database = {
     Enums: {
       amazon_link_status: "coming_soon" | "available" | "not_available"
       app_role: "admin" | "moderator" | "user"
+      feedback_report_status: "open" | "in_progress" | "resolved" | "closed"
       listing_condition: "new" | "like_new" | "good" | "fair" | "poor"
       listing_status:
         | "active"
@@ -1067,6 +1121,7 @@ export const Constants = {
     Enums: {
       amazon_link_status: ["coming_soon", "available", "not_available"],
       app_role: ["admin", "moderator", "user"],
+      feedback_report_status: ["open", "in_progress", "resolved", "closed"],
       listing_condition: ["new", "like_new", "good", "fair", "poor"],
       listing_status: [
         "active",
