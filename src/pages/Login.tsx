@@ -37,11 +37,41 @@ const LoginContent = () => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
     if (error) {
-      toast.error(error.message);
+      const msg = error.message?.toLowerCase() || "";
+      if (msg.includes("confirm") || msg.includes("not confirmed")) {
+        toast.error(
+          language === "it"
+            ? "Email non ancora confermata. Clicca 'Reinvia email di conferma' qui sotto."
+            : "Email not confirmed yet. Click 'Resend confirmation email' below."
+        );
+      } else {
+        toast.error(error.message);
+      }
       return;
     }
     toast.success(language === "it" ? "Bentornato!" : "Welcome back!");
     navigate(redirectTo);
+  };
+
+  const handleResendConfirmation = async () => {
+    if (!email) {
+      toast.error(language === "it" ? "Inserisci prima la tua email" : "Please enter your email first");
+      return;
+    }
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email,
+      options: { emailRedirectTo: `${window.location.origin}${redirectTo}` },
+    });
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success(
+      language === "it"
+        ? "Email di conferma inviata. Controlla la casella (anche spam)."
+        : "Confirmation email sent. Check your inbox (and spam folder)."
+    );
   };
 
   const handleGoogle = async () => {
@@ -91,6 +121,16 @@ const LoginContent = () => {
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <>{t.nav.login}<ArrowRight className="h-4 w-4" /></>}
               </Button>
             </form>
+
+            <div className="mt-4 text-center">
+              <button
+                type="button"
+                onClick={handleResendConfirmation}
+                className="text-xs text-muted-foreground hover:text-primary underline"
+              >
+                {language === "it" ? "Reinvia email di conferma" : "Resend confirmation email"}
+              </button>
+            </div>
 
             <div className="mt-6 text-center text-sm">
               <p className="text-muted-foreground">

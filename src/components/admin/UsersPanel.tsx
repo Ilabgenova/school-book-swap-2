@@ -8,13 +8,27 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Loader2, ShieldOff, ShieldCheck, ShieldAlert, StickyNote } from "lucide-react";
+import { Loader2, ShieldOff, ShieldCheck, ShieldAlert, Mail, MailCheck } from "lucide-react";
 
-type Profile = {
-  user_id: string; first_name: string; last_name: string; school: string | null;
-  account_status: string; blocked_at: string | null; block_reason: string | null;
-  suspension_until: string | null; admin_notes: string | null;
-  rating_average: number; completed_transactions: number;
+type EnrichedUser = {
+  user_id: string;
+  email: string | null;
+  first_name: string | null;
+  last_name: string | null;
+  school: string | null;
+  account_status: string;
+  block_reason: string | null;
+  admin_notes: string | null;
+  suspension_until: string | null;
+  rating_average: number;
+  completed_transactions: number;
+  created_at: string | null;
+  email_confirmed_at: string | null;
+  last_sign_in_at: string | null;
+  is_admin: boolean;
+  listings_count: number;
+  active_listings_count: number;
+  sold_listings_count: number;
 };
 
 const REASONS = [
@@ -24,27 +38,39 @@ const REASONS = [
 ];
 
 export const UsersPanel = () => {
-  const [users, setUsers] = useState<Profile[]>([]);
+  const [users, setUsers] = useState<EnrichedUser[]>([]);
   const [q, setQ] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"all" | "confirmed" | "pending">("all");
   const [loading, setLoading] = useState(true);
-  const [modal, setModal] = useState<{ user: Profile; action: "blocked" | "suspended" } | null>(null);
+  const [modal, setModal] = useState<{ user: EnrichedUser; action: "blocked" | "suspended" } | null>(null);
   const [reason, setReason] = useState("");
   const [note, setNote] = useState("");
   const [until, setUntil] = useState("");
+  const [resendingFor, setResendingFor] = useState<string | null>(null);
 
   const load = async () => {
     setLoading(true);
-    let query = supabase.from("profiles").select("user_id,first_name,last_name,school,account_status,blocked_at,block_reason,suspension_until,admin_notes,rating_average,completed_transactions").order("created_at", { ascending: false }).limit(500);
-    const { data, error } = await query;
-    if (error) toast.error(error.message); else setUsers((data as any) || []);
+    const { data, error } = await supabase.rpc("admin_list_users_with_auth" as any);
+    if (error) toast.error(error.message);
+    else setUsers(((data as any) || []) as EnrichedUser[]);
     setLoading(false);
   };
   useEffect(() => { load(); }, []);
 
   const filtered = users.filter(u => {
     const s = q.toLowerCase();
-    return !s || `${u.first_name} ${u.last_name}`.toLowerCase().includes(s) || u.user_id.includes(s);
+    const matchesText = !s
+      || `${u.first_name ?? ""} ${u.last_name ?? ""}`.toLowerCase().includes(s)
+      || (u.email ?? "").toLowerCase().includes(s);
+    const confirmed = !!u.email_confirmed_at;
+    const matchesStatus =
+      statusFilter === "all"
+      || (statusFilter === "confirmed" && confirmed)
+      || (statusFilter === "pending" && !confirmed);
+    return matchesText && matchesStatus;
   });
+
+  const pendingCount = users.filter(u => !u.email_confirmed_at).length;
 
   const applyModeration = async () => {
     if (!modal) return;
@@ -63,7 +89,7 @@ export const UsersPanel = () => {
     load();
   };
 
-  const unblock = async (u: Profile) => {
+  const unblock = async (u: EnrichedUser) => {
     if (!confirm(`Unblock ${u.first_name} ${u.last_name}?`)) return;
     const { error } = await supabase.rpc("admin_moderate_user", {
       _user_id: u.user_id,
@@ -77,50 +103,98 @@ export const UsersPanel = () => {
     load();
   };
 
+  const resendConfirmation = async (u: EnrichedUser) => {
+    if (!u.email) return toast.error("No email on file");
+    setResendingFor(u.user_id);
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email: u.email,
+      options: { emailRedirectTo: `${window.location.origin}/browse` },
+    });
+    setResendingFor(null);
+    if (error) return toast.error(error.message);
+    toast.success(`Confirmation email resent to ${u.email}`);
+  };
+
+  const fmtDate = (d: string | null) => d ? new Date(d).toLocaleDateString() : "—";
 
   return (
     <div className="space-y-4">
-      <div className="flex gap-2">
-        <Input placeholder="Search by name…" value={q} onChange={e => setQ(e.target.value)} className="max-w-sm" />
+      <div className="flex gap-2 flex-wrap items-center">
+        <Input placeholder="Search by name or email…" value={q} onChange={e => setQ(e.target.value)} className="max-w-sm" />
+        <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as any)}>
+          <SelectTrigger className="w-56"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All users ({users.length})</SelectItem>
+            <SelectItem value="confirmed">Confirmed ({users.length - pendingCount})</SelectItem>
+            <SelectItem value="pending">Pending confirmation ({pendingCount})</SelectItem>
+          </SelectContent>
+        </Select>
         <Button variant="outline" size="sm" onClick={load}>Refresh</Button>
       </div>
+
       {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : (
         <div className="space-y-2">
-          {filtered.map(u => (
-            <Card key={u.user_id} className="p-3 flex flex-col md:flex-row md:items-center justify-between gap-3">
-              <div className="min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <p className="font-medium">{u.first_name} {u.last_name}</p>
-                  <Badge variant={u.account_status === "active" ? "outline" : u.account_status === "blocked" ? "destructive" : "secondary"}>
-                    {u.account_status}
-                  </Badge>
-                  {u.school && <Badge variant="secondary">{u.school}</Badge>}
+          {filtered.map(u => {
+            const confirmed = !!u.email_confirmed_at;
+            return (
+              <Card key={u.user_id} className="p-3 flex flex-col md:flex-row md:items-start justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <p className="font-medium">
+                      {(u.first_name || "").trim() || "—"} {(u.last_name || "").trim()}
+                    </p>
+                    {u.is_admin && <Badge variant="default">admin</Badge>}
+                    <Badge variant={confirmed ? "outline" : "secondary"} className={confirmed ? "" : "bg-amber-100 text-amber-900 border-amber-300"}>
+                      {confirmed
+                        ? <><MailCheck className="h-3 w-3 mr-1" />Confirmed</>
+                        : <><Mail className="h-3 w-3 mr-1" />Pending confirmation / In attesa di conferma</>}
+                    </Badge>
+                    <Badge variant={u.account_status === "active" ? "outline" : u.account_status === "blocked" ? "destructive" : "secondary"}>
+                      {u.account_status}
+                    </Badge>
+                    {u.school && <Badge variant="secondary">{u.school}</Badge>}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1 break-all">
+                    {u.email || "(no email)"}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Registered {fmtDate(u.created_at)} · Last sign-in {fmtDate(u.last_sign_in_at)} · ★{u.rating_average || 0} · {u.completed_transactions} tx
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Listings: {u.listings_count} total · {u.active_listings_count} active · {u.sold_listings_count} sold
+                  </p>
+                  {u.block_reason && <p className="text-xs text-destructive">Reason: {u.block_reason}</p>}
+                  {u.admin_notes && <p className="text-xs text-muted-foreground italic">Note: {u.admin_notes}</p>}
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  {u.user_id.slice(0, 8)}… · ★{u.rating_average || 0} · {u.completed_transactions} tx
-                </p>
-                {u.block_reason && <p className="text-xs text-destructive">Reason: {u.block_reason}</p>}
-                {u.admin_notes && <p className="text-xs text-muted-foreground italic">Note: {u.admin_notes}</p>}
-              </div>
-              <div className="flex gap-2 flex-wrap">
-                {u.account_status === "active" && (
-                  <>
-                    <Button size="sm" variant="outline" onClick={() => { setModal({ user: u, action: "suspended" }); }}>
-                      <ShieldAlert className="h-4 w-4 mr-1" />Suspend
+                <div className="flex gap-2 flex-wrap">
+                  {!confirmed && (
+                    <Button size="sm" variant="outline" onClick={() => resendConfirmation(u)} disabled={resendingFor === u.user_id}>
+                      {resendingFor === u.user_id
+                        ? <Loader2 className="h-4 w-4 animate-spin mr-1" />
+                        : <Mail className="h-4 w-4 mr-1" />}
+                      Resend confirmation / Reinvia
                     </Button>
-                    <Button size="sm" variant="destructive" onClick={() => { setModal({ user: u, action: "blocked" }); }}>
-                      <ShieldOff className="h-4 w-4 mr-1" />Block
+                  )}
+                  {u.account_status === "active" && (
+                    <>
+                      <Button size="sm" variant="outline" onClick={() => { setModal({ user: u, action: "suspended" }); }}>
+                        <ShieldAlert className="h-4 w-4 mr-1" />Suspend
+                      </Button>
+                      <Button size="sm" variant="destructive" onClick={() => { setModal({ user: u, action: "blocked" }); }}>
+                        <ShieldOff className="h-4 w-4 mr-1" />Block
+                      </Button>
+                    </>
+                  )}
+                  {u.account_status !== "active" && (
+                    <Button size="sm" variant="outline" onClick={() => unblock(u)}>
+                      <ShieldCheck className="h-4 w-4 mr-1" />Unblock
                     </Button>
-                  </>
-                )}
-                {u.account_status !== "active" && (
-                  <Button size="sm" variant="outline" onClick={() => unblock(u)}>
-                    <ShieldCheck className="h-4 w-4 mr-1" />Unblock
-                  </Button>
-                )}
-              </div>
-            </Card>
-          ))}
+                  )}
+                </div>
+              </Card>
+            );
+          })}
           {filtered.length === 0 && <p className="text-sm text-muted-foreground">No users.</p>}
         </div>
       )}
