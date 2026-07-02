@@ -510,19 +510,59 @@ export function isSellableItem(book: OfficialBook): boolean {
 // ============================================================
 // Selling helpers (last-year list only, for now)
 // ============================================================
-export function getSellableBooks(previousGrade: string, _previousProgram: string): OfficialBook[] {
-  // Until the new year list is uploaded, every real book from the
-  // previous grade is potentially sellable. Filter out non-book items.
-  return officialBooks
+// Books from the user's PREVIOUS grade that are reusable somewhere in the
+// 2026-2027 list AND not needed by the same student in their NEW grade →
+// candidates to LIST for other families.
+export function getSellableBooks(
+  previousGrade: string,
+  _previousProgram: string,
+  newGrade?: string
+): OfficialBook[] {
+  const candidates = officialBooks
     .filter((b) => b.grade === previousGrade)
     .filter(isSellableItem);
+  if (!NEW_SCHOOL_YEAR_AVAILABLE) return candidates;
+  const keepIsbns = new Set(
+    newGrade
+      ? newYearBooks.filter((b) => b.grade === newGrade && b.isbn).map((b) => b.isbn!.replace(/[^0-9]/g, ""))
+      : []
+  );
+  const reusableIsbns = new Set(
+    newYearBooks.filter((b) => b.isbn).map((b) => b.isbn!.replace(/[^0-9]/g, ""))
+  );
+  return candidates.filter((b) => {
+    const isbn = (b.isbn || "").replace(/[^0-9]/g, "");
+    if (!isbn) return false; // avoid uncertain matches → not shown as reusable
+    if (keepIsbns.has(isbn)) return false; // needed next year → keep
+    return reusableIsbns.has(isbn);
+  });
 }
 
-export function getBooksToKeep(_previousGrade: string, _previousProgram: string): OfficialBook[] {
-  // We cannot tell which books should be kept until the new school year
-  // book list has been uploaded.
-  if (!NEW_SCHOOL_YEAR_AVAILABLE) return [];
-  return [];
+// Books from previous grade that the same student still needs in their NEW grade.
+export function getBooksToKeep(
+  previousGrade: string,
+  _previousProgram: string,
+  newGrade?: string
+): OfficialBook[] {
+  if (!NEW_SCHOOL_YEAR_AVAILABLE || !newGrade) return [];
+  const newIsbns = new Set(
+    newYearBooks.filter((b) => b.grade === newGrade && b.isbn).map((b) => b.isbn!.replace(/[^0-9]/g, ""))
+  );
+  return officialBooks
+    .filter((b) => b.grade === previousGrade)
+    .filter(isSellableItem)
+    .filter((b) => {
+      const isbn = (b.isbn || "").replace(/[^0-9]/g, "");
+      return isbn && newIsbns.has(isbn);
+    });
+}
+
+// For a reusable book, tell where it appears in the new year list (grade/subject).
+export function getReuseTarget(book: OfficialBook): { grade: string; subject: string } | null {
+  const isbn = (book.isbn || "").replace(/[^0-9]/g, "");
+  if (!isbn) return null;
+  const hit = newYearBooks.find((b) => (b.isbn || "").replace(/[^0-9]/g, "") === isbn);
+  return hit ? { grade: hit.grade, subject: hit.subject } : null;
 }
 
 export function getPriceRange(_bookId: string): { min: number; max: number } | null {
