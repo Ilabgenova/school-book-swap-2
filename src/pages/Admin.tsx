@@ -169,7 +169,7 @@ const ListingsPanel = () => {
                 <p className="text-xs text-muted-foreground mt-1">
                   €{l.price} · {l.condition} · {l.school_year} · ISBN {l.isbn || "—"}
                 </p>
-                <p className="text-[11px] text-muted-foreground">Seller: {l.seller_id.slice(0, 8)}… · {new Date(l.created_at).toLocaleDateString()}</p>
+                <p className="text-[11px] text-muted-foreground">Seller: {formatSellerName(sellers[l.seller_id]?.first_name, sellers[l.seller_id]?.last_name)} · {new Date(l.created_at).toLocaleDateString()}</p>
               </div>
               <div className="flex gap-2 flex-wrap">
                 {l.status !== "active" && (
