@@ -85,9 +85,8 @@ export const BooksToSellSuggestion = ({
 const SellableBookItem = ({ book }: { book: OfficialBook }) => {
   const target = getReuseTarget(book);
   const params = new URLSearchParams({
-    isbn: book.isbn || "",
-    title: book.title,
-    subject: book.subject,
+    grade: book.grade,
+    bookId: book.id,
   });
   return (
     <div className="p-3 rounded-lg border border-border bg-card/50 flex items-center justify-between gap-3">
