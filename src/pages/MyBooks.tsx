@@ -425,23 +425,39 @@ const MyBooksContent = () => {
                     classYear={l.class_year}
                     badges={[
                       <Badge key="t" variant="outline">{l.listing_type}</Badge>,
-                      <Badge key="s" variant={statusVariant(l.status)}>{statusLabel(l.status)}</Badge>,
-
+                      <Badge
+                        key="s"
+                        variant={l.status === "needs_correction" ? "destructive" : statusVariant(l.status)}
+                      >
+                        {l.status === "needs_correction" && <AlertTriangle className="h-3 w-3 mr-1 inline" />}
+                        {statusLabel(l.status)}
+                      </Badge>,
                     ]}
                     meta={
                       <>
                         {l.condition} · €{Number(l.price).toFixed(2)}
+                        {l.admin_review_note && (
+                          <span className="mt-2 block rounded-md bg-destructive/10 border border-destructive/30 p-2 text-destructive text-xs">
+                            <span className="font-medium">Admin: </span>{l.admin_review_note}
+                          </span>
+                        )}
                       </>
                     }
                     actions={
                       <>
+                        {l.status === "needs_correction" && (
+                          <Button variant="default" size="sm" onClick={() => openCorrection(l)}>
+                            <AlertTriangle className="h-3.5 w-3.5" />
+                            Edit &amp; resubmit
+                          </Button>
+                        )}
                         {l.status === "active" && (
                           <Button variant="default" size="sm" onClick={() => markListingSold(l.id)}>
                             <Check className="h-3.5 w-3.5" />
                             Mark as sold
                           </Button>
                         )}
-                        {l.status !== "archived" && l.status !== "sold" && (
+                        {l.status !== "archived" && l.status !== "sold" && l.status !== "needs_correction" && (
                           <Button variant="ghost" size="sm" onClick={() => archiveListing(l.id)}>
                             <Archive className="h-3.5 w-3.5" />
                             Archive
@@ -458,13 +474,12 @@ const MyBooksContent = () => {
                         </Button>
                       </>
                     }
-
-
                   />
                 ))}
               </div>
             )}
           </TabsContent>
+
 
           {/* WANTED */}
           <TabsContent value="wanted" className="mt-6">
