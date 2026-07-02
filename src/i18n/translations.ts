@@ -3,14 +3,19 @@ export const translations = {
     // Navigation
     nav: {
       home: "Home",
-      browse: "Sfoglia",
-      myListings: "I Miei Annunci",
+      browse: "Compra un libro",
+      buy: "Compra un libro",
+      list: "Metti in vendita un libro",
+      wanted: "Cercati",
+      myBooks: "I miei libri",
+      myListings: "I miei annunci",
       messages: "Messaggi",
       profile: "Profilo",
       login: "Accedi",
       register: "Registrati",
       logout: "Esci",
     },
+
     // Landing Page
     landing: {
       hero: {
