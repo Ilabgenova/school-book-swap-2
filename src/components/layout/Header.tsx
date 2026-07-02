@@ -2,15 +2,18 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Menu, X, LogOut, Sparkles } from "lucide-react";
+import { Menu, X, LogOut, Sparkles, MessageCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
+import { useUnreadMessages } from "@/hooks/useUnreadMessages";
+import { Badge } from "@/components/ui/badge";
 
 export const Header = () => {
   const { t } = useLanguage();
   const { user, signOut } = useAuth();
   const { isAdmin } = useIsAdmin();
+  const unread = useUnreadMessages();
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -95,7 +98,25 @@ export const Header = () => {
                   size="sm"
                   className={isActive("/my-books") ? "text-accent bg-accent/10" : ""}
                 >
-                  My Books
+                  {t.nav.myBooks}
+                </Button>
+              </Link>
+              <Link to="/messages">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={cn(
+                    "gap-1.5 relative",
+                    isActive("/messages") ? "text-accent bg-accent/10" : ""
+                  )}
+                >
+                  <MessageCircle className="h-4 w-4" />
+                  {t.nav.messages}
+                  {unread > 0 && (
+                    <Badge className="ml-1 h-5 min-w-5 rounded-full px-1.5 text-[10px]">
+                      {unread}
+                    </Badge>
+                  )}
                 </Button>
               </Link>
               {isAdmin && (
