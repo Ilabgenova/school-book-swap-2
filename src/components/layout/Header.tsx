@@ -11,6 +11,7 @@ import {
   ShoppingBag,
   Tag,
   Shield,
+  LifeBuoy,
   MoreHorizontal,
 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -256,6 +257,12 @@ export const Header = () => {
                 <BookOpen className="h-4 w-4 mr-2" />
                 {t.nav.wanted}
               </DropdownMenuItem>
+              {user && (
+                <DropdownMenuItem onClick={() => navigate("/help-feedback")}>
+                  <LifeBuoy className="h-4 w-4 mr-2" />
+                  {t.nav.help}
+                </DropdownMenuItem>
+              )}
               {user && isAdmin && (
                 <>
                   <DropdownMenuSeparator />
