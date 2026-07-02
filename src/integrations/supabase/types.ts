@@ -423,6 +423,7 @@ export type Database = {
       }
       listings: {
         Row: {
+          admin_review_note: string | null
           book_id: string | null
           class_year: string | null
           condition: Database["public"]["Enums"]["listing_condition"]
@@ -442,6 +443,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          admin_review_note?: string | null
           book_id?: string | null
           class_year?: string | null
           condition?: Database["public"]["Enums"]["listing_condition"]
@@ -461,6 +463,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          admin_review_note?: string | null
           book_id?: string | null
           class_year?: string | null
           condition?: Database["public"]["Enums"]["listing_condition"]
@@ -515,6 +518,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      notifications: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          listing_id: string | null
+          read_at: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          listing_id?: string | null
+          read_at?: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          listing_id?: string | null
+          read_at?: string | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -844,6 +880,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_delete_listing_with_reason: {
+        Args: { _listing_id: string; _reason: string }
+        Returns: undefined
+      }
       admin_moderate_user: {
         Args: {
           _action: string
@@ -852,6 +892,10 @@ export type Database = {
           _suspension_until?: string
           _user_id: string
         }
+        Returns: undefined
+      }
+      admin_request_listing_correction: {
+        Args: { _listing_id: string; _note: string }
         Returns: undefined
       }
       current_user_is_admin: { Args: never; Returns: boolean }
@@ -876,6 +920,10 @@ export type Database = {
           subject: string
           title: string
         }[]
+      }
+      seller_resubmit_listing: {
+        Args: { _listing_id: string }
+        Returns: undefined
       }
     }
     Enums: {
