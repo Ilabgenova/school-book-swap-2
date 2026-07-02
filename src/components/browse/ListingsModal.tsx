@@ -216,13 +216,29 @@ export const ListingsModal = ({
                   </div>
 
                   {/* Action */}
-                  <Button 
-                    className="w-full mt-3 gap-2" 
+                  <Button
+                    className="w-full mt-3 gap-2"
                     size="sm"
-                    onClick={() => handleReserve(listing)}
+                    onClick={() => {
+                      if (!user) {
+                        navigate(
+                          `/login?next=${encodeURIComponent(
+                            `/messages?listing=${listing.id}`
+                          )}`
+                        );
+                        return;
+                      }
+                      if (user.id === listing.sellerId) {
+                        navigate("/messages");
+                        onClose();
+                        return;
+                      }
+                      navigate(`/messages?listing=${listing.id}`);
+                      onClose();
+                    }}
                   >
-                    <BookOpen className="h-4 w-4" />
-                    {t.browse.reservation.reserveNow}
+                    <MessageCircle className="h-4 w-4" />
+                    {language === "it" ? "Contatta il venditore" : "Contact seller"}
                   </Button>
                 </div>
               ))
