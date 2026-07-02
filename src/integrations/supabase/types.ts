@@ -130,6 +130,131 @@ export type Database = {
         }
         Relationships: []
       }
+      book_import_rows: {
+        Row: {
+          author: string | null
+          class_year: string | null
+          created_at: string
+          edition: string | null
+          id: string
+          import_id: string
+          import_status: string
+          isbn: string | null
+          lookup_status: string | null
+          notes: string | null
+          programme: string | null
+          publication_year: string | null
+          publisher: string | null
+          raw_data: Json | null
+          required_optional: string | null
+          row_number: number
+          subject: string | null
+          title: string | null
+          updated_at: string
+          validation_status: string | null
+          warning_message: string | null
+        }
+        Insert: {
+          author?: string | null
+          class_year?: string | null
+          created_at?: string
+          edition?: string | null
+          id?: string
+          import_id: string
+          import_status?: string
+          isbn?: string | null
+          lookup_status?: string | null
+          notes?: string | null
+          programme?: string | null
+          publication_year?: string | null
+          publisher?: string | null
+          raw_data?: Json | null
+          required_optional?: string | null
+          row_number: number
+          subject?: string | null
+          title?: string | null
+          updated_at?: string
+          validation_status?: string | null
+          warning_message?: string | null
+        }
+        Update: {
+          author?: string | null
+          class_year?: string | null
+          created_at?: string
+          edition?: string | null
+          id?: string
+          import_id?: string
+          import_status?: string
+          isbn?: string | null
+          lookup_status?: string | null
+          notes?: string | null
+          programme?: string | null
+          publication_year?: string | null
+          publisher?: string | null
+          raw_data?: Json | null
+          required_optional?: string | null
+          row_number?: number
+          subject?: string | null
+          title?: string | null
+          updated_at?: string
+          validation_status?: string | null
+          warning_message?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "book_import_rows_import_id_fkey"
+            columns: ["import_id"]
+            isOneToOne: false
+            referencedRelation: "book_imports"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      book_imports: {
+        Row: {
+          created_at: string
+          failed_rows: number
+          file_name: string
+          id: string
+          imported_rows: number
+          notes: string | null
+          school_year: string | null
+          skipped_rows: number
+          status: string
+          total_rows: number
+          updated_at: string
+          uploaded_by: string
+        }
+        Insert: {
+          created_at?: string
+          failed_rows?: number
+          file_name: string
+          id?: string
+          imported_rows?: number
+          notes?: string | null
+          school_year?: string | null
+          skipped_rows?: number
+          status?: string
+          total_rows?: number
+          updated_at?: string
+          uploaded_by: string
+        }
+        Update: {
+          created_at?: string
+          failed_rows?: number
+          file_name?: string
+          id?: string
+          imported_rows?: number
+          notes?: string | null
+          school_year?: string | null
+          skipped_rows?: number
+          status?: string
+          total_rows?: number
+          updated_at?: string
+          uploaded_by?: string
+        }
+        Relationships: []
+      }
       bought_books: {
         Row: {
           acquisition_type: string
@@ -336,8 +461,13 @@ export type Database = {
       }
       profiles: {
         Row: {
+          account_status: string
+          admin_notes: string | null
           avatar_url: string | null
           bio: string | null
+          block_reason: string | null
+          blocked_at: string | null
+          blocked_by: string | null
           class_year: string | null
           completed_transactions: number | null
           created_at: string
@@ -351,12 +481,18 @@ export type Database = {
           rating_average: number | null
           rating_count: number | null
           school: string | null
+          suspension_until: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
+          account_status?: string
+          admin_notes?: string | null
           avatar_url?: string | null
           bio?: string | null
+          block_reason?: string | null
+          blocked_at?: string | null
+          blocked_by?: string | null
           class_year?: string | null
           completed_transactions?: number | null
           created_at?: string
@@ -370,12 +506,18 @@ export type Database = {
           rating_average?: number | null
           rating_count?: number | null
           school?: string | null
+          suspension_until?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
+          account_status?: string
+          admin_notes?: string | null
           avatar_url?: string | null
           bio?: string | null
+          block_reason?: string | null
+          blocked_at?: string | null
+          blocked_by?: string | null
           class_year?: string | null
           completed_transactions?: number | null
           created_at?: string
@@ -389,6 +531,7 @@ export type Database = {
           rating_average?: number | null
           rating_count?: number | null
           school?: string | null
+          suspension_until?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -412,6 +555,51 @@ export type Database = {
           phone?: string | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      reports: {
+        Row: {
+          admin_notes: string | null
+          created_at: string
+          description: string | null
+          id: string
+          reason: string
+          reporter_id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          target_id: string
+          target_type: string
+          updated_at: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          reason: string
+          reporter_id: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          target_id: string
+          target_type: string
+          updated_at?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          reason?: string
+          reporter_id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          target_id?: string
+          target_type?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -454,6 +642,39 @@ export type Database = {
           seller_id?: string
           status?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      user_moderation_log: {
+        Row: {
+          action: string
+          admin_id: string
+          created_at: string
+          id: string
+          internal_note: string | null
+          reason: string | null
+          suspension_until: string | null
+          user_id: string
+        }
+        Insert: {
+          action: string
+          admin_id: string
+          created_at?: string
+          id?: string
+          internal_note?: string | null
+          reason?: string | null
+          suspension_until?: string | null
+          user_id: string
+        }
+        Update: {
+          action?: string
+          admin_id?: string
+          created_at?: string
+          id?: string
+          internal_note?: string | null
+          reason?: string | null
+          suspension_until?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -566,6 +787,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      is_account_active: { Args: { _user_id: string }; Returns: boolean }
       is_admin: { Args: never; Returns: boolean }
     }
     Enums: {
