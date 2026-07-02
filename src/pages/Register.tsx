@@ -35,7 +35,9 @@ const RegisterContent = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const nextPath = new URLSearchParams(window.location.search).get("next");
-  const redirectTo = nextPath?.startsWith("/") ? nextPath : "/browse";
+  const isSafeRedirect = (u: string | null): u is string =>
+    typeof u === "string" && u.startsWith("/") && !u.startsWith("//") && !u.startsWith("/\\");
+  const redirectTo = isSafeRedirect(nextPath) ? nextPath : "/browse";
   const [isFromDIS, setIsFromDIS] = useState<boolean | null>(null);
   const [previousGrade, setPreviousGrade] = useState<string>("");
   const [previousProgram, setPreviousProgram] = useState<string>("");
