@@ -37,6 +37,7 @@ export const Header = () => {
   const { isAdmin } = useIsAdmin();
   const unread = useUnreadMessages();
   const adminPending = useAdminPendingCount();
+  const myBooksAttention = useMyBooksAttentionCount();
   const navigate = useNavigate();
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
