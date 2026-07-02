@@ -82,6 +82,27 @@ export type Database = {
           },
         ]
       }
+      app_settings: {
+        Row: {
+          key: string
+          updated_at: string
+          updated_by: string | null
+          value: Json
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          updated_by?: string | null
+          value: Json
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: Json
+        }
+        Relationships: []
+      }
       book_catalog: {
         Row: {
           academic_year: string
@@ -478,18 +499,23 @@ export type Database = {
         Row: {
           admin_review_note: string | null
           book_id: string | null
+          buyer_id: string | null
           class_year: string | null
           condition: Database["public"]["Enums"]["listing_condition"]
           created_at: string
           id: string
           images: string[]
           isbn: string | null
+          item_type: string
           listing_type: Database["public"]["Enums"]["listing_type"]
           notes: string | null
           price: number
           program: string | null
           school_year: string
           seller_id: string
+          sold_at: string | null
+          sold_by_user_id: string | null
+          sold_through_disbook: boolean | null
           status: Database["public"]["Enums"]["listing_status"]
           subject: string | null
           title: string
@@ -498,18 +524,23 @@ export type Database = {
         Insert: {
           admin_review_note?: string | null
           book_id?: string | null
+          buyer_id?: string | null
           class_year?: string | null
           condition?: Database["public"]["Enums"]["listing_condition"]
           created_at?: string
           id?: string
           images?: string[]
           isbn?: string | null
+          item_type?: string
           listing_type?: Database["public"]["Enums"]["listing_type"]
           notes?: string | null
           price: number
           program?: string | null
           school_year?: string
           seller_id: string
+          sold_at?: string | null
+          sold_by_user_id?: string | null
+          sold_through_disbook?: boolean | null
           status?: Database["public"]["Enums"]["listing_status"]
           subject?: string | null
           title: string
@@ -518,18 +549,23 @@ export type Database = {
         Update: {
           admin_review_note?: string | null
           book_id?: string | null
+          buyer_id?: string | null
           class_year?: string | null
           condition?: Database["public"]["Enums"]["listing_condition"]
           created_at?: string
           id?: string
           images?: string[]
           isbn?: string | null
+          item_type?: string
           listing_type?: Database["public"]["Enums"]["listing_type"]
           notes?: string | null
           price?: number
           program?: string | null
           school_year?: string
           seller_id?: string
+          sold_at?: string | null
+          sold_by_user_id?: string | null
+          sold_through_disbook?: boolean | null
           status?: Database["public"]["Enums"]["listing_status"]
           subject?: string | null
           title?: string
@@ -937,6 +973,7 @@ export type Database = {
         Args: { _listing_id: string; _reason: string }
         Returns: undefined
       }
+      admin_get_impact_stats: { Args: never; Returns: Json }
       admin_moderate_user: {
         Args: {
           _action: string
@@ -973,6 +1010,14 @@ export type Database = {
           subject: string
           title: string
         }[]
+      }
+      seller_mark_listing_sold: {
+        Args: {
+          _buyer_id?: string
+          _listing_id: string
+          _sold_through_disbook?: boolean
+        }
+        Returns: undefined
       }
       seller_resubmit_listing: {
         Args: { _listing_id: string }
