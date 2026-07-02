@@ -12,11 +12,19 @@ import { useAuth } from "@/hooks/useAuth";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Trash2, Check, Archive, Plus, ShieldAlert, Loader2 } from "lucide-react";
+import { Trash2, Check, Archive, Plus, ShieldAlert, Loader2, MessageSquareWarning } from "lucide-react";
 import { BookImportPanel } from "@/components/admin/BookImportPanel";
 import { UsersPanel as UsersModerationPanel } from "@/components/admin/UsersPanel";
 import { ModerationPanel } from "@/components/admin/ModerationPanel";
 import { ReuseReviewPanel } from "@/components/admin/ReuseReviewPanel";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { formatSellerName } from "@/lib/sellerName";
 
 
