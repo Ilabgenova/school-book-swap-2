@@ -129,11 +129,12 @@ const ListingsPanel = () => {
           <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All</SelectItem>
-            <SelectItem value="pending_review">Pending review</SelectItem>
-            <SelectItem value="active">Active</SelectItem>
+            <SelectItem value="pending_review">Pending approval</SelectItem>
+            <SelectItem value="active">Approved</SelectItem>
             <SelectItem value="sold">Sold</SelectItem>
             <SelectItem value="reserved">Reserved</SelectItem>
-            <SelectItem value="archived">Archived</SelectItem>
+            <SelectItem value="archived">Removed</SelectItem>
+
           </SelectContent>
         </Select>
         <Button variant="outline" size="sm" onClick={load}>Refresh</Button>
