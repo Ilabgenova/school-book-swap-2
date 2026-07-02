@@ -2,13 +2,30 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Menu, X, LogOut, Sparkles, MessageCircle } from "lucide-react";
-import { useState, useEffect } from "react";
+import {
+  Menu,
+  LogOut,
+  Sparkles,
+  MessageCircle,
+  BookOpen,
+  ShoppingBag,
+  Tag,
+  Shield,
+  MoreHorizontal,
+} from "lucide-react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export const Header = () => {
   const { t } = useLanguage();
@@ -17,7 +34,6 @@ export const Header = () => {
   const unread = useUnreadMessages();
   const navigate = useNavigate();
   const location = useLocation();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -29,7 +45,6 @@ export const Header = () => {
 
   const handleSignOut = async () => {
     await signOut();
-    setMobileMenuOpen(false);
     navigate("/");
   };
 
@@ -43,9 +58,9 @@ export const Header = () => {
           : "border-b border-transparent bg-background/60 backdrop-blur-md"
       }`}
     >
-      <div className="container flex h-16 items-center justify-between">
+      <div className="container flex h-16 items-center justify-between gap-2">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2.5 group">
+        <Link to="/" className="flex items-center gap-2.5 group shrink-0">
           <div className="relative flex h-9 w-9 items-center justify-center rounded-lg gradient-accent text-accent-foreground shadow-soft group-hover:shadow-glow transition-all">
             <Sparkles className="h-4.5 w-4.5" strokeWidth={2.5} />
           </div>
@@ -136,7 +151,6 @@ export const Header = () => {
                 <LogOut className="h-4 w-4" /> {t.nav.logout}
               </Button>
             </>
-
           ) : (
             <>
               <Link to="/login">
@@ -153,84 +167,99 @@ export const Header = () => {
           )}
         </nav>
 
-        {/* Mobile Menu Button */}
+        {/* Mobile Navigation */}
         <div className="flex items-center gap-1 md:hidden">
+          {user ? (
+            <>
+              <Link to="/my-books" aria-label={t.nav.myBooks}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={cn(
+                    "gap-1.5 px-2",
+                    isActive("/my-books") ? "text-accent bg-accent/10" : ""
+                  )}
+                >
+                  <BookOpen className="h-4 w-4" />
+                  <span className="hidden xs:inline text-xs">{t.nav.myBooks}</span>
+                </Button>
+              </Link>
+              <Link to="/messages" aria-label={t.nav.messages}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={cn(
+                    "gap-1.5 px-2 relative",
+                    isActive("/messages") ? "text-accent bg-accent/10" : ""
+                  )}
+                >
+                  <MessageCircle className="h-4 w-4" />
+                  <span className="hidden xs:inline text-xs">{t.nav.messages}</span>
+                  {unread > 0 && (
+                    <Badge className="ml-0.5 h-4 min-w-4 rounded-full px-1 text-[10px]">
+                      {unread}
+                    </Badge>
+                  )}
+                </Button>
+              </Link>
+            </>
+          ) : (
+            <Link to="/login">
+              <Button variant="ghost" size="sm" className="px-2 text-xs">
+                {t.nav.login}
+              </Button>
+            </Link>
+          )}
           <LanguageSwitcher />
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label="Toggle menu"
-          >
-            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </Button>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label={t.nav.more}
+                className="h-9 w-9"
+              >
+                <MoreHorizontal className="h-5 w-5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuItem onClick={() => navigate("/buy")}>
+                <ShoppingBag className="h-4 w-4 mr-2" />
+                {t.nav.buy}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/sell?intent=sell&mode=sell")}>
+                <Tag className="h-4 w-4 mr-2" />
+                {t.nav.list}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/wanted")}>
+                <BookOpen className="h-4 w-4 mr-2" />
+                {t.nav.wanted}
+              </DropdownMenuItem>
+              {user && isAdmin && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => navigate("/admin")}>
+                    <Shield className="h-4 w-4 mr-2" />
+                    Admin
+                  </DropdownMenuItem>
+                </>
+              )}
+              <DropdownMenuSeparator />
+              {user ? (
+                <DropdownMenuItem onClick={handleSignOut}>
+                  <LogOut className="h-4 w-4 mr-2" />
+                  {t.nav.logout}
+                </DropdownMenuItem>
+              ) : (
+                <DropdownMenuItem onClick={() => navigate("/register")}>
+                  {t.nav.register}
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
-
-      {/* Mobile Menu */}
-      {mobileMenuOpen && (
-        <div className="md:hidden border-t border-border bg-background animate-slide-up">
-          <nav className="container flex flex-col gap-2 py-4">
-            <Link to="/sell?intent=sell&mode=sell" onClick={() => setMobileMenuOpen(false)}>
-              <Button variant="ghost" className="w-full justify-start">
-                {t.nav.list}
-              </Button>
-            </Link>
-            <Link to="/buy" onClick={() => setMobileMenuOpen(false)}>
-              <Button variant="ghost" className="w-full justify-start">
-                {t.nav.buy}
-              </Button>
-            </Link>
-            <Link to="/wanted" onClick={() => setMobileMenuOpen(false)}>
-              <Button variant="ghost" className="w-full justify-start">
-                {t.nav.wanted}
-              </Button>
-            </Link>
-
-
-            {user ? (
-              <>
-                <Link to="/my-books" onClick={() => setMobileMenuOpen(false)}>
-                  <Button variant="ghost" className="w-full justify-start">
-                    {t.nav.myBooks}
-                  </Button>
-                </Link>
-                <Link to="/messages" onClick={() => setMobileMenuOpen(false)}>
-                  <Button variant="ghost" className="w-full justify-start gap-2">
-                    <MessageCircle className="h-4 w-4" />
-                    {t.nav.messages}
-                    {unread > 0 && (
-                      <Badge className="ml-auto h-5 min-w-5 rounded-full px-1.5 text-[10px]">
-                        {unread}
-                      </Badge>
-                    )}
-                  </Button>
-                </Link>
-                <Button
-                  variant="outline"
-                  className="w-full gap-1.5"
-                  onClick={handleSignOut}
-                >
-                  <LogOut className="h-4 w-4" /> {t.nav.logout}
-                </Button>
-              </>
-            ) : (
-              <>
-                <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
-                  <Button variant="outline" className="w-full">
-                    {t.nav.login}
-                  </Button>
-                </Link>
-                <Link to="/register" onClick={() => setMobileMenuOpen(false)}>
-                  <Button variant="hero" className="w-full">
-                    {t.nav.register}
-                  </Button>
-                </Link>
-              </>
-            )}
-          </nav>
-        </div>
-      )}
     </header>
   );
 };
