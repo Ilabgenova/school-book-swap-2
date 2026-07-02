@@ -17,6 +17,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
+import { useAdminPendingCount } from "@/hooks/useAdminPendingCount";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import {
@@ -32,6 +33,7 @@ export const Header = () => {
   const { user, signOut } = useAuth();
   const { isAdmin } = useIsAdmin();
   const unread = useUnreadMessages();
+  const adminPending = useAdminPendingCount();
   const navigate = useNavigate();
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
@@ -129,7 +131,7 @@ export const Header = () => {
                   <MessageCircle className="h-4 w-4" />
                   {t.nav.messages}
                   {unread > 0 && (
-                    <Badge className="ml-1 h-5 min-w-5 rounded-full px-1.5 text-[10px]">
+                    <Badge variant="destructive" className="ml-1 h-5 min-w-5 rounded-full px-1.5 text-[10px]">
                       {unread}
                     </Badge>
                   )}
@@ -137,8 +139,23 @@ export const Header = () => {
               </Link>
               {isAdmin && (
                 <Link to="/admin">
-                  <Button variant="ghost" size="sm" className={isActive("/admin") ? "text-accent bg-accent/10" : ""}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className={cn(
+                      "gap-1.5 relative",
+                      isActive("/admin") ? "text-accent bg-accent/10" : ""
+                    )}
+                  >
                     Admin
+                    {adminPending > 0 && (
+                      <Badge
+                        variant="destructive"
+                        className="ml-1 h-5 min-w-5 rounded-full px-1.5 text-[10px]"
+                      >
+                        {adminPending}
+                      </Badge>
+                    )}
                   </Button>
                 </Link>
               )}
@@ -196,7 +213,7 @@ export const Header = () => {
                   <MessageCircle className="h-4 w-4" />
                   <span className="hidden xs:inline text-xs">{t.nav.messages}</span>
                   {unread > 0 && (
-                    <Badge className="ml-0.5 h-4 min-w-4 rounded-full px-1 text-[10px]">
+                    <Badge variant="destructive" className="ml-0.5 h-4 min-w-4 rounded-full px-1 text-[10px]">
                       {unread}
                     </Badge>
                   )}
@@ -218,9 +235,12 @@ export const Header = () => {
                 variant="ghost"
                 size="icon"
                 aria-label={t.nav.more}
-                className="h-9 w-9"
+                className="h-9 w-9 relative"
               >
                 <MoreHorizontal className="h-5 w-5" />
+                {user && isAdmin && adminPending > 0 && (
+                  <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-destructive" />
+                )}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
@@ -241,7 +261,12 @@ export const Header = () => {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => navigate("/admin")}>
                     <Shield className="h-4 w-4 mr-2" />
-                    Admin
+                    <span>Admin</span>
+                    {adminPending > 0 && (
+                      <Badge variant="destructive" className="ml-auto h-5 min-w-5 rounded-full px-1.5 text-[10px]">
+                        {adminPending}
+                      </Badge>
+                    )}
                   </DropdownMenuItem>
                 </>
               )}
