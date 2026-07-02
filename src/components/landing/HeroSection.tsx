@@ -25,6 +25,10 @@ export const HeroSection = () => {
       <div className="absolute inset-0 grid-pattern opacity-40 pointer-events-none [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_75%)]" />
 
       <div className="container relative py-16 md:py-24 lg:py-28">
+        <div className="mb-6 rounded-lg border border-primary/30 bg-primary/5 px-4 py-2.5 text-sm text-foreground">
+          <Sparkles className="inline h-4 w-4 mr-1.5 text-primary" />
+          DISbook now supports the <strong>2026–2027</strong> MYP and DP book reference list. Families can list reusable books from last year for sale, donation or exchange.
+        </div>
         <div className="grid lg:grid-cols-[1.05fr_1fr] gap-12 lg:gap-16 items-center">
           {/* Left — copy */}
           <div className="space-y-7">
