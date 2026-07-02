@@ -338,6 +338,50 @@ const MyBooksContent = () => {
           </p>
         </div>
 
+        {notifications.length > 0 && (
+          <div className="mb-6 rounded-xl border border-border bg-card p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Bell className="h-4 w-4 text-primary" />
+                <h2 className="font-medium text-sm">
+                  Notifications / Notifiche
+                  {notifUnread > 0 && (
+                    <Badge variant="default" className="ml-2">{notifUnread}</Badge>
+                  )}
+                </h2>
+              </div>
+              {notifUnread > 0 && (
+                <Button variant="ghost" size="sm" onClick={markAllRead}>
+                  Mark all read
+                </Button>
+              )}
+            </div>
+            <div className="space-y-2 max-h-64 overflow-auto">
+              {notifications.slice(0, 10).map((n) => (
+                <div
+                  key={n.id}
+                  className={`rounded-md border p-3 text-sm ${n.read_at ? "bg-background" : "bg-muted/40 border-primary/40"}`}
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="font-medium">{n.title}</p>
+                      <p className="mt-1 whitespace-pre-line text-muted-foreground text-xs">{n.body}</p>
+                      <p className="mt-1 text-[10px] text-muted-foreground">
+                        {new Date(n.created_at).toLocaleString()}
+                      </p>
+                    </div>
+                    {!n.read_at && (
+                      <Button size="sm" variant="ghost" onClick={() => markRead(n.id)}>
+                        <Check className="h-3.5 w-3.5" />
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         <Tabs value={tab} onValueChange={setTab}>
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="listed" className="gap-2">
