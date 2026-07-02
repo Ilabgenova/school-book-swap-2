@@ -39,6 +39,7 @@ const RegisterContent = () => {
   const [isFromDIS, setIsFromDIS] = useState<boolean | null>(null);
   const [previousGrade, setPreviousGrade] = useState<string>("");
   const [previousProgram, setPreviousProgram] = useState<string>("");
+  const [newGrade, setNewGrade] = useState<string>("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
