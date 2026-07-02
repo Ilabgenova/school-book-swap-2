@@ -859,14 +859,22 @@ export type Database = {
         Args: { _book_ids: string[] }
         Returns: {
           book_id: string
+          class_year: string
           condition: string
+          created_at: string
           id: string
+          images: string[]
+          isbn: string
           listing_type: string
+          notes: string
           price: number
           seller_completed_exchanges: number
           seller_display_name: string
           seller_id: string
           seller_rating: number
+          status: string
+          subject: string
+          title: string
         }[]
       }
     }
