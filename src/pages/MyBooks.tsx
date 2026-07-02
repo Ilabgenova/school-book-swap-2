@@ -272,6 +272,50 @@ const MyBooksContent = () => {
     loadAll();
   };
 
+  const openCorrection = (l: ListingRow) => {
+    setCorrectionListing(l);
+    setEditPrice(String(l.price ?? ""));
+    setEditCondition(l.condition ?? "");
+    setEditNotes(l.notes ?? "");
+  };
+
+  const submitResubmit = async () => {
+    if (!correctionListing) return;
+    setResubmitting(true);
+    const priceNum = Number(editPrice);
+    if (!Number.isFinite(priceNum) || priceNum < 0) {
+      toast({ title: "Please enter a valid price", variant: "destructive" });
+      setResubmitting(false);
+      return;
+    }
+    const { error: updErr } = await supabase
+      .from("listings")
+      .update({
+        price: priceNum,
+        condition: editCondition as any,
+        notes: editNotes || null,
+      })
+      .eq("id", correctionListing.id)
+      .eq("seller_id", user!.id);
+    if (updErr) {
+      toast({ title: "Could not save changes", description: updErr.message, variant: "destructive" });
+      setResubmitting(false);
+      return;
+    }
+    const { error: rpcErr } = await supabase.rpc("seller_resubmit_listing", {
+      _listing_id: correctionListing.id,
+    });
+    setResubmitting(false);
+    if (rpcErr) {
+      toast({ title: "Could not resubmit", description: rpcErr.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: "Sent for admin approval / Inviato per approvazione" });
+    setCorrectionListing(null);
+    loadAll();
+  };
+
+
 
   if (authLoading || !user) {
     return (
