@@ -120,6 +120,15 @@ const MyBooksContent = () => {
   const [loading, setLoading] = useState(true);
   const [addOpen, setAddOpen] = useState(false);
 
+  // Correction / resubmit dialog state
+  const [correctionListing, setCorrectionListing] = useState<ListingRow | null>(null);
+  const [editPrice, setEditPrice] = useState("");
+  const [editCondition, setEditCondition] = useState("");
+  const [editNotes, setEditNotes] = useState("");
+  const [resubmitting, setResubmitting] = useState(false);
+
+  const { items: notifications, unreadCount: notifUnread, markRead, markAllRead } = useNotifications();
+
   // Manual add form state
   const [formBookId, setFormBookId] = useState<string>("");
   const [formSeller, setFormSeller] = useState("");
