@@ -77,21 +77,6 @@ export const UsersPanel = () => {
     load();
   };
 
-  const unblock = async (u: Profile) => {
-    if (!confirm(`Unblock ${u.first_name} ${u.last_name}?`)) return;
-    const { data: userRes } = await supabase.auth.getUser();
-    const adminId = userRes.user!.id;
-    const { error } = await supabase.from("profiles").update({
-      account_status: "active", blocked_at: null, blocked_by: null,
-      block_reason: null, suspension_until: null,
-    }).eq("user_id", u.user_id);
-    if (error) return toast.error(error.message);
-    await supabase.from("user_moderation_log" as any).insert({
-      user_id: u.user_id, admin_id: adminId, action: "unblocked", reason: "Admin unblock",
-    });
-    toast.success("User unblocked");
-    load();
-  };
 
   return (
     <div className="space-y-4">
