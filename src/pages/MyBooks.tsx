@@ -641,6 +641,69 @@ const MyBooksContent = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      <Dialog open={!!correctionListing} onOpenChange={(o) => !o && setCorrectionListing(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit &amp; resubmit / Correggi e reinvia</DialogTitle>
+          </DialogHeader>
+          {correctionListing && (
+            <div className="space-y-3">
+              <div className="rounded-md bg-destructive/10 border border-destructive/30 p-3 text-xs text-destructive">
+                <p className="font-medium mb-1">Admin note</p>
+                <p className="whitespace-pre-line">{correctionListing.admin_review_note ?? "—"}</p>
+              </div>
+              <div>
+                <Label>{correctionListing.title}</Label>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label>Price (€)</Label>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    value={editPrice}
+                    onChange={(e) => setEditPrice(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label>Condition</Label>
+                  <Select value={editCondition} onValueChange={setEditCondition}>
+                    <SelectTrigger><SelectValue placeholder="Condition" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="new">New</SelectItem>
+                      <SelectItem value="like_new">Like new</SelectItem>
+                      <SelectItem value="good">Good</SelectItem>
+                      <SelectItem value="fair">Fair</SelectItem>
+                      <SelectItem value="poor">Poor</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div>
+                <Label>Notes</Label>
+                <Textarea
+                  rows={3}
+                  value={editNotes}
+                  onChange={(e) => setEditNotes(e.target.value)}
+                  placeholder="Describe the condition, missing pages, etc."
+                />
+              </div>
+              <p className="text-xs text-muted-foreground">
+                To replace or add photos, please contact the admin. Resubmitting will send the
+                listing back to pending approval.
+              </p>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setCorrectionListing(null)}>Cancel</Button>
+            <Button onClick={submitResubmit} disabled={resubmitting}>
+              {resubmitting && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
+              Resubmit for approval
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </MainLayout>
   );
 };
