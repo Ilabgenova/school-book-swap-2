@@ -70,9 +70,10 @@ const Admin = () => {
           <p className="text-muted-foreground text-sm">Moderation & housekeeping for DISbook</p>
         </div>
         <Tabs defaultValue="listings">
-          <TabsList className="grid grid-cols-3 md:grid-cols-7 w-full md:w-auto">
+          <TabsList className="grid grid-cols-4 md:grid-cols-8 w-full md:w-auto">
             <TabsTrigger value="listings">Listings</TabsTrigger>
             <TabsTrigger value="import">Book import</TabsTrigger>
+            <TabsTrigger value="reuse">Reuse review</TabsTrigger>
             <TabsTrigger value="users">Users</TabsTrigger>
             <TabsTrigger value="moderation">Moderation</TabsTrigger>
             <TabsTrigger value="amazon">Amazon</TabsTrigger>
@@ -81,6 +82,7 @@ const Admin = () => {
           </TabsList>
           <TabsContent value="listings" className="mt-6"><ListingsPanel /></TabsContent>
           <TabsContent value="import" className="mt-6"><BookImportPanel /></TabsContent>
+          <TabsContent value="reuse" className="mt-6"><ReuseReviewPanel /></TabsContent>
           <TabsContent value="users" className="mt-6"><UsersModerationPanel /></TabsContent>
           <TabsContent value="moderation" className="mt-6"><ModerationPanel /></TabsContent>
           <TabsContent value="amazon" className="mt-6"><AmazonPanel /></TabsContent>
