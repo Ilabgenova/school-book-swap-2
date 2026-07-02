@@ -93,7 +93,7 @@ export const BookImportPanel = () => {
       if (!uid) throw new Error("Not authenticated");
       // Create import record
       const { data: imp, error: impErr } = await supabase.from("book_imports" as any).insert({
-        uploaded_by: uid, file_name: fileName, school_year: schoolYear,
+        uploaded_by: uid, file_name: fileName, school_year: schoolYear, academic_year: schoolYear,
         total_rows: rows.length, status: "processed",
       }).select().single();
       if (impErr) throw impErr;
@@ -101,6 +101,7 @@ export const BookImportPanel = () => {
       // Insert into book_catalog
       const catalogRows = toImport.map((r) => ({
         school_year: schoolYear,
+        academic_year: schoolYear,
         program: r.programme || (r.class_year?.startsWith("MYP") ? "MYP" : "DP"),
         grade: r.class_year!,
         subject: r.subject,
