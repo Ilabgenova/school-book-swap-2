@@ -71,7 +71,7 @@ export const ReuseReviewPanel = () => {
   const save = async (row: CatalogRow) => {
     const p = edits[row.id];
     if (!p) return toast.info("No changes");
-    const { error } = await supabase.from("book_catalog").update(p as any).eq("id", row.id);
+    const { error } = await (supabase.from("book_catalog") as any).update(p).eq("id", row.id);
     if (error) return toast.error(error.message);
     toast.success("Saved");
     load();
