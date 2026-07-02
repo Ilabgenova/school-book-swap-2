@@ -301,14 +301,19 @@ export const translations = {
     // Navigation
     nav: {
       home: "Home",
-      browse: "Browse",
-      myListings: "My Listings",
+      browse: "Buy a book",
+      buy: "Buy a book",
+      list: "List a book",
+      wanted: "Wanted",
+      myBooks: "My books",
+      myListings: "My listings",
       messages: "Messages",
       profile: "Profile",
       login: "Login",
       register: "Register",
       logout: "Logout",
     },
+
     // Landing Page
     landing: {
       hero: {
