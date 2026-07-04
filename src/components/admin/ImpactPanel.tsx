@@ -42,7 +42,23 @@ export const ImpactPanel = () => {
     }
     setStats(data as any);
     setCoef(String((data as any)?.co2_kg_per_book ?? ""));
+    const { data: noteRow } = await supabase
+      .from("app_settings")
+      .select("value")
+      .eq("key", "co2_source_note")
+      .maybeSingle();
+    setNote(typeof noteRow?.value === "string" ? (noteRow.value as string) : "");
     setLoading(false);
+  };
+
+  const saveNote = async () => {
+    setSavingNote(true);
+    const { error } = await supabase
+      .from("app_settings")
+      .upsert({ key: "co2_source_note", value: note as any, updated_at: new Date().toISOString() });
+    setSavingNote(false);
+    if (error) return toast.error(error.message);
+    toast.success(language === "it" ? "Nota aggiornata" : "Note updated");
   };
 
   useEffect(() => {
