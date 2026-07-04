@@ -170,6 +170,23 @@ export const ImpactPanel = () => {
           )}
         </p>
       </Card>
+
+      <Card className="p-4">
+        <Label>{T("Fonte / nota esplicativa", "Source / explanation note")}</Label>
+        <Textarea
+          className="mt-2"
+          rows={3}
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+          placeholder={T("Es. Fonte: ...", "e.g. Source: ...")}
+        />
+        <div className="mt-2 flex justify-end">
+          <Button onClick={saveNote} disabled={savingNote} size="sm">
+            {savingNote ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+            {T("Salva nota", "Save note")}
+          </Button>
+        </div>
+      </Card>
     </div>
   );
 };
