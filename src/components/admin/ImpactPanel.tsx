@@ -28,7 +28,9 @@ export const ImpactPanel = () => {
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
   const [coef, setCoef] = useState("");
+  const [note, setNote] = useState("");
   const [saving, setSaving] = useState(false);
+  const [savingNote, setSavingNote] = useState(false);
 
   const load = async () => {
     setLoading(true);
