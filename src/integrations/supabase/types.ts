@@ -407,6 +407,30 @@ export type Database = {
           },
         ]
       }
+      co2_public_stats: {
+        Row: {
+          books_reused: number
+          co2_kg_per_book: number
+          id: boolean
+          source_note: string
+          updated_at: string
+        }
+        Insert: {
+          books_reused?: number
+          co2_kg_per_book?: number
+          id?: boolean
+          source_note?: string
+          updated_at?: string
+        }
+        Update: {
+          books_reused?: number
+          co2_kg_per_book?: number
+          id?: boolean
+          source_note?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       conversations: {
         Row: {
           buyer_id: string
