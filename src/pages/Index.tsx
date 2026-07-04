@@ -5,10 +5,12 @@ import { HowItWorksSection } from "@/components/landing/HowItWorksSection";
 import { PreviewSection } from "@/components/landing/PreviewSection";
 import { CommunityTipsSection } from "@/components/landing/CommunityTipsSection";
 import { CTASection } from "@/components/landing/CTASection";
+import { Co2ImpactBand } from "@/components/landing/Co2ImpactBand";
 
 const Index = () => {
   return (
     <MainLayout>
+      <Co2ImpactBand />
       <HeroSection />
       <FeaturesSection />
       <HowItWorksSection />

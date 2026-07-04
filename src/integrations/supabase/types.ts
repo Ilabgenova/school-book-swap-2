@@ -1034,6 +1034,7 @@ export type Database = {
           title: string
         }[]
       }
+      public_get_co2_impact: { Args: never; Returns: Json }
       seller_mark_listing_sold: {
         Args: {
           _buyer_id?: string

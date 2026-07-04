@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Loader2, Leaf, Save } from "lucide-react";
 import { toast } from "sonner";
@@ -27,7 +28,9 @@ export const ImpactPanel = () => {
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
   const [coef, setCoef] = useState("");
+  const [note, setNote] = useState("");
   const [saving, setSaving] = useState(false);
+  const [savingNote, setSavingNote] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -39,7 +42,23 @@ export const ImpactPanel = () => {
     }
     setStats(data as any);
     setCoef(String((data as any)?.co2_kg_per_book ?? ""));
+    const { data: noteRow } = await supabase
+      .from("app_settings")
+      .select("value")
+      .eq("key", "co2_source_note")
+      .maybeSingle();
+    setNote(typeof noteRow?.value === "string" ? (noteRow.value as string) : "");
     setLoading(false);
+  };
+
+  const saveNote = async () => {
+    setSavingNote(true);
+    const { error } = await supabase
+      .from("app_settings")
+      .upsert({ key: "co2_source_note", value: note as any, updated_at: new Date().toISOString() });
+    setSavingNote(false);
+    if (error) return toast.error(error.message);
+    toast.success(language === "it" ? "Nota aggiornata" : "Note updated");
   };
 
   useEffect(() => {
@@ -150,6 +169,23 @@ export const ImpactPanel = () => {
             "This coefficient can be updated later when more precise data is available."
           )}
         </p>
+      </Card>
+
+      <Card className="p-4">
+        <Label>{T("Fonte / nota esplicativa", "Source / explanation note")}</Label>
+        <Textarea
+          className="mt-2"
+          rows={3}
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+          placeholder={T("Es. Fonte: ...", "e.g. Source: ...")}
+        />
+        <div className="mt-2 flex justify-end">
+          <Button onClick={saveNote} disabled={savingNote} size="sm">
+            {savingNote ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+            {T("Salva nota", "Save note")}
+          </Button>
+        </div>
       </Card>
     </div>
   );
