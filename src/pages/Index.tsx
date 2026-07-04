@@ -6,6 +6,7 @@ import { PreviewSection } from "@/components/landing/PreviewSection";
 import { CommunityTipsSection } from "@/components/landing/CommunityTipsSection";
 import { CTASection } from "@/components/landing/CTASection";
 import { Co2ImpactBand } from "@/components/landing/Co2ImpactBand";
+import { SustainabilitySection } from "@/components/landing/SustainabilitySection";
 
 const Index = () => {
   return (
@@ -14,6 +15,7 @@ const Index = () => {
       <HeroSection />
       <FeaturesSection />
       <HowItWorksSection />
+      <SustainabilitySection />
       <PreviewSection />
       <CommunityTipsSection />
       <CTASection />
