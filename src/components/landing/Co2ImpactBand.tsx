@@ -51,26 +51,21 @@ export const Co2ImpactBand = () => {
               <Leaf className="h-5 w-5 text-success" />
             </div>
             <div className="flex-1 min-w-0">
-              {hasData ? (
-                <>
-                  <p className="text-base sm:text-lg font-bold text-foreground leading-tight break-words">
-                    {formatted} {T("kg di CO₂ evitati", "kg CO₂ avoided")}
-                  </p>
-                  <p className="text-xs sm:text-sm text-muted-foreground leading-snug break-words">
-                    {T(
+              <p className="text-base sm:text-lg font-bold text-foreground leading-tight break-words">
+                <span className="tabular-nums">{formatted}</span>{" "}
+                {T("kg di CO₂ evitati", "kg CO₂ avoided")}
+              </p>
+              <p className="text-xs sm:text-sm text-muted-foreground leading-snug break-words">
+                {hasData
+                  ? T(
                       "Libri riutilizzati tramite DISbook invece di comprarli nuovi.",
                       "Books reused through DISbook instead of buying new ones.",
+                    )
+                  : T(
+                      "Il contatore crescerà quando i libri inizieranno a essere riutilizzati tramite DISbook.",
+                      "The counter will grow as books start being reused through DISbook.",
                     )}
-                  </p>
-                </>
-              ) : (
-                <p className="text-sm text-muted-foreground leading-snug break-words">
-                  {T(
-                    "La CO₂ evitata apparirà qui quando i libri inizieranno a essere riutilizzati tramite DISbook.",
-                    "CO₂ avoided will appear here once books start being reused through DISbook.",
-                  )}
-                </p>
-              )}
+              </p>
             </div>
           </div>
           <Button
