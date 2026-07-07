@@ -41,7 +41,7 @@ export const BookList = ({
   selectedLanguages,
   onBack,
 }: BookListProps) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { user } = useAuth();
   const [selectedBook, setSelectedBook] = useState<OfficialBook | null>(null);
   const [liveListings, setLiveListings] = useState<Record<string, BookListing[]>>({});
