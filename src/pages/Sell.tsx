@@ -573,7 +573,9 @@ const SellContent = () => {
                 </p>
                 <h2 className="mt-1 font-display text-xl font-bold text-foreground">{selectedBook.title}</h2>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  {selectedBook.grade} • {selectedBook.subject}{selectedBook.isbn ? ` • ISBN: ${selectedBook.isbn}` : ""}
+                  {isGenericMyp
+                    ? (isIT ? "Materiale generico per MYP" : "Generic MYP item")
+                    : `${selectedBook.grade} • ${selectedBook.subject}${selectedBook.isbn ? ` • ISBN: ${selectedBook.isbn}` : ""}`}
                 </p>
               </div>
             </div>
