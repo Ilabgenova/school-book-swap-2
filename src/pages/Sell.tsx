@@ -461,6 +461,34 @@ const SellContent = () => {
                   </div>
                 </div>
               ))}
+
+              {/* Generic MYP category — Keyboard / Sphero Mini Robot (no class year) */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Badge variant="myp">MYP</Badge>
+                  <span className="text-sm text-muted-foreground">
+                    {isIT ? "Materiali generici (tutte le classi MYP)" : "Generic materials (all MYP years)"}
+                  </span>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full h-auto justify-between py-4 group hover:border-primary hover:bg-primary/5"
+                  onClick={() => handleSelectGrade(GENERIC_MYP_GRADE)}
+                >
+                  <span className="flex flex-col text-left">
+                    <span className="font-medium">
+                      {isIT ? "Tastiera / Robot Sphero Mini" : "Keyboard / Sphero Mini Robot"}
+                    </span>
+                    <span className="text-xs text-muted-foreground font-normal">
+                      {isIT
+                        ? "Nessun anno o ISBN richiesto"
+                        : "No class year or ISBN required"}
+                    </span>
+                  </span>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-primary" />
+                </Button>
+              </div>
             </div>
           </section>
         )}
