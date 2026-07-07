@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/select";
 import { Loader2, BookPlus, ArrowLeft, Camera, X, AlertTriangle, ShieldAlert, GraduationCap, ChevronRight, BookOpen, ArrowRight, CheckCircle2, Upload, Info, ChevronDown } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { officialBooks, isSellableItem, LAST_SCHOOL_YEAR } from "@/data/officialBooks";
+import { officialBooks, isSellableItem, LAST_SCHOOL_YEAR, GENERIC_MYP_GRADE } from "@/data/officialBooks";
 import { BookCover } from "@/components/book/BookCover";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -41,6 +41,7 @@ const ACCEPT_ATTR = "image/jpeg,image/png,image/webp,image/heic,image/heif,.heic
 type PhotoState = { file: File; preview: string } | null;
 
 const getProgramFromGrade = (grade: string) => {
+  if (grade === GENERIC_MYP_GRADE) return "MYP";
   if (grade.startsWith("MYP")) return "MYP";
   if (grade.startsWith("DP")) return "DP";
   return "";
@@ -243,8 +244,11 @@ const SellContent = () => {
     [bookId]
   );
   const selectedProgram = useMemo(() => getProgramFromGrade(grade), [grade]);
+  const isGenericMyp = grade === GENERIC_MYP_GRADE;
 
-  const photosValid = !!front && !!inside;
+  // Generic MYP items (Keyboard, Sphero) only need one photo — inside pages
+  // don't make sense for a physical device.
+  const photosValid = isGenericMyp ? !!front : (!!front && !!inside);
   const canSubmit = !!selectedBook && photosValid && !submitting;
 
   useEffect(() => {
@@ -336,8 +340,12 @@ const SellContent = () => {
     if (!selectedBook) { toast.error(isIT ? "Seleziona un libro" : "Please select a book"); return; }
     if (!photosValid) {
       toast.error(isIT
-        ? "Carica almeno una foto della copertina e una delle pagine interne prima di pubblicare."
-        : "Please upload at least a front cover photo and one inside photo before publishing your listing.");
+        ? (isGenericMyp
+            ? "Carica almeno una foto dell'oggetto prima di pubblicare."
+            : "Carica almeno una foto della copertina e una delle pagine interne prima di pubblicare.")
+        : (isGenericMyp
+            ? "Please upload at least one photo of the item before publishing."
+            : "Please upload at least a front cover photo and one inside photo before publishing your listing."));
       return;
     }
     const priceValue = listingType === "sale" ? parseFloat(price) : 0;
@@ -367,6 +375,7 @@ const SellContent = () => {
         subject: selectedBook.subject,
         program: selectedBook.program,
         class_year: selectedBook.grade,
+        item_type: selectedBook.itemType ?? "book",
         condition,
         listing_type: listingType,
         price: priceValue,
@@ -452,6 +461,34 @@ const SellContent = () => {
                   </div>
                 </div>
               ))}
+
+              {/* Generic MYP category — Keyboard / Sphero Mini Robot (no class year) */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Badge variant="myp">MYP</Badge>
+                  <span className="text-sm text-muted-foreground">
+                    {isIT ? "Materiali generici (tutte le classi MYP)" : "Generic materials (all MYP years)"}
+                  </span>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full h-auto justify-between py-4 group hover:border-primary hover:bg-primary/5"
+                  onClick={() => handleSelectGrade(GENERIC_MYP_GRADE)}
+                >
+                  <span className="flex flex-col text-left">
+                    <span className="font-medium">
+                      {isIT ? "Tastiera / Robot Sphero Mini" : "Keyboard / Sphero Mini Robot"}
+                    </span>
+                    <span className="text-xs text-muted-foreground font-normal">
+                      {isIT
+                        ? "Nessun anno o ISBN richiesto"
+                        : "No class year or ISBN required"}
+                    </span>
+                  </span>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-primary" />
+                </Button>
+              </div>
             </div>
           </section>
         )}
@@ -536,7 +573,9 @@ const SellContent = () => {
                 </p>
                 <h2 className="mt-1 font-display text-xl font-bold text-foreground">{selectedBook.title}</h2>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  {selectedBook.grade} • {selectedBook.subject}{selectedBook.isbn ? ` • ISBN: ${selectedBook.isbn}` : ""}
+                  {isGenericMyp
+                    ? (isIT ? "Materiale generico per MYP" : "Generic MYP item")
+                    : `${selectedBook.grade} • ${selectedBook.subject}${selectedBook.isbn ? ` • ISBN: ${selectedBook.isbn}` : ""}`}
                 </p>
               </div>
             </div>
@@ -631,22 +670,28 @@ const SellContent = () => {
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                 <PhotoUpload
                   language={language}
-                  label={isIT ? "Copertina" : "Front cover"}
+                  label={isGenericMyp
+                    ? (isIT ? "Foto principale" : "Main photo")
+                    : (isIT ? "Copertina" : "Front cover")}
                   required
-                  warning={isIT ? "Carica la copertina reale di questo libro." : "Upload the actual front cover of this book."}
+                  warning={isGenericMyp
+                    ? (isIT ? "Carica una foto reale di questo oggetto." : "Upload an actual photo of this item.")
+                    : (isIT ? "Carica la copertina reale di questo libro." : "Upload the actual front cover of this book.")}
                   value={front}
                   onChange={setFront}
                 />
                 <PhotoUpload
                   language={language}
-                  label={isIT ? "Pagine interne" : "Inside pages"}
-                  required
-                  hint={isIT ? "Mostra scritte, segni, condizione delle pagine" : "Show writing, marks, page condition"}
-                  warning={isIT ? "Carica una foto reale delle pagine interne che mostri la condizione." : "Upload a real inside-page photo showing the condition of this book."}
+                  label={isGenericMyp
+                    ? (isIT ? "Foto extra" : "Extra photo")
+                    : (isIT ? "Pagine interne" : "Inside pages")}
+                  required={!isGenericMyp}
+                  hint={isGenericMyp ? undefined : (isIT ? "Mostra scritte, segni, condizione delle pagine" : "Show writing, marks, page condition")}
+                  warning={isGenericMyp ? undefined : (isIT ? "Carica una foto reale delle pagine interne che mostri la condizione." : "Upload a real inside-page photo showing the condition of this book.")}
                   value={inside}
                   onChange={setInside}
                 />
-                <PhotoUpload language={language} label={isIT ? "Retro copertina" : "Back cover"} value={back} onChange={setBack} />
+                <PhotoUpload language={language} label={isGenericMyp ? (isIT ? "Foto extra" : "Extra photo") : (isIT ? "Retro copertina" : "Back cover")} value={back} onChange={setBack} />
                 <PhotoUpload language={language} label={isIT ? "Foto extra" : "Extra photo"} value={extra1} onChange={setExtra1} />
                 <PhotoUpload language={language} label={isIT ? "Foto extra" : "Extra photo"} value={extra2} onChange={setExtra2} />
               </div>
@@ -677,8 +722,12 @@ const SellContent = () => {
                   <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
                   <p>
                     {isIT
-                      ? "Carica almeno una foto della copertina e una delle pagine interne prima di pubblicare."
-                      : "Please upload at least a front cover photo and one inside photo before publishing your listing."}
+                      ? (isGenericMyp
+                          ? "Carica almeno una foto dell'oggetto prima di pubblicare."
+                          : "Carica almeno una foto della copertina e una delle pagine interne prima di pubblicare.")
+                      : (isGenericMyp
+                          ? "Please upload at least one photo of the item before publishing."
+                          : "Please upload at least a front cover photo and one inside photo before publishing your listing.")}
                   </p>
                 </div>
               )}

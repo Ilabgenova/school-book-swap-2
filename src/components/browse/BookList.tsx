@@ -12,7 +12,7 @@ import {
 import { BookListItem } from "./BookListItem";
 import { ListingsModal } from "./ListingsModal";
 import { SummerReadingSection } from "./SummerReadingSection";
-import { officialBooks, OfficialBook, BookListing, isSellableItem, LAST_SCHOOL_YEAR, NEW_SCHOOL_YEAR_AVAILABLE } from "@/data/officialBooks";
+import { officialBooks, OfficialBook, BookListing, isSellableItem, LAST_SCHOOL_YEAR, NEW_SCHOOL_YEAR_AVAILABLE, GENERIC_MYP_GRADE } from "@/data/officialBooks";
 import { BuyNewNotice } from "@/components/buy-new/BuyNewNotice";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -41,7 +41,7 @@ export const BookList = ({
   selectedLanguages,
   onBack,
 }: BookListProps) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { user } = useAuth();
   const [selectedBook, setSelectedBook] = useState<OfficialBook | null>(null);
   const [liveListings, setLiveListings] = useState<Record<string, BookListing[]>>({});
@@ -102,8 +102,9 @@ export const BookList = ({
     return () => { cancelled = true; };
   }, [allBooks, user]);
 
-  // For MYP, split into core and foreign language sections
-  const isMYP = selectedProgram === "MYP";
+  const isGenericMyp = selectedGrade === GENERIC_MYP_GRADE;
+  // For MYP (but not the generic-materials pseudo-grade), split into core and foreign language sections
+  const isMYP = selectedProgram === "MYP" && !isGenericMyp;
   const coreBooks = isMYP
     ? allBooks.filter((b) => !FOREIGN_LANGUAGE_SUBJECTS.includes(b.subject))
     : allBooks;
@@ -141,20 +142,28 @@ export const BookList = ({
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Badge
               variant={selectedProgram.toLowerCase() as "pyp" | "myp" | "dp"}
             >
               {selectedProgram}
             </Badge>
             <h2 className="font-display text-xl font-bold text-foreground">
-              {selectedGrade}
+              {isGenericMyp
+                ? (language === "it"
+                    ? "Tastiera / Robot Sphero Mini"
+                    : "Keyboard / Sphero Mini Robot")
+                : selectedGrade}
             </h2>
           </div>
           <div className="flex items-center gap-2 mt-1">
             <Calendar className="h-4 w-4 text-muted-foreground" />
             <p className="text-sm text-muted-foreground">
-              {t.browse.schoolYear} 2025-2026 • {t.browse.officialBookList}
+              {isGenericMyp
+                ? (language === "it"
+                    ? "Materiali generici usati nel percorso MYP, non collegati a una singola classe."
+                    : "Generic items used across MYP, not linked to one specific class.")
+                : `${t.browse.schoolYear} 2025-2026 • ${t.browse.officialBookList}`}
             </p>
           </div>
         </div>

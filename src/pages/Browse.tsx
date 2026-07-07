@@ -22,7 +22,13 @@ const BrowseContent = () => {
   const handleSelectGrade = (grade: string, program: string) => {
     setSelectedGrade(grade);
     setSelectedProgram(program);
-    setStep("mode");
+    // Generic MYP items (Keyboard / Sphero) are not tied to a class year and
+    // have no buying-mode / language / subject step — jump straight to the list.
+    if (grade === "Generic MYP") {
+      setStep("books");
+    } else {
+      setStep("mode");
+    }
   };
 
   const handleSelectMode = (mode: "new" | "used") => {

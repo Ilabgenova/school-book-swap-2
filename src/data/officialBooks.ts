@@ -12,7 +12,15 @@ export interface OfficialBook {
   program: string;
   isSummerReading?: boolean;
   schoolYear?: string;
+  /**
+   * Item type for non-book generic items (Keyboard, Sphero Mini Robot).
+   * Defaults to "book" when omitted. Persisted to `listings.item_type`.
+   */
+  itemType?: "book" | "keyboard" | "sphero";
 }
+
+// Synthetic "grade" for items shared across all MYP years (keyboard, sphero robot).
+export const GENERIC_MYP_GRADE = "Generic MYP";
 
 export interface BookListing {
   id: string;
@@ -467,6 +475,33 @@ export const lastYearBooks = officialBooks;
 
 // Empty summer reading list (none in 2025-2026 source file)
 export const summerReadingBooks: OfficialBook[] = [];
+
+// Generic MYP items: shared across all MYP years, not tied to a specific class.
+export const genericMypItems: OfficialBook[] = [
+  {
+    id: "generic-keyboard",
+    title: "Keyboard / Tastiera (4 ottave, 49 tasti)",
+    subject: "Keyboard",
+    publisher: "",
+    availableFromPreviousYear: true,
+    grade: GENERIC_MYP_GRADE,
+    program: "MYP",
+    itemType: "keyboard",
+  },
+  {
+    id: "generic-sphero",
+    title: "Sphero Mini Robot",
+    subject: "Sphero Mini Robot",
+    publisher: "",
+    availableFromPreviousYear: true,
+    grade: GENERIC_MYP_GRADE,
+    program: "MYP",
+    itemType: "sphero",
+  },
+];
+
+// Expose generic items in the same list so grade-filtered UIs pick them up.
+officialBooks.push(...genericMypItems);
 
 // Mock listings placeholder (no live data without DB query)
 export const mockListings: Record<string, BookListing[]> = {};

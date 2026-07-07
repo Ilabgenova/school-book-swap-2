@@ -1,7 +1,8 @@
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { GraduationCap, ChevronRight } from "lucide-react";
+import { GraduationCap, ChevronRight, Music } from "lucide-react";
+import { GENERIC_MYP_GRADE } from "@/data/officialBooks";
 
 const grades = {
   MYP: ["MYP 1", "MYP 2", "MYP 3", "MYP 4", "MYP 5"],
@@ -13,7 +14,8 @@ interface GradeSelectorProps {
 }
 
 export const GradeSelector = ({ onSelectGrade }: GradeSelectorProps) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const isIT = language === "it";
 
   return (
     <div className="space-y-8">
@@ -54,6 +56,36 @@ export const GradeSelector = ({ onSelectGrade }: GradeSelectorProps) => {
             </div>
           </div>
         ))}
+
+        {/* Generic MYP items (Keyboard / Sphero Mini Robot) — not tied to one class */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <Badge variant="myp">MYP</Badge>
+            <span className="text-sm text-muted-foreground">
+              {isIT ? "Materiali generici" : "Generic materials"}
+            </span>
+          </div>
+          <Button
+            variant="outline"
+            className="w-full h-auto py-4 justify-between group hover:border-primary hover:bg-primary/5"
+            onClick={() => onSelectGrade(GENERIC_MYP_GRADE, "MYP")}
+          >
+            <span className="flex items-center gap-3 text-left">
+              <Music className="h-5 w-5 text-primary shrink-0" />
+              <span className="flex flex-col">
+                <span className="font-medium">
+                  {isIT ? "Tastiera / Robot Sphero Mini" : "Keyboard / Sphero Mini Robot"}
+                </span>
+                <span className="text-xs text-muted-foreground font-normal">
+                  {isIT
+                    ? "Materiali generici usati in tutte le classi MYP"
+                    : "Generic items used across all MYP years"}
+                </span>
+              </span>
+            </span>
+            <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+          </Button>
+        </div>
       </div>
     </div>
   );
