@@ -150,7 +150,7 @@ export const BookList = ({
             </Badge>
             <h2 className="font-display text-xl font-bold text-foreground">
               {isGenericMyp
-                ? (t.language === "it"
+                ? (language === "it"
                     ? "Tastiera / Robot Sphero Mini"
                     : "Keyboard / Sphero Mini Robot")
                 : selectedGrade}
@@ -160,7 +160,7 @@ export const BookList = ({
             <Calendar className="h-4 w-4 text-muted-foreground" />
             <p className="text-sm text-muted-foreground">
               {isGenericMyp
-                ? (t.language === "it"
+                ? (language === "it"
                     ? "Materiali generici usati nel percorso MYP, non collegati a una singola classe."
                     : "Generic items used across MYP, not linked to one specific class.")
                 : `${t.browse.schoolYear} 2025-2026 • ${t.browse.officialBookList}`}
