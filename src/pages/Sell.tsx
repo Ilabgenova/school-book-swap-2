@@ -670,22 +670,28 @@ const SellContent = () => {
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                 <PhotoUpload
                   language={language}
-                  label={isIT ? "Copertina" : "Front cover"}
+                  label={isGenericMyp
+                    ? (isIT ? "Foto principale" : "Main photo")
+                    : (isIT ? "Copertina" : "Front cover")}
                   required
-                  warning={isIT ? "Carica la copertina reale di questo libro." : "Upload the actual front cover of this book."}
+                  warning={isGenericMyp
+                    ? (isIT ? "Carica una foto reale di questo oggetto." : "Upload an actual photo of this item.")
+                    : (isIT ? "Carica la copertina reale di questo libro." : "Upload the actual front cover of this book.")}
                   value={front}
                   onChange={setFront}
                 />
                 <PhotoUpload
                   language={language}
-                  label={isIT ? "Pagine interne" : "Inside pages"}
-                  required
-                  hint={isIT ? "Mostra scritte, segni, condizione delle pagine" : "Show writing, marks, page condition"}
-                  warning={isIT ? "Carica una foto reale delle pagine interne che mostri la condizione." : "Upload a real inside-page photo showing the condition of this book."}
+                  label={isGenericMyp
+                    ? (isIT ? "Foto extra" : "Extra photo")
+                    : (isIT ? "Pagine interne" : "Inside pages")}
+                  required={!isGenericMyp}
+                  hint={isGenericMyp ? undefined : (isIT ? "Mostra scritte, segni, condizione delle pagine" : "Show writing, marks, page condition")}
+                  warning={isGenericMyp ? undefined : (isIT ? "Carica una foto reale delle pagine interne che mostri la condizione." : "Upload a real inside-page photo showing the condition of this book.")}
                   value={inside}
                   onChange={setInside}
                 />
-                <PhotoUpload language={language} label={isIT ? "Retro copertina" : "Back cover"} value={back} onChange={setBack} />
+                <PhotoUpload language={language} label={isGenericMyp ? (isIT ? "Foto extra" : "Extra photo") : (isIT ? "Retro copertina" : "Back cover")} value={back} onChange={setBack} />
                 <PhotoUpload language={language} label={isIT ? "Foto extra" : "Extra photo"} value={extra1} onChange={setExtra1} />
                 <PhotoUpload language={language} label={isIT ? "Foto extra" : "Extra photo"} value={extra2} onChange={setExtra2} />
               </div>
