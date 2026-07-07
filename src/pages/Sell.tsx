@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/select";
 import { Loader2, BookPlus, ArrowLeft, Camera, X, AlertTriangle, ShieldAlert, GraduationCap, ChevronRight, BookOpen, ArrowRight, CheckCircle2, Upload, Info, ChevronDown } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { officialBooks, isSellableItem, LAST_SCHOOL_YEAR } from "@/data/officialBooks";
+import { officialBooks, isSellableItem, LAST_SCHOOL_YEAR, GENERIC_MYP_GRADE } from "@/data/officialBooks";
 import { BookCover } from "@/components/book/BookCover";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -41,6 +41,7 @@ const ACCEPT_ATTR = "image/jpeg,image/png,image/webp,image/heic,image/heif,.heic
 type PhotoState = { file: File; preview: string } | null;
 
 const getProgramFromGrade = (grade: string) => {
+  if (grade === GENERIC_MYP_GRADE) return "MYP";
   if (grade.startsWith("MYP")) return "MYP";
   if (grade.startsWith("DP")) return "DP";
   return "";
@@ -243,8 +244,11 @@ const SellContent = () => {
     [bookId]
   );
   const selectedProgram = useMemo(() => getProgramFromGrade(grade), [grade]);
+  const isGenericMyp = grade === GENERIC_MYP_GRADE;
 
-  const photosValid = !!front && !!inside;
+  // Generic MYP items (Keyboard, Sphero) only need one photo — inside pages
+  // don't make sense for a physical device.
+  const photosValid = isGenericMyp ? !!front : (!!front && !!inside);
   const canSubmit = !!selectedBook && photosValid && !submitting;
 
   useEffect(() => {
