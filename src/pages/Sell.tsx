@@ -340,8 +340,12 @@ const SellContent = () => {
     if (!selectedBook) { toast.error(isIT ? "Seleziona un libro" : "Please select a book"); return; }
     if (!photosValid) {
       toast.error(isIT
-        ? "Carica almeno una foto della copertina e una delle pagine interne prima di pubblicare."
-        : "Please upload at least a front cover photo and one inside photo before publishing your listing.");
+        ? (isGenericMyp
+            ? "Carica almeno una foto dell'oggetto prima di pubblicare."
+            : "Carica almeno una foto della copertina e una delle pagine interne prima di pubblicare.")
+        : (isGenericMyp
+            ? "Please upload at least one photo of the item before publishing."
+            : "Please upload at least a front cover photo and one inside photo before publishing your listing."));
       return;
     }
     const priceValue = listingType === "sale" ? parseFloat(price) : 0;
@@ -371,6 +375,7 @@ const SellContent = () => {
         subject: selectedBook.subject,
         program: selectedBook.program,
         class_year: selectedBook.grade,
+        item_type: selectedBook.itemType ?? "book",
         condition,
         listing_type: listingType,
         price: priceValue,
