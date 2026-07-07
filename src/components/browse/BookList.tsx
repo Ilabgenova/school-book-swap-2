@@ -12,7 +12,7 @@ import {
 import { BookListItem } from "./BookListItem";
 import { ListingsModal } from "./ListingsModal";
 import { SummerReadingSection } from "./SummerReadingSection";
-import { officialBooks, OfficialBook, BookListing, isSellableItem, LAST_SCHOOL_YEAR, NEW_SCHOOL_YEAR_AVAILABLE } from "@/data/officialBooks";
+import { officialBooks, OfficialBook, BookListing, isSellableItem, LAST_SCHOOL_YEAR, NEW_SCHOOL_YEAR_AVAILABLE, GENERIC_MYP_GRADE } from "@/data/officialBooks";
 import { BuyNewNotice } from "@/components/buy-new/BuyNewNotice";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
