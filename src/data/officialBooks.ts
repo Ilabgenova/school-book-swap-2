@@ -476,6 +476,33 @@ export const lastYearBooks = officialBooks;
 // Empty summer reading list (none in 2025-2026 source file)
 export const summerReadingBooks: OfficialBook[] = [];
 
+// Generic MYP items: shared across all MYP years, not tied to a specific class.
+export const genericMypItems: OfficialBook[] = [
+  {
+    id: "generic-keyboard",
+    title: "Keyboard / Tastiera (4 ottave, 49 tasti)",
+    subject: "Keyboard",
+    publisher: "",
+    availableFromPreviousYear: true,
+    grade: GENERIC_MYP_GRADE,
+    program: "MYP",
+    itemType: "keyboard",
+  },
+  {
+    id: "generic-sphero",
+    title: "Sphero Mini Robot",
+    subject: "Sphero Mini Robot",
+    publisher: "",
+    availableFromPreviousYear: true,
+    grade: GENERIC_MYP_GRADE,
+    program: "MYP",
+    itemType: "sphero",
+  },
+];
+
+// Expose generic items in the same list so grade-filtered UIs pick them up.
+officialBooks.push(...genericMypItems);
+
 // Mock listings placeholder (no live data without DB query)
 export const mockListings: Record<string, BookListing[]> = {};
 
