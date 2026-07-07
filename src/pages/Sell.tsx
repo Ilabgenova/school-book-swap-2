@@ -722,8 +722,12 @@ const SellContent = () => {
                   <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
                   <p>
                     {isIT
-                      ? "Carica almeno una foto della copertina e una delle pagine interne prima di pubblicare."
-                      : "Please upload at least a front cover photo and one inside photo before publishing your listing."}
+                      ? (isGenericMyp
+                          ? "Carica almeno una foto dell'oggetto prima di pubblicare."
+                          : "Carica almeno una foto della copertina e una delle pagine interne prima di pubblicare.")
+                      : (isGenericMyp
+                          ? "Please upload at least one photo of the item before publishing."
+                          : "Please upload at least a front cover photo and one inside photo before publishing your listing.")}
                   </p>
                 </div>
               )}
