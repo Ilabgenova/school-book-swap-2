@@ -12,7 +12,15 @@ export interface OfficialBook {
   program: string;
   isSummerReading?: boolean;
   schoolYear?: string;
+  /**
+   * Item type for non-book generic items (Keyboard, Sphero Mini Robot).
+   * Defaults to "book" when omitted. Persisted to `listings.item_type`.
+   */
+  itemType?: "book" | "keyboard" | "sphero";
 }
+
+// Synthetic "grade" for items shared across all MYP years (keyboard, sphero robot).
+export const GENERIC_MYP_GRADE = "Generic MYP";
 
 export interface BookListing {
   id: string;
