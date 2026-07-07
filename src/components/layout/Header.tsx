@@ -248,8 +248,8 @@ export const Header = () => {
               </Link>
             </>
           ) : (
-            <Link to="/login">
-              <Button variant="ghost" size="sm" className="px-2 text-xs">
+            <Link to="/login" aria-label={t.nav.login}>
+              <Button variant="hero" size="sm" className="h-10 px-4 font-semibold shadow-soft">
                 {t.nav.login}
               </Button>
             </Link>
