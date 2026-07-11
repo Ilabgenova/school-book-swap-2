@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
-import { ArrowUpRight, BookOpen, Heart, Repeat2, Loader2 } from "lucide-react";
+import { ArrowUpRight, BookOpen, Heart, Repeat2, Loader2, ShoppingBag } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import { BookCover } from "@/components/book/BookCover";
@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 
 type Row = {
   listing_id: string;
+  group_key: string;
   book_id: string | null;
   title: string | null;
   subject: string | null;
@@ -20,6 +21,12 @@ type Row = {
   created_at: string;
   seller_display_name: string;
   copies_available: number;
+  offers: unknown;
+};
+
+type ListingOffer = {
+  price?: number | string | null;
+  listingType?: string | null;
 };
 
 const typeIcon = {
@@ -71,8 +78,17 @@ export const PreviewSection = () => {
     };
   }, [fetchRows]);
 
-  const conditionLabel = (c: string) =>
-    c === "new" ? p.conditionNew : c === "like_new" ? p.conditionAsNew : p.conditionUsed;
+  const conditionLabel = (c: string) => {
+    if (c === "new") return p.conditionNew;
+    if (c === "like_new") return p.conditionAsNew;
+    if (c === "good") return p.conditionGood;
+    if (c === "fair") return p.conditionFair;
+    if (c === "poor") return p.conditionPoor;
+    return p.conditionUsed;
+  };
+
+  const offersFor = (offers: unknown): ListingOffer[] =>
+    Array.isArray(offers) ? (offers as ListingOffer[]) : [];
 
   return (
     <section className="py-20 md:py-28 bg-background">
@@ -114,21 +130,29 @@ export const PreviewSection = () => {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {rows.map((r) => {
               const TypeIcon = typeIcon[(r.listing_type as keyof typeof typeIcon)] ?? BookOpen;
+              const offers = offersFor(r.offers);
+              const salePrices = offers
+                .filter((offer) => offer.listingType === "sale" && offer.price != null)
+                .map((offer) => Number(offer.price))
+                .filter((price) => Number.isFinite(price));
+              const lowestPrice = salePrices.length > 0 ? Math.min(...salePrices) : null;
               const isFree = r.listing_type === "donation";
               const isExchange = r.listing_type === "exchange";
-              const priceLabel = isFree
-                ? p.free
-                : isExchange
-                  ? p.exchange
-                  : r.price != null
-                    ? `€${Number(r.price).toFixed(0)}`
-                    : "—";
-              const sellerImage = Array.isArray(r.images) && r.images[0] ? r.images[0] : null;
+              const priceLabel = lowestPrice != null
+                ? `${p.fromPrice} €${lowestPrice.toFixed(0)}`
+                : isFree
+                  ? p.free
+                  : isExchange
+                    ? p.exchange
+                    : r.price != null
+                      ? `€${Number(r.price).toFixed(0)}`
+                      : "—";
+              const sellerImage = Array.isArray(r.images) ? r.images[0] : null;
 
               return (
                 <Link
                   key={r.listing_id}
-                  to="/browse"
+                  to={`/listings/${r.listing_id}`}
                   className="group relative flex flex-col bg-card rounded-xl border border-border hover:border-accent/40 hover:shadow-elevated transition-all duration-300 overflow-hidden"
                 >
                   {/* Header strip */}
@@ -172,11 +196,12 @@ export const PreviewSection = () => {
                           <span className="h-1.5 w-1.5 rounded-full bg-[hsl(var(--teal))]" />
                           {conditionLabel(r.condition)}
                         </div>
-                        {r.copies_available > 1 && (
-                          <p className="mt-1.5 text-[11px] font-semibold text-accent">
-                            {p.copiesMany.replace("{{count}}", String(r.copies_available))}
-                          </p>
-                        )}
+                        <p className="mt-1.5 text-[11px] font-semibold text-accent inline-flex items-center gap-1">
+                          <ShoppingBag className="h-3 w-3" />
+                          {r.copies_available === 1
+                            ? p.copiesOne
+                            : p.copiesMany.replace("{{count}}", String(r.copies_available))}
+                        </p>
                       </div>
                     </div>
 
