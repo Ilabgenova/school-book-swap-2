@@ -1191,6 +1191,28 @@ export type Database = {
         Returns: number
       }
       public_get_co2_impact: { Args: never; Returns: Json }
+      public_get_listing_group: {
+        Args: { _listing_id: string }
+        Returns: {
+          book_id: string
+          class_year: string
+          condition: string
+          copies_available: number
+          created_at: string
+          id: string
+          images: string[]
+          isbn: string
+          listing_type: string
+          notes: string
+          price: number
+          seller_completed_exchanges: number
+          seller_display_name: string
+          seller_rating: number
+          status: string
+          subject: string
+          title: string
+        }[]
+      }
       public_get_recent_listings: {
         Args: { _limit?: number }
         Returns: {
@@ -1199,10 +1221,12 @@ export type Database = {
           condition: string
           copies_available: number
           created_at: string
+          group_key: string
           images: string[]
           isbn: string
           listing_id: string
           listing_type: string
+          offers: Json
           price: number
           seller_display_name: string
           subject: string
