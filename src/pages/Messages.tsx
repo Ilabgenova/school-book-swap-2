@@ -18,6 +18,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { EmailNotificationToggle } from "@/components/messages/EmailNotificationToggle";
 
 type ConversationRow = {
   id: string;
@@ -387,9 +388,12 @@ const MessagesContent = () => {
   return (
     <MainLayout>
       <div className="container max-w-5xl py-8">
-        <div className="mb-6 flex items-center gap-3">
+        <div className="mb-6 flex flex-wrap items-center gap-3">
           <MessageCircle className="h-6 w-6 text-primary" />
           <h1 className="font-display text-2xl font-bold">{title}</h1>
+          <div className="ml-auto">
+            <EmailNotificationToggle />
+          </div>
         </div>
 
         <div className="grid md:grid-cols-[320px_1fr] gap-4 rounded-2xl border border-border bg-card min-h-[520px] overflow-hidden">
