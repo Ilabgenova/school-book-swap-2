@@ -17,6 +17,7 @@ import NotFound from "./pages/NotFound";
 import Admin from "./pages/Admin";
 import Messages from "./pages/Messages";
 import HelpFeedback from "./pages/HelpFeedback";
+import ListingDetail from "./pages/ListingDetail";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/browse" element={<Browse />} />
             <Route path="/buy" element={<Browse />} />
+            <Route path="/listings/:listingId" element={<ListingDetail />} />
 
             <Route path="/sell" element={<Sell />} />
             <Route path="/wanted" element={<Wanted />} />
