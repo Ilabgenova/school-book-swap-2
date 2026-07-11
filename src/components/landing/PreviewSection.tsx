@@ -1,45 +1,26 @@
-import { useLanguage } from "@/i18n/LanguageContext";
+import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
-import { ArrowUpRight, BookOpen, Heart, Repeat2 } from "lucide-react";
+import { ArrowUpRight, BookOpen, Heart, Repeat2, Loader2 } from "lucide-react";
+import { useLanguage } from "@/i18n/LanguageContext";
+import { supabase } from "@/integrations/supabase/client";
+import { BookCover } from "@/components/book/BookCover";
+import { Button } from "@/components/ui/button";
 
-const mockListings = [
-  {
-    id: "1",
-    title: "Mathematics MYP 3 — Concept-Based",
-    isbn: "978-0-19-835617-2",
-    grade: "MYP 3",
-    program: "myp",
-    condition: "As new",
-    type: "sale",
-    price: "€18",
-    seller: "Marco F.",
-    rating: "4.9",
-  },
-  {
-    id: "2",
-    title: "Spanish Ab Initio — Course Book",
-    isbn: "978-1-4479-7821-4",
-    grade: "DP 1",
-    program: "dp",
-    condition: "Used",
-    type: "exchange",
-    price: "Exchange",
-    seller: "Giulia R.",
-    rating: "5.0",
-  },
-  {
-    id: "3",
-    title: "Biology Higher Level — Oxford IB",
-    isbn: "978-0-19-839262-0",
-    grade: "DP 2",
-    program: "dp",
-    condition: "New",
-    type: "donation",
-    price: "Free",
-    seller: "Anna B.",
-    rating: "4.8",
-  },
-];
+type Row = {
+  listing_id: string;
+  book_id: string | null;
+  title: string | null;
+  subject: string | null;
+  class_year: string | null;
+  isbn: string | null;
+  listing_type: string;
+  price: number | null;
+  condition: string;
+  images: string[] | null;
+  created_at: string;
+  seller_display_name: string;
+  copies_available: number;
+};
 
 const typeIcon = {
   sale: BookOpen,
@@ -47,9 +28,51 @@ const typeIcon = {
   donation: Heart,
 } as const;
 
+const LIMIT = 8;
+
+const formatDate = (iso: string, locale: string) =>
+  new Date(iso).toLocaleDateString(locale === "it" ? "it-IT" : "en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+
 export const PreviewSection = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const p = t.landing.preview;
+  const [rows, setRows] = useState<Row[] | null>(null);
+
+  const fetchRows = useCallback(async () => {
+    const { data, error } = await supabase.rpc("public_get_recent_listings", { _limit: LIMIT });
+    if (error) {
+      console.error("public_get_recent_listings", error);
+      setRows([]);
+      return;
+    }
+    setRows((data ?? []) as Row[]);
+  }, []);
+
+  useEffect(() => {
+    fetchRows();
+  }, [fetchRows]);
+
+  // Live updates when listings change
+  useEffect(() => {
+    const channel = supabase
+      .channel("landing-listings")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "listings" },
+        () => fetchRows()
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [fetchRows]);
+
+  const conditionLabel = (c: string) =>
+    c === "new" ? p.conditionNew : c === "like_new" ? p.conditionAsNew : p.conditionUsed;
 
   return (
     <section className="py-20 md:py-28 bg-background">
@@ -72,69 +95,120 @@ export const PreviewSection = () => {
           </Link>
         </div>
 
+        {rows === null ? (
+          <div className="flex items-center justify-center py-16 text-muted-foreground gap-2">
+            <Loader2 className="h-5 w-5 animate-spin" />
+            <span className="text-sm">{p.loading}</span>
+          </div>
+        ) : rows.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-border bg-card/50 p-10 md:p-14 text-center">
+            <h3 className="font-display font-semibold text-lg text-foreground mb-2">
+              {p.emptyTitle}
+            </h3>
+            <p className="text-sm text-muted-foreground mb-6">{p.emptyBody}</p>
+            <Button asChild size="lg">
+              <Link to="/sell">{p.emptyCta}</Link>
+            </Button>
+          </div>
+        ) : (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {rows.map((r) => {
+              const TypeIcon = typeIcon[(r.listing_type as keyof typeof typeIcon)] ?? BookOpen;
+              const isFree = r.listing_type === "donation";
+              const isExchange = r.listing_type === "exchange";
+              const priceLabel = isFree
+                ? p.free
+                : isExchange
+                  ? p.exchange
+                  : r.price != null
+                    ? `€${Number(r.price).toFixed(0)}`
+                    : "—";
+              const sellerImage = Array.isArray(r.images) && r.images[0] ? r.images[0] : null;
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {mockListings.map((listing) => {
-            const TypeIcon = typeIcon[listing.type as keyof typeof typeIcon];
-            const isFree = listing.type === "donation";
-            const isExchange = listing.type === "exchange";
+              return (
+                <Link
+                  key={r.listing_id}
+                  to="/browse"
+                  className="group relative flex flex-col bg-card rounded-xl border border-border hover:border-accent/40 hover:shadow-elevated transition-all duration-300 overflow-hidden"
+                >
+                  {/* Header strip */}
+                  <div className="flex items-center justify-between px-4 py-2.5 border-b border-border bg-secondary/30">
+                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20 truncate max-w-[60%]">
+                      {r.class_year || r.subject || "DISbook"}
+                    </span>
+                    <span className="font-mono text-[10px] text-muted-foreground">
+                      {formatDate(r.created_at, language)}
+                    </span>
+                  </div>
 
-            return (
-              <div
-                key={listing.id}
-                className="group relative bg-card rounded-xl border border-border hover:border-accent/40 hover:shadow-elevated transition-all duration-300 overflow-hidden"
-              >
-                {/* Header strip */}
-                <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-secondary/30">
-                  <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-${listing.program}/10 text-${listing.program} border border-${listing.program}/20`}>
-                    {listing.grade}
-                  </span>
-                  <span className="font-mono text-[10px] text-muted-foreground">
-                    {listing.isbn}
-                  </span>
-                </div>
+                  <div className="p-4 flex-1 flex flex-col">
+                    <div className="flex gap-3 mb-4">
+                      {sellerImage ? (
+                        <img
+                          src={sellerImage}
+                          alt={r.title ?? "listing"}
+                          loading="lazy"
+                          className="h-24 w-16 shrink-0 rounded-md object-cover bg-muted"
+                        />
+                      ) : (
+                        <BookCover
+                          isbn={r.isbn}
+                          title={r.title ?? "Book"}
+                          className="h-24 w-16"
+                          iconClassName="h-6 w-6"
+                        />
+                      )}
 
-                <div className="p-5">
-                  <div className="flex gap-4 mb-5">
-                    {/* Book spine */}
-                    <div className="h-20 w-14 shrink-0 rounded gradient-primary shadow-soft relative overflow-hidden">
-                      <div className="absolute inset-y-0 left-1.5 w-px bg-primary-foreground/15" />
-                      <div className="absolute inset-y-0 left-2.5 w-px bg-primary-foreground/10" />
-                    </div>
-
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-display font-semibold text-foreground line-clamp-2 leading-snug mb-2">
-                        {listing.title}
-                      </h3>
-                      <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-                        <span className="h-1.5 w-1.5 rounded-full bg-[hsl(var(--teal))]" />
-                        {listing.condition === "As new" ? p.conditionAsNew : listing.condition === "New" ? p.conditionNew : p.conditionUsed}
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-display font-semibold text-foreground line-clamp-2 leading-snug mb-1.5 break-words">
+                          {r.title ?? "—"}
+                        </h3>
+                        {r.subject && (
+                          <p className="text-[11px] text-muted-foreground line-clamp-1 mb-1">
+                            {r.subject}
+                          </p>
+                        )}
+                        <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                          <span className="h-1.5 w-1.5 rounded-full bg-[hsl(var(--teal))]" />
+                          {conditionLabel(r.condition)}
+                        </div>
+                        {r.copies_available > 1 && (
+                          <p className="mt-1.5 text-[11px] font-semibold text-accent">
+                            {p.copiesMany.replace("{{count}}", String(r.copies_available))}
+                          </p>
+                        )}
                       </div>
                     </div>
-                  </div>
 
-                  {/* Bottom row */}
-                  <div className="flex items-center justify-between pt-4 border-t border-border">
-                    <div>
-                      <p className={`font-display font-bold text-xl leading-none flex items-center gap-1.5 ${isFree ? "text-[hsl(var(--teal))]" : isExchange ? "text-accent" : "text-foreground"}`}>
-                        <TypeIcon className="h-4 w-4" />
-                        {isFree ? p.free : isExchange ? p.exchange : listing.price}
-                      </p>
-                      <p className="text-[11px] text-muted-foreground mt-1">
-                        {listing.seller} · ★ {listing.rating}
-                      </p>
+                    <div className="mt-auto flex items-center justify-between pt-3 border-t border-border">
+                      <div>
+                        <p
+                          className={`font-display font-bold text-xl leading-none flex items-center gap-1.5 ${
+                            isFree
+                              ? "text-[hsl(var(--teal))]"
+                              : isExchange
+                                ? "text-accent"
+                                : "text-foreground"
+                          }`}
+                        >
+                          <TypeIcon className="h-4 w-4" />
+                          {priceLabel}
+                        </p>
+                        <p className="text-[11px] text-muted-foreground mt-1 truncate max-w-[140px]">
+                          {r.seller_display_name}
+                        </p>
+                      </div>
+                      <span className="text-xs font-semibold text-accent inline-flex items-center gap-1">
+                        {p.viewListing}
+                        <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                      </span>
                     </div>
-                    <button className="text-xs font-semibold text-accent hover:text-accent/80 inline-flex items-center gap-1 group/btn">
-                      {p.contact}
-                      <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5" />
-                    </button>
-
                   </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+                </Link>
+              );
+            })}
+          </div>
+        )}
       </div>
     </section>
   );
