@@ -38,20 +38,30 @@ const testContainer: React.CSSProperties = {
 }
 
 const EmailTest = () => (
-  <Html>
-    <Head />
-    <Preview>DISbook email test</Preview>
-    <Body style={testMain}>
-      <Container style={testContainer}>
-        <Heading style={{ color: '#2F6B4F', fontSize: '24px', margin: '0 0 16px' }}>
-          DISbook email test
-        </Heading>
-        <Text style={{ color: '#374151', fontSize: '15px', lineHeight: '22px', margin: 0 }}>
-          This is a test email from DISbook to confirm that email notifications are working.
-        </Text>
-      </Container>
-    </Body>
-  </Html>
+  React.createElement(
+    Html,
+    null,
+    React.createElement(Head),
+    React.createElement(Preview, null, 'DISbook email test'),
+    React.createElement(
+      Body,
+      { style: testMain },
+      React.createElement(
+        Container,
+        { style: testContainer },
+        React.createElement(
+          Heading,
+          { style: { color: '#2F6B4F', fontSize: '24px', margin: '0 0 16px' } },
+          'DISbook email test'
+        ),
+        React.createElement(
+          Text,
+          { style: { color: '#374151', fontSize: '15px', lineHeight: '22px', margin: 0 } },
+          'This is a test email from DISbook to confirm that email notifications are working.'
+        )
+      )
+    )
+  )
 )
 
 const emailTest = {
