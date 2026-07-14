@@ -122,6 +122,7 @@ export const BookList = ({
         b.availableFromPreviousYear && (liveListings[b.id]?.length ?? 0) > 0
     ).length,
   };
+  const listingsLabel = user ? t.browse.withListings : t.browse.noListingsYet;
 
   const renderBookList = (books: OfficialBook[]) => (
     <div className="space-y-3">
@@ -187,7 +188,7 @@ export const BookList = ({
         <div className="flex items-center gap-2">
           <ListChecks className="h-4 w-4 text-primary" />
           <span className="text-sm">
-            <strong>{stats.available}</strong> {t.browse.withListings}
+            <strong>{user ? stats.available : "—"}</strong> {listingsLabel}
           </span>
         </div>
       </div>
