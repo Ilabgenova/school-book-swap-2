@@ -67,6 +67,15 @@ async function moveToDlq(
     status: 'dlq',
     error_message: reason,
   })
+  if (payload.notification_log_id) {
+    await supabase
+      .from('message_notification_log')
+      .update({
+        status: 'failed',
+        error_message: reason,
+      })
+      .eq('id', payload.notification_log_id)
+  }
   const { error } = await supabase.rpc('move_to_dlq', {
     source_queue: queue,
     dlq_name: `${queue}_dlq`,
@@ -277,6 +286,16 @@ Deno.serve(async (req) => {
           recipient_email: payload.to,
           status: 'sent',
         })
+        if (payload.notification_log_id) {
+          await supabase
+            .from('message_notification_log')
+            .update({
+              status: 'sent',
+              provider_response: 'Provider accepted email',
+              sent_at: new Date().toISOString(),
+            })
+            .eq('id', payload.notification_log_id)
+        }
 
         // Delete from queue
         const { error: delError } = await supabase.rpc('delete_email', {
@@ -305,6 +324,15 @@ Deno.serve(async (req) => {
             status: 'rate_limited',
             error_message: errorMsg.slice(0, 1000),
           })
+          if (payload.notification_log_id) {
+            await supabase
+              .from('message_notification_log')
+              .update({
+                status: 'failed',
+                error_message: errorMsg.slice(0, 1000),
+              })
+              .eq('id', payload.notification_log_id)
+          }
 
           const retryAfterSecs = getRetryAfterSeconds(error)
           await supabase
@@ -342,6 +370,15 @@ Deno.serve(async (req) => {
           status: 'failed',
           error_message: errorMsg.slice(0, 1000),
         })
+        if (payload.notification_log_id) {
+          await supabase
+            .from('message_notification_log')
+            .update({
+              status: 'failed',
+              error_message: errorMsg.slice(0, 1000),
+            })
+            .eq('id', payload.notification_log_id)
+        }
         if (payload?.message_id && typeof payload.message_id === 'string') {
           failedAttemptsByMessageId.set(payload.message_id, failedAttempts + 1)
         }

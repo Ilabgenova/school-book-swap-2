@@ -31,6 +31,7 @@ interface BookListProps {
   selectedProgram: string;
   selectedSubjects?: string[] | null;
   selectedLanguages?: Record<string, string> | null;
+  selectedItemType?: "keyboard" | "sphero" | null;
   onBack: () => void;
 }
 
@@ -39,6 +40,7 @@ export const BookList = ({
   selectedProgram,
   selectedSubjects,
   selectedLanguages,
+  selectedItemType = null,
   onBack,
 }: BookListProps) => {
   const { t, language } = useLanguage();
@@ -50,6 +52,7 @@ export const BookList = ({
   const allBooks = useMemo(() => officialBooks.filter((book) => {
     if (book.grade !== selectedGrade || book.isSummerReading) return false;
     if (!isSellableItem(book)) return false;
+    if (selectedItemType) return book.itemType === selectedItemType;
     if (selectedProgram === "DP" && selectedSubjects && selectedSubjects.length > 0) {
       return selectedSubjects.includes(book.subject);
     }
@@ -60,7 +63,7 @@ export const BookList = ({
       if (isCoreForeignLang) return isForeignLangBook;
     }
     return true;
-  }), [selectedGrade, selectedProgram, selectedSubjects, selectedLanguages]);
+  }), [selectedGrade, selectedProgram, selectedSubjects, selectedLanguages, selectedItemType]);
 
   // Fetch approved live listings from the database (status = 'active').
   // Only signed-in users can query listings; anonymous visitors see an empty state.
@@ -119,6 +122,7 @@ export const BookList = ({
         b.availableFromPreviousYear && (liveListings[b.id]?.length ?? 0) > 0
     ).length,
   };
+  const listingsLabel = user ? t.browse.withListings : t.browse.noListingsYet;
 
   const renderBookList = (books: OfficialBook[]) => (
     <div className="space-y-3">
@@ -149,7 +153,11 @@ export const BookList = ({
               {selectedProgram}
             </Badge>
             <h2 className="font-display text-xl font-bold text-foreground">
-              {isGenericMyp
+              {selectedItemType === "keyboard"
+                ? (language === "it" ? "Tastiera" : "Keyboard")
+                : selectedItemType === "sphero"
+                  ? (language === "it" ? "Robot Sphero Mini" : "Sphero Mini Robot")
+                  : isGenericMyp
                 ? (language === "it"
                     ? "Tastiera / Robot Sphero Mini"
                     : "Keyboard / Sphero Mini Robot")
@@ -161,8 +169,8 @@ export const BookList = ({
             <p className="text-sm text-muted-foreground">
               {isGenericMyp
                 ? (language === "it"
-                    ? "Materiali generici usati nel percorso MYP, non collegati a una singola classe."
-                    : "Generic items used across MYP, not linked to one specific class.")
+                    ? "Materiale generico usato nel percorso MYP, non collegato a una singola classe."
+                    : "Generic item used across MYP, not linked to one specific class.")
                 : `${t.browse.schoolYear} 2025-2026 • ${t.browse.officialBookList}`}
             </p>
           </div>
@@ -180,7 +188,7 @@ export const BookList = ({
         <div className="flex items-center gap-2">
           <ListChecks className="h-4 w-4 text-primary" />
           <span className="text-sm">
-            <strong>{stats.available}</strong> {t.browse.withListings}
+            <strong>{user ? stats.available : "—"}</strong> {listingsLabel}
           </span>
         </div>
       </div>
