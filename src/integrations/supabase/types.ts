@@ -684,6 +684,53 @@ export type Database = {
         }
         Relationships: []
       }
+      message_notification_log: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          id: string
+          message_id: string | null
+          provider_response: string | null
+          recipient_email: string | null
+          recipient_user_id: string | null
+          sender_user_id: string | null
+          sent_at: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          message_id?: string | null
+          provider_response?: string | null
+          recipient_email?: string | null
+          recipient_user_id?: string | null
+          sender_user_id?: string | null
+          sent_at?: string | null
+          status: string
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          message_id?: string | null
+          provider_response?: string | null
+          recipient_email?: string | null
+          recipient_user_id?: string | null
+          sender_user_id?: string | null
+          sent_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_notification_log_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       messages: {
         Row: {
           body: string

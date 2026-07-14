@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2, BookPlus, ArrowLeft, Camera, X, AlertTriangle, ShieldAlert, GraduationCap, ChevronRight, BookOpen, ArrowRight, CheckCircle2, Upload, Info, ChevronDown } from "lucide-react";
+import { Loader2, BookPlus, ArrowLeft, Camera, X, AlertTriangle, ShieldAlert, GraduationCap, ChevronRight, BookOpen, ArrowRight, CheckCircle2, Upload, Info, ChevronDown, Keyboard, Bot } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { officialBooks, isSellableItem, LAST_SCHOOL_YEAR, GENERIC_MYP_GRADE } from "@/data/officialBooks";
 import { BookCover } from "@/components/book/BookCover";
@@ -301,6 +301,13 @@ const SellContent = () => {
     updateSellParams({ bookId: nextBookId });
   };
 
+  const handleSelectGenericItem = (nextBookId: string) => {
+    setGrade(GENERIC_MYP_GRADE);
+    setBookId(nextBookId);
+    setStep("details");
+    updateSellParams({ grade: GENERIC_MYP_GRADE, bookId: nextBookId });
+  };
+
   const handleListingTypeChange = (value: ListingType) => {
     setListingType(value);
     updateSellParams({ type: value });
@@ -462,32 +469,50 @@ const SellContent = () => {
                 </div>
               ))}
 
-              {/* Generic MYP category — Keyboard / Sphero Mini Robot (no class year) */}
+              {/* Generic MYP categories — Keyboard / Sphero Mini Robot (no class year) */}
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
                   <Badge variant="myp">MYP</Badge>
                   <span className="text-sm text-muted-foreground">
-                    {isIT ? "Materiali generici (tutte le classi MYP)" : "Generic materials (all MYP years)"}
+                    {isIT ? "Categorie generiche" : "Generic categories"}
                   </span>
                 </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full h-auto justify-between py-4 group hover:border-primary hover:bg-primary/5"
-                  onClick={() => handleSelectGrade(GENERIC_MYP_GRADE)}
-                >
-                  <span className="flex flex-col text-left">
-                    <span className="font-medium">
-                      {isIT ? "Tastiera / Robot Sphero Mini" : "Keyboard / Sphero Mini Robot"}
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="h-auto justify-between gap-3 p-4 group hover:border-primary hover:bg-primary/5"
+                    onClick={() => handleSelectGenericItem("generic-keyboard")}
+                  >
+                    <span className="flex min-w-0 items-start gap-3 text-left">
+                      <Keyboard className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+                      <span className="min-w-0">
+                        <span className="block font-medium">{isIT ? "Tastiera" : "Keyboard"}</span>
+                        <span className="block whitespace-normal text-xs text-muted-foreground font-normal">
+                          {isIT ? "Nessuna classe o ISBN richiesti" : "No class year or ISBN required"}
+                        </span>
+                      </span>
                     </span>
-                    <span className="text-xs text-muted-foreground font-normal">
-                      {isIT
-                        ? "Nessun anno o ISBN richiesto"
-                        : "No class year or ISBN required"}
+                    <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition-colors group-hover:text-primary" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="h-auto justify-between gap-3 p-4 group hover:border-primary hover:bg-primary/5"
+                    onClick={() => handleSelectGenericItem("generic-sphero")}
+                  >
+                    <span className="flex min-w-0 items-start gap-3 text-left">
+                      <Bot className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+                      <span className="min-w-0">
+                        <span className="block font-medium">{isIT ? "Robot Sphero" : "Sphero Robot"}</span>
+                        <span className="block whitespace-normal text-xs text-muted-foreground font-normal">
+                          Sphero Mini
+                        </span>
+                      </span>
                     </span>
-                  </span>
-                  <ChevronRight className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-primary" />
-                </Button>
+                    <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition-colors group-hover:text-primary" />
+                  </Button>
+                </div>
               </div>
             </div>
           </section>

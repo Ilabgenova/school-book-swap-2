@@ -54,12 +54,20 @@ Deno.serve(async (req) => {
   let recipientEmail: string
   let idempotencyKey: string
   let messageId: string
+  let notificationLogId: string | null = null
   let templateData: Record<string, any> = {}
   try {
     const body = await req.json()
     templateName = body.templateName || body.template_name
     recipientEmail = body.recipientEmail || body.recipient_email
-    messageId = crypto.randomUUID()
+    const suppliedMessageId = body.messageId || body.message_id
+    messageId = typeof suppliedMessageId === 'string' && suppliedMessageId.trim()
+      ? suppliedMessageId.trim()
+      : crypto.randomUUID()
+    const suppliedNotificationLogId = body.notificationLogId || body.notification_log_id
+    notificationLogId = typeof suppliedNotificationLogId === 'string' && suppliedNotificationLogId.trim()
+      ? suppliedNotificationLogId.trim()
+      : null
     idempotencyKey = body.idempotencyKey || body.idempotency_key || messageId
     if (body.templateData && typeof body.templateData === 'object') {
       templateData = body.templateData
@@ -120,6 +128,55 @@ Deno.serve(async (req) => {
   // Create Supabase client with service role (bypasses RLS)
   const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
+  const updateNotificationLog = async (
+    status: 'pending' | 'sent' | 'failed' | 'skipped',
+    fields: Record<string, unknown> = {}
+  ) => {
+    if (!notificationLogId) return
+    const { error } = await supabase
+      .from('message_notification_log')
+      .update({ status, ...fields })
+      .eq('id', notificationLogId)
+    if (error) {
+      console.error('Failed to update message notification log', {
+        notificationLogId,
+        status,
+        error,
+      })
+    }
+  }
+
+  if (templateName === 'email-test') {
+    const authHeader = req.headers.get('Authorization')
+    const token = authHeader?.startsWith('Bearer ')
+      ? authHeader.slice('Bearer '.length).trim()
+      : ''
+    const { data: authData, error: authError } = token
+      ? await supabase.auth.getUser(token)
+      : { data: { user: null }, error: new Error('Missing token') }
+
+    if (authError || !authData.user) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+
+    const { data: adminRole } = await supabase
+      .from('user_roles')
+      .select('id')
+      .eq('user_id', authData.user.id)
+      .eq('role', 'admin')
+      .maybeSingle()
+
+    if (!adminRole) {
+      return new Response(JSON.stringify({ error: 'Forbidden' }), {
+        status: 403,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+  }
+
   // 2. Check suppression list (fail-closed: if we can't verify, don't send)
   const { data: suppressed, error: suppressionError } = await supabase
     .from('suppressed_emails')
@@ -148,6 +205,9 @@ Deno.serve(async (req) => {
       template_name: templateName,
       recipient_email: effectiveRecipient,
       status: 'suppressed',
+    })
+    await updateNotificationLog('skipped', {
+      error_message: 'Recipient email is suppressed',
     })
 
     console.log('Email suppressed', { effectiveRecipient, templateName })
@@ -183,6 +243,9 @@ Deno.serve(async (req) => {
       status: 'failed',
       error_message: 'Failed to look up unsubscribe token',
     })
+    await updateNotificationLog('failed', {
+      error_message: 'Failed to look up unsubscribe token',
+    })
     return new Response(
       JSON.stringify({ error: 'Failed to prepare email' }),
       {
@@ -216,6 +279,9 @@ Deno.serve(async (req) => {
         status: 'failed',
         error_message: 'Failed to create unsubscribe token',
       })
+      await updateNotificationLog('failed', {
+        error_message: 'Failed to create unsubscribe token',
+      })
       return new Response(
         JSON.stringify({ error: 'Failed to prepare email' }),
         {
@@ -245,6 +311,9 @@ Deno.serve(async (req) => {
         status: 'failed',
         error_message: 'Failed to confirm unsubscribe token storage',
       })
+      await updateNotificationLog('failed', {
+        error_message: 'Failed to confirm unsubscribe token storage',
+      })
       return new Response(
         JSON.stringify({ error: 'Failed to prepare email' }),
         {
@@ -267,6 +336,9 @@ Deno.serve(async (req) => {
       status: 'suppressed',
       error_message:
         'Unsubscribe token used but email missing from suppressed list',
+    })
+    await updateNotificationLog('skipped', {
+      error_message: 'Unsubscribe token used but email missing from suppressed list',
     })
     return new Response(
       JSON.stringify({ success: false, reason: 'email_suppressed' }),
@@ -317,6 +389,7 @@ Deno.serve(async (req) => {
       label: templateName,
       idempotency_key: idempotencyKey,
       unsubscribe_token: unsubscribeToken,
+      notification_log_id: notificationLogId,
       queued_at: new Date().toISOString(),
     },
   })
@@ -335,6 +408,9 @@ Deno.serve(async (req) => {
       status: 'failed',
       error_message: 'Failed to enqueue email',
     })
+    await updateNotificationLog('failed', {
+      error_message: 'Failed to enqueue email',
+    })
 
     return new Response(JSON.stringify({ error: 'Failed to enqueue email' }), {
       status: 500,
@@ -343,6 +419,9 @@ Deno.serve(async (req) => {
   }
 
   console.log('Transactional email enqueued', { templateName, effectiveRecipient })
+  await updateNotificationLog('pending', {
+    provider_response: 'Email queued for delivery',
+  })
 
   return new Response(
     JSON.stringify({ success: true, queued: true }),

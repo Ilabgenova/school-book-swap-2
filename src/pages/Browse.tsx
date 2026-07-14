@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Navigate, useSearchParams } from "react-router-dom";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -9,6 +9,7 @@ import { MYPLanguageSelector } from "@/components/browse/MYPLanguageSelector";
 import { BookList } from "@/components/browse/BookList";
 
 type BrowseStep = "grade" | "mode" | "dpSubjects" | "mypLanguage" | "books";
+type GenericCategory = "keyboard" | "sphero" | null;
 
 const BrowseContent = () => {
   const { t } = useLanguage();
@@ -18,10 +19,25 @@ const BrowseContent = () => {
   const [selectedProgram, setSelectedProgram] = useState<string | null>(null);
   const [selectedSubjects, setSelectedSubjects] = useState<string[] | null>(null);
   const [selectedLanguages, setSelectedLanguages] = useState<Record<string, string> | null>(null);
+  const [selectedGenericCategory, setSelectedGenericCategory] = useState<GenericCategory>(() => {
+    const category = searchParams.get("category");
+    return category === "keyboard" || category === "sphero" ? category : null;
+  });
+
+  useEffect(() => {
+    const category = searchParams.get("category");
+    if (category === "keyboard" || category === "sphero") {
+      setSelectedGenericCategory(category);
+      setSelectedGrade("Generic MYP");
+      setSelectedProgram("MYP");
+      setStep("books");
+    }
+  }, [searchParams]);
 
   const handleSelectGrade = (grade: string, program: string) => {
     setSelectedGrade(grade);
     setSelectedProgram(program);
+    setSelectedGenericCategory(null);
     // Generic MYP items (Keyboard / Sphero) are not tied to a class year and
     // have no buying-mode / language / subject step — jump straight to the list.
     if (grade === "Generic MYP") {
@@ -29,6 +45,15 @@ const BrowseContent = () => {
     } else {
       setStep("mode");
     }
+  };
+
+  const handleSelectGenericCategory = (category: "keyboard" | "sphero") => {
+    setSelectedGenericCategory(category);
+    setSelectedGrade("Generic MYP");
+    setSelectedProgram("MYP");
+    setSelectedSubjects(null);
+    setSelectedLanguages(null);
+    setStep("books");
   };
 
   const handleSelectMode = (mode: "new" | "used") => {
@@ -58,6 +83,7 @@ const BrowseContent = () => {
     setSelectedProgram(null);
     setSelectedSubjects(null);
     setSelectedLanguages(null);
+    setSelectedGenericCategory(null);
   };
 
   const handleBackToMode = () => {
@@ -82,7 +108,10 @@ const BrowseContent = () => {
     <MainLayout>
       <div className="container py-8">
         {step === "grade" && (
-          <GradeSelector onSelectGrade={handleSelectGrade} />
+          <GradeSelector
+            onSelectGrade={handleSelectGrade}
+            onSelectGenericCategory={handleSelectGenericCategory}
+          />
         )}
         {step === "mode" && selectedGrade && selectedProgram && (
           <BuyingModeSelector
@@ -112,8 +141,11 @@ const BrowseContent = () => {
             selectedProgram={selectedProgram}
             selectedSubjects={selectedSubjects}
             selectedLanguages={selectedLanguages}
+            selectedItemType={selectedGenericCategory}
             onBack={
-              selectedProgram === "MYP"
+              selectedGenericCategory || selectedGrade === "Generic MYP"
+                ? handleBackToGrade
+                : selectedProgram === "MYP"
                 ? handleBackToMYPLanguage
                 : handleBackToMode
             }
