@@ -374,7 +374,7 @@ const MessagesContent = () => {
     );
   }
   if (!user) {
-    const next = `/messages${listingParam ? `?listing=${listingParam}` : ""}`;
+    const next = `${location.pathname}${location.search}`;
     return <Navigate to={`/login?next=${encodeURIComponent(next)}`} replace />;
   }
 
