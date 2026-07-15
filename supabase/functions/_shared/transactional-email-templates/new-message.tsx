@@ -91,7 +91,7 @@ const footer: React.CSSProperties = {
 
 const Email = ({
   senderName = 'un altro utente / another user',
-  conversationUrl = 'https://disbook.it/messages',
+  conversationUrl = 'https://www.disbook.it/messages',
 }: Props) => (
   <Html>
     <Head />
@@ -150,6 +150,6 @@ export const template = {
   displayName: 'New message notification',
   previewData: {
     senderName: 'Mario',
-    conversationUrl: 'https://disbook.it/messages',
+    conversationUrl: 'https://www.disbook.it/messages',
   },
 } satisfies TemplateEntry

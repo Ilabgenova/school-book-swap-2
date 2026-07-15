@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, FormEvent } from "react";
-import { useNavigate, useSearchParams, Navigate } from "react-router-dom";
+import { useNavigate, useSearchParams, Navigate, useParams, useLocation } from "react-router-dom";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -60,10 +60,16 @@ const MessagesContent = () => {
   const { t, language } = useLanguage();
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
+  const routeParams = useParams();
+  const location = useLocation();
+  const initialConvId =
+    routeParams.conversationId ||
+    searchParams.get("thread") ||
+    searchParams.get("conversation");
 
   const [threads, setThreads] = useState<ThreadInfo[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedId, setSelectedId] = useState<string | null>(searchParams.get("thread"));
+  const [selectedId, setSelectedId] = useState<string | null>(initialConvId);
   const [messages, setMessages] = useState<MessageRow[]>([]);
   const [msgLoading, setMsgLoading] = useState(false);
   const [body, setBody] = useState("");
@@ -368,7 +374,7 @@ const MessagesContent = () => {
     );
   }
   if (!user) {
-    const next = `/messages${listingParam ? `?listing=${listingParam}` : ""}`;
+    const next = `${location.pathname}${location.search}`;
     return <Navigate to={`/login?next=${encodeURIComponent(next)}`} replace />;
   }
 
