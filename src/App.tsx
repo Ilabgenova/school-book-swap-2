@@ -18,6 +18,7 @@ import Admin from "./pages/Admin";
 import Messages from "./pages/Messages";
 import HelpFeedback from "./pages/HelpFeedback";
 import ListingDetail from "./pages/ListingDetail";
+import ListingActionResult from "./pages/ListingActionResult";
 
 const queryClient = new QueryClient();
 
@@ -41,6 +42,7 @@ const App = () => (
             <Route path="/my-books" element={<MyBooks />} />
             <Route path="/messages" element={<Messages />} />
             <Route path="/messages/:conversationId" element={<Messages />} />
+            <Route path="/listing-action/result" element={<ListingActionResult />} />
             <Route path="/help-feedback" element={<HelpFeedback />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
