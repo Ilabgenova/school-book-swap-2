@@ -8,6 +8,7 @@ const corsHeaders = {
 }
 
 const SITE_URL = 'https://www.disbook.it'
+const ACTION_URL = 'https://tbhstqoixqhovzgjmmss.supabase.co/functions/v1/handle-listing-action'
 const TOKEN_TTL_DAYS = 21
 
 function toHex(buf: ArrayBuffer): string {
@@ -56,8 +57,8 @@ Deno.serve(async (req) => {
       })
       if (rpcErr) throw rpcErr
 
-      const stillUrl = `${SITE_URL}/listing-action?token=${tokStill}&action=still_available`
-      const soldUrl = `${SITE_URL}/listing-action?token=${tokSold}&action=mark_sold`
+      const stillUrl = `${ACTION_URL}?token=${tokStill}&action=still_available`
+      const soldUrl = `${ACTION_URL}?token=${tokSold}&action=mark_sold`
 
       const { error: emailErr } = await supabase.functions.invoke('send-transactional-email', {
         body: {
