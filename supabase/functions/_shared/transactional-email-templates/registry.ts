@@ -11,6 +11,7 @@ import {
   Text,
 } from 'npm:@react-email/components@0.0.22'
 import { template as newMessage } from './new-message.tsx'
+import { template as listingReminder } from './listing-reminder.tsx'
 
 export interface TemplateEntry {
   component: ComponentType<any>
@@ -73,5 +74,6 @@ const emailTest = {
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'new-message': newMessage,
+  'listing-reminder': listingReminder,
   'email-test': emailTest,
 }

@@ -14,3 +14,9 @@ verify_jwt = false
 
 [functions.handle-email-suppression]
 verify_jwt = false
+
+[functions.handle-listing-action]
+verify_jwt = false
+
+[functions.send-listing-reminders]
+verify_jwt = true

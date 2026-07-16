@@ -606,6 +606,132 @@ export type Database = {
           },
         ]
       }
+      listing_email_action_tokens: {
+        Row: {
+          action_type: string
+          created_at: string
+          email_reminder_id: string | null
+          expires_at: string
+          id: string
+          listing_id: string
+          token_hash: string
+          used_at: string | null
+          user_id: string
+        }
+        Insert: {
+          action_type: string
+          created_at?: string
+          email_reminder_id?: string | null
+          expires_at: string
+          id?: string
+          listing_id: string
+          token_hash: string
+          used_at?: string | null
+          user_id: string
+        }
+        Update: {
+          action_type?: string
+          created_at?: string
+          email_reminder_id?: string | null
+          expires_at?: string
+          id?: string
+          listing_id?: string
+          token_hash?: string
+          used_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listing_email_action_tokens_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      listing_reminder_log: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          id: string
+          listing_id: string
+          reminder_type: string
+          sent_at: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          listing_id: string
+          reminder_type?: string
+          sent_at?: string | null
+          status: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          listing_id?: string
+          reminder_type?: string
+          sent_at?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listing_reminder_log_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      listing_status_action_log: {
+        Row: {
+          action: string
+          action_source: string
+          created_at: string
+          id: string
+          listing_id: string
+          new_status: string | null
+          previous_status: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          action_source: string
+          created_at?: string
+          id?: string
+          listing_id: string
+          new_status?: string | null
+          previous_status?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          action_source?: string
+          created_at?: string
+          id?: string
+          listing_id?: string
+          new_status?: string | null
+          previous_status?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listing_status_action_log_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       listings: {
         Row: {
           admin_review_note: string | null
@@ -614,11 +740,16 @@ export type Database = {
           class_year: string | null
           condition: Database["public"]["Enums"]["listing_condition"]
           created_at: string
+          email_reminder_count: number
           id: string
           images: string[]
           isbn: string | null
           item_type: string
+          last_confirmed_available_at: string | null
+          last_email_reminder_sent_at: string | null
+          last_status_prompted_at: string | null
           listing_type: Database["public"]["Enums"]["listing_type"]
+          marked_sold_by: string | null
           notes: string | null
           price: number
           program: string | null
@@ -639,11 +770,16 @@ export type Database = {
           class_year?: string | null
           condition?: Database["public"]["Enums"]["listing_condition"]
           created_at?: string
+          email_reminder_count?: number
           id?: string
           images?: string[]
           isbn?: string | null
           item_type?: string
+          last_confirmed_available_at?: string | null
+          last_email_reminder_sent_at?: string | null
+          last_status_prompted_at?: string | null
           listing_type?: Database["public"]["Enums"]["listing_type"]
+          marked_sold_by?: string | null
           notes?: string | null
           price: number
           program?: string | null
@@ -664,11 +800,16 @@ export type Database = {
           class_year?: string | null
           condition?: Database["public"]["Enums"]["listing_condition"]
           created_at?: string
+          email_reminder_count?: number
           id?: string
           images?: string[]
           isbn?: string | null
           item_type?: string
+          last_confirmed_available_at?: string | null
+          last_email_reminder_sent_at?: string | null
+          last_status_prompted_at?: string | null
           listing_type?: Database["public"]["Enums"]["listing_type"]
+          marked_sold_by?: string | null
           notes?: string | null
           price?: number
           program?: string | null
@@ -1196,6 +1337,20 @@ export type Database = {
         Args: { _listing_id: string; _note: string }
         Returns: undefined
       }
+      consume_listing_action_token: {
+        Args: { _token_hash: string }
+        Returns: Json
+      }
+      create_listing_reminder_tokens: {
+        Args: {
+          _expires_at: string
+          _listing_id: string
+          _mark_sold_hash: string
+          _still_available_hash: string
+          _user_id: string
+        }
+        Returns: undefined
+      }
       current_user_is_admin: { Args: never; Returns: boolean }
       delete_email: {
         Args: { message_id: number; queue_name: string }
@@ -1225,6 +1380,15 @@ export type Database = {
           seller_rating: number
           status: string
           subject: string
+          title: string
+        }[]
+      }
+      list_listings_needing_reminder: {
+        Args: { _limit?: number }
+        Returns: {
+          listing_id: string
+          recipient_email: string
+          seller_id: string
           title: string
         }[]
       }
