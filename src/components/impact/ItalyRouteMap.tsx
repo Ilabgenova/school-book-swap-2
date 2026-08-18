@@ -67,7 +67,7 @@ export const ItalyRouteMap = ({ carKm, compact }: { carKm: number; compact?: boo
             `Mappa dell'Italia: percorso equivalente da Genova${arrival ? ` a ${arrival.name}` : ""}`,
             `Map of Italy: equivalent route from Genova${arrival ? ` to ${arrival.name}` : ""}`,
           )}
-          className={`mx-auto w-auto ${compact ? "h-44" : "h-52 sm:h-64"} sm:mx-0`}
+          className={`mx-auto w-auto ${compact ? "h-52" : "h-52 sm:h-64"} sm:mx-0`}
         >
           <path d={ITALY_MAINLAND} className="fill-success/15 stroke-success/50" strokeWidth="1.5" strokeLinejoin="round" />
           <path d={SICILY} className="fill-success/15 stroke-success/50" strokeWidth="1.5" strokeLinejoin="round" />
