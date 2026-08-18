@@ -61,7 +61,7 @@ export const ItalyRouteMap = ({ carKm, compact }: { carKm: number; compact?: boo
     <div className="w-full rounded-xl border border-success/30 bg-background p-3">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <svg
-          viewBox="-6 20 216 274"
+          viewBox="-26 18 250 282"
           role="img"
           aria-label={T(
             `Mappa dell'Italia: percorso equivalente da Genova${arrival ? ` a ${arrival.name}` : ""}`,
