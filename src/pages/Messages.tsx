@@ -204,7 +204,7 @@ const MessagesContent = () => {
       return {
         conv: c,
         listing: listingMap.get(c.listing_id),
-        otherName: formatSellerName(p?.first_name ?? null, p?.last_name ?? null),
+        otherName: p || "DISbook user",
         otherId,
         lastMessage: lastByConv.get(c.id),
         unread: unreadByConv.get(c.id) || 0,
