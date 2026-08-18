@@ -44,7 +44,6 @@ import {
 import { useNotifications } from "@/hooks/useNotifications";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { formatSellerName } from "@/lib/sellerName";
 
 
 type ListingRow = {

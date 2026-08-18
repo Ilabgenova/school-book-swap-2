@@ -8,7 +8,6 @@ import { Loader2, Send, MessageCircle, ArrowLeft, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { formatSellerName } from "@/lib/sellerName";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import {
@@ -35,7 +34,7 @@ type ListingLite = {
   seller_id: string;
 };
 
-type ProfileLite = { user_id: string; first_name: string | null; last_name: string | null };
+type ProfileLite = { user_id: string; display_name: string };
 
 type MessageRow = {
   id: string;
