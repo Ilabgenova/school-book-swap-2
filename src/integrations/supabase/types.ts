@@ -1589,6 +1589,13 @@ export type Database = {
           title: string
         }[]
       }
+      get_public_profile_names: {
+        Args: { _user_ids: string[] }
+        Returns: {
+          display_name: string
+          user_id: string
+        }[]
+      }
       list_listings_needing_reminder: {
         Args: { _limit?: number }
         Returns: {

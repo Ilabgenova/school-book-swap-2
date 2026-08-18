@@ -8,7 +8,6 @@ import { Loader2, Send, MessageCircle, ArrowLeft, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { formatSellerName } from "@/lib/sellerName";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import {
@@ -35,7 +34,7 @@ type ListingLite = {
   seller_id: string;
 };
 
-type ProfileLite = { user_id: string; first_name: string | null; last_name: string | null };
+type ProfileLite = { user_id: string; display_name: string };
 
 type MessageRow = {
   id: string;
@@ -171,10 +170,7 @@ const MessagesContent = () => {
             .in("id", listingIds)
         : Promise.resolve({ data: [] as ListingLite[] }),
       otherIds.length
-        ? supabase
-            .from("profiles")
-            .select("user_id, first_name, last_name")
-            .in("user_id", otherIds)
+        ? supabase.rpc("get_public_profile_names", { _user_ids: otherIds })
         : Promise.resolve({ data: [] as ProfileLite[] }),
       convIds.length
         ? supabase
@@ -188,8 +184,8 @@ const MessagesContent = () => {
     const listingMap = new Map<string, ListingLite>(
       (listingsRes.data || []).map((l: any) => [l.id, l])
     );
-    const profMap = new Map<string, ProfileLite>(
-      (profilesRes.data || []).map((p: any) => [p.user_id, p])
+    const profMap = new Map<string, string>(
+      ((profilesRes.data as any[]) || []).map((p: any) => [p.user_id as string, p.display_name as string])
     );
     const allMsgs = (msgsRes.data || []) as MessageRow[];
     const lastByConv = new Map<string, MessageRow>();
@@ -207,7 +203,7 @@ const MessagesContent = () => {
       return {
         conv: c,
         listing: listingMap.get(c.listing_id),
-        otherName: formatSellerName(p?.first_name ?? null, p?.last_name ?? null),
+        otherName: p || "DISbook user",
         otherId,
         lastMessage: lastByConv.get(c.id),
         unread: unreadByConv.get(c.id) || 0,

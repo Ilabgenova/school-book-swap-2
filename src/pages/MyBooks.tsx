@@ -44,7 +44,6 @@ import {
 import { useNotifications } from "@/hooks/useNotifications";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { formatSellerName } from "@/lib/sellerName";
 
 
 type ListingRow = {
@@ -268,14 +267,13 @@ const MyBooksContent = () => {
       .eq("listing_id", l.id);
     const buyerIds = Array.from(new Set((convs || []).map((c: any) => c.buyer_id)));
     if (buyerIds.length) {
-      const { data: profs } = await supabase
-        .from("profiles")
-        .select("user_id, first_name, last_name")
-        .in("user_id", buyerIds);
+      const { data: profs } = await supabase.rpc("get_public_profile_names", {
+        _user_ids: buyerIds,
+      });
       setSoldBuyers(
-        (profs || []).map((p: any) => ({
+        ((profs as any[]) || []).map((p: any) => ({
           user_id: p.user_id,
-          name: formatSellerName(p.first_name, p.last_name),
+          name: p.display_name || "DISbook user",
         })),
       );
     }
