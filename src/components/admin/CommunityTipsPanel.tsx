@@ -204,8 +204,18 @@ export const CommunityTipsPanel = () => {
                   <h3 className="font-semibold text-foreground">{tip.activity_opportunity_name}</h3>
                   <p className="text-sm text-muted-foreground">{tip.entity_provider_name}</p>
                   <p className="text-[11px] text-muted-foreground mt-1">
-                    Submitted by {tip.submitted_by_user_id?.slice(0, 8)}… on{" "}
-                    {new Date(tip.created_at).toLocaleString()}
+                    Submitted by{" "}
+                    {[submitters[tip.submitted_by_user_id]?.first_name, submitters[tip.submitted_by_user_id]?.last_name]
+                      .filter(Boolean)
+                      .join(" ") || tip.submitted_by_user_id?.slice(0, 8) + "…"}
+                    {submitters[tip.submitted_by_user_id]?.email
+                      ? ` (${submitters[tip.submitted_by_user_id]?.email})`
+                      : ""}{" "}
+                    on {new Date(tip.created_at).toLocaleString()}
+                  </p>
+                  <p className="text-[11px] text-muted-foreground">
+                    Public label: “Recommended by:{" "}
+                    {submitters[tip.submitted_by_user_id]?.recommended_by_name ?? "DISbook community member"}”
                   </p>
                 </div>
                 <Badge variant="secondary">{tip.status.replace("_", " ")}</Badge>
