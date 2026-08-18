@@ -93,12 +93,12 @@ export const CommunityTipsPanel = () => {
   const [submitters, setSubmitters] = useState<Record<string, Submitter>>({});
   const [counts, setCounts] = useState<Record<string, { thumbs_up_count: number; heart_count: number }>>({});
   const [translating, setTranslating] = useState<string | null>(null);
-  const [drafts, setDrafts] = useState<Record<string, Partial<Tip>>>({});
+  const [drafts, setDrafts] = useState<Record<string, Record<string, string>>>({});
 
-  const draftValue = (tip: Tip, key: keyof Tip) =>
-    (drafts[tip.id]?.[key] as string | null | undefined) ?? ((tip[key] as string | null) ?? "");
+  const draftValue = (tip: Tip, key: string) =>
+    drafts[tip.id]?.[key] ?? ((tip[key as keyof Tip] as string | null) ?? "");
 
-  const setDraft = (tipId: string, key: keyof Tip, value: string) =>
+  const setDraft = (tipId: string, key: string, value: string) =>
     setDrafts((prev) => ({ ...prev, [tipId]: { ...prev[tipId], [key]: value } }));
 
   const saveTranslation = async (tip: Tip) => {
@@ -107,7 +107,7 @@ export const CommunityTipsPanel = () => {
     setBusy(tip.id);
     const { error } = await supabase
       .from("parent_community_tips")
-      .update({ ...patch, translation_status: "ready", translated_at: new Date().toISOString() })
+      .update({ ...patch, translation_status: "ready", translated_at: new Date().toISOString() } as never)
       .eq("id", tip.id);
     setBusy(null);
     if (error) return toast.error(error.message);
@@ -342,19 +342,19 @@ export const CommunityTipsPanel = () => {
                       <Textarea
                         rows={1}
                         placeholder="Activity name"
-                        value={draftValue(tip, `activity_name_${lang}` as keyof Tip)}
+                        value={draftValue(tip, `activity_name_${lang}`}
                         onChange={(e) => setDraft(tip.id, `activity_name_${lang}` as keyof Tip, e.target.value)}
                       />
                       <Textarea
                         rows={3}
                         placeholder="Brief description"
-                        value={draftValue(tip, `brief_description_${lang}` as keyof Tip)}
+                        value={draftValue(tip, `brief_description_${lang}`}
                         onChange={(e) => setDraft(tip.id, `brief_description_${lang}` as keyof Tip, e.target.value)}
                       />
                       <Textarea
                         rows={3}
                         placeholder="Personal feedback"
-                        value={draftValue(tip, `personal_feedback_${lang}` as keyof Tip)}
+                        value={draftValue(tip, `personal_feedback_${lang}`}
                         onChange={(e) => setDraft(tip.id, `personal_feedback_${lang}` as keyof Tip, e.target.value)}
                       />
                     </div>
