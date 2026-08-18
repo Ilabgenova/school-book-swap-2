@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Loader2, Leaf, Save } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { carKmFromCo2, treeCountFromCo2 } from "@/lib/impact";
 
 type Stats = {
   total_listed: number;
