@@ -188,15 +188,31 @@ const ShareTip = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    const parsed = schema.safeParse(form);
+    const normalized = {
+      ...form,
+      website_url: normalizeUrl(form.website_url),
+      photo_logo_url: normalizeUrl(form.photo_logo_url),
+    };
+    setForm(normalized);
+    const parsed = schema.safeParse(normalized);
     if (!parsed.success) {
+      const issue = parsed.error.issues[0];
+      const key = String(issue.path[0] ?? "");
+      const label = FIELD_LABELS[key];
+      const name = label ? (it ? label.it : label.en) : key;
+      const isFormat = issue.message === "url" || issue.code === "invalid_string";
       toast.error(
-        it
-          ? "Controlla i campi obbligatori e i formati (email / link)."
-          : "Please check required fields and formats (email / links)."
+        isFormat
+          ? it
+            ? `Formato non valido nel campo "${name}". Controlla che sia un indirizzo valido (es. https://www.esempio.it).`
+            : `Invalid format in "${name}". Please check it is a valid address (e.g. https://www.example.com).`
+          : it
+          ? `Controlla il campo "${name}".`
+          : `Please check the "${name}" field.`
       );
       return;
     }
+
     const v = parsed.data;
     const hasContact = Boolean(
       v.website_url || v.email || v.phone || v.social_page || v.location || v.contact_information
