@@ -368,7 +368,7 @@ const ShareTip = () => {
         {opts.required && <span className="text-destructive"> *</span>}
       </Label>
       {opts.textarea ? (
-        <Textarea id={key} value={form[key]} onChange={set(key)} rows={4} maxLength={800} placeholder={opts.placeholder} />
+        <Textarea id={key} value={form[key]} onChange={set(key)} rows={4} maxLength={key === "brief_description" ? 600 : 800} placeholder={opts.placeholder} />
       ) : (
         <Input id={key} type={opts.type ?? "text"} value={form[key]} onChange={set(key)} maxLength={300} placeholder={opts.placeholder} />
       )}
