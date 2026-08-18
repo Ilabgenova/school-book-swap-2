@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Leaf, ArrowDown, BookOpen, Car } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { TreeComparison } from "@/components/impact/TreeComparison";
+import { ItalyRouteMap } from "@/components/impact/ItalyRouteMap";
 import { impactFromBooks } from "@/lib/impact";
 
 type Impact = {
@@ -18,18 +19,26 @@ export const Co2ImpactBand = () => {
   const T = (it: string, en: string) => (language === "it" ? it : en);
   const [booksReused, setBooksReused] = useState(0);
 
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const { data, error } = await supabase.rpc("public_get_co2_impact");
-      if (cancelled || error || !data) return;
-      const impact = data as unknown as Impact;
-      setBooksReused(Number(impact.books_reused || 0));
-    })();
-    return () => {
-      cancelled = true;
-    };
+  const fetchImpact = useCallback(async () => {
+    const { data, error } = await supabase.rpc("public_get_co2_impact");
+    if (error || !data) return;
+    const impact = data as unknown as Impact;
+    setBooksReused(Number(impact.books_reused || 0));
   }, []);
+
+  useEffect(() => {
+    fetchImpact();
+    // Keep the counter and the route visual in sync with listing status changes.
+    const channel = supabase
+      .channel("co2-impact-listings")
+      .on("postgres_changes", { event: "*", schema: "public", table: "listings" }, () => {
+        fetchImpact();
+      })
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [fetchImpact]);
 
   const { co2, carKm } = impactFromBooks(booksReused);
 
