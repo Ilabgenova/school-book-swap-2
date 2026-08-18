@@ -56,7 +56,11 @@ export const CommunityTipsSection = () => {
           <Link to="/tips/share">
             <Button variant="outline">{language === "it" ? "Condividi un consiglio" : "Share a Tip"}</Button>
           </Link>
+          <Link to="/tips/mine">
+            <Button variant="outline">{language === "it" ? "I miei consigli" : "My Tips"}</Button>
+          </Link>
         </div>
+
 
         <p className="mt-6 text-xs text-muted-foreground/80 italic flex items-start gap-2 max-w-2xl">
           <Lightbulb className="h-3.5 w-3.5 text-accent shrink-0 mt-0.5" />
