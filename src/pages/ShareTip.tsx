@@ -19,12 +19,20 @@ import { LEVELS } from "./Tips";
 const MAX_FLYER_BYTES = 10 * 1024 * 1024;
 const ACCEPTED = ["application/pdf", "image/jpeg", "image/jpg", "image/png", "image/webp"];
 
+const urlish = z
+  .string()
+  .trim()
+  .max(300)
+  .refine((v) => v === "" || /^https?:\/\/[^\s.]+\.[^\s]{2,}$/i.test(v), {
+    message: "url",
+  });
+
 const schema = z.object({
   entity_provider_name: z.string().trim().min(2).max(120),
   activity_opportunity_name: z.string().trim().min(2).max(120),
   brief_description: z.string().trim().min(10).max(600),
   personal_feedback: z.string().trim().min(10).max(800),
-  website_url: z.string().trim().max(300).url().optional().or(z.literal("")),
+  website_url: urlish,
   email: z.string().trim().max(255).email().optional().or(z.literal("")),
   phone: z.string().trim().max(40).optional(),
   social_page: z.string().trim().max(300).optional(),
@@ -33,8 +41,27 @@ const schema = z.object({
   approximate_cost: z.string().trim().max(80).optional(),
   period: z.string().trim().max(80).optional(),
   contact_information: z.string().trim().max(300).optional(),
-  photo_logo_url: z.string().trim().max(500).url().optional().or(z.literal("")),
+  photo_logo_url: urlish,
 });
+
+// Accept "www.site.it" / "site.it" by prefixing the scheme automatically.
+const normalizeUrl = (v: string) => {
+  const t = v.trim();
+  if (!t) return "";
+  if (/^https?:\/\//i.test(t)) return t;
+  return `https://${t}`;
+};
+
+const FIELD_LABELS: Record<string, { it: string; en: string }> = {
+  entity_provider_name: { it: "Ente / organizzatore", en: "Entity / provider name" },
+  activity_opportunity_name: { it: "Attività / opportunità", en: "Activity / opportunity name" },
+  brief_description: { it: "Breve descrizione", en: "Brief description" },
+  personal_feedback: { it: "La tua esperienza personale", en: "Personal feedback" },
+  website_url: { it: "Sito web", en: "Website" },
+  email: { it: "Email di contatto", en: "Contact email" },
+  photo_logo_url: { it: "Link a foto / logo", en: "Photo / logo link" },
+};
+
 
 const empty = {
   entity_provider_name: "",
