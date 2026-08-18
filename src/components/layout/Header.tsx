@@ -14,6 +14,7 @@ import {
   Shield,
   LifeBuoy,
   MoreHorizontal,
+  Lightbulb,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useMyBooksAttentionCount } from "@/hooks/useMyBooksAttentionCount";
@@ -292,6 +293,10 @@ export const Header = () => {
               <DropdownMenuItem onClick={() => navigate("/wanted")}>
                 <BookOpen className="h-4 w-4 mr-2" />
                 {t.nav.wanted}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/tips")}>
+                <Lightbulb className="h-4 w-4 mr-2" />
+                Tips
               </DropdownMenuItem>
               {user && (
                 <DropdownMenuItem onClick={() => navigate("/help-feedback")}>
