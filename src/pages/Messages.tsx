@@ -185,8 +185,8 @@ const MessagesContent = () => {
     const listingMap = new Map<string, ListingLite>(
       (listingsRes.data || []).map((l: any) => [l.id, l])
     );
-    const profMap = new Map<string, ProfileLite>(
-      (profilesRes.data || []).map((p: any) => [p.user_id, p])
+    const profMap = new Map<string, string>(
+      ((profilesRes.data as any[]) || []).map((p: any) => [p.user_id as string, p.display_name as string])
     );
     const allMsgs = (msgsRes.data || []) as MessageRow[];
     const lastByConv = new Map<string, MessageRow>();
