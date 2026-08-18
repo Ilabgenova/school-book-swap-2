@@ -386,8 +386,8 @@ const ShareTip = () => {
           </Button>
           <p className="text-xs text-muted-foreground text-center">
             {it
-              ? "Condividi solo informazioni che puoi rendere pubbliche. Il tuo nome non viene mostrato."
-              : "Only share information you are happy to make public. Your name is not shown."}
+              ? "Il tuo consiglio mostrerà il tuo nome visualizzato o il tuo nome. La tua email e i tuoi contatti privati non saranno mostrati."
+              : "Your recommendation will show your display name or first name. Your email and private contact details will not be shown."}
           </p>
         </form>
       </div>

@@ -21,6 +21,7 @@ import {
   ShieldCheck,
   Users,
   Info,
+  UserRound,
 } from "lucide-react";
 import { FlyerButton } from "@/components/tips/FlyerButton";
 
@@ -50,6 +51,7 @@ type Tip = {
   flyer_file_type: string | null;
   flyer_file_size: number | null;
   published_at: string | null;
+  recommended_by_name: string | null;
 };
 
 const TipCard = ({ tip, it }: { tip: Tip; it: boolean }) => (
@@ -115,6 +117,15 @@ const TipCard = ({ tip, it }: { tip: Tip; it: boolean }) => (
         </span>
       )}
     </div>
+
+    <p className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+      <UserRound className="h-3.5 w-3.5" />
+      {it ? "Consigliato da:" : "Recommended by:"}{" "}
+      <span className="font-medium text-foreground">
+        {tip.recommended_by_name?.trim() ||
+          (it ? "Membro della community DISbook" : "DISbook community member")}
+      </span>
+    </p>
 
     <div className="grid gap-1.5 text-xs text-muted-foreground">
       {tip.location && (
