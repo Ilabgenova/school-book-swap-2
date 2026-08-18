@@ -171,10 +171,7 @@ const MessagesContent = () => {
             .in("id", listingIds)
         : Promise.resolve({ data: [] as ListingLite[] }),
       otherIds.length
-        ? supabase
-            .from("profiles")
-            .select("user_id, first_name, last_name")
-            .in("user_id", otherIds)
+        ? supabase.rpc("get_public_profile_names", { _user_ids: otherIds })
         : Promise.resolve({ data: [] as ProfileLite[] }),
       convIds.length
         ? supabase
