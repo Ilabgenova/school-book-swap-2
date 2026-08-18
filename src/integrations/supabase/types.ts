@@ -1405,6 +1405,16 @@ export type Database = {
         Returns: undefined
       }
       admin_get_impact_stats: { Args: never; Returns: Json }
+      admin_get_tip_submitters: {
+        Args: { _user_ids: string[] }
+        Returns: {
+          email: string
+          first_name: string
+          last_name: string
+          recommended_by_name: string
+          user_id: string
+        }[]
+      }
       admin_list_community_tips: {
         Args: never
         Returns: {
@@ -1572,6 +1582,7 @@ export type Database = {
           phone: string
           photo_logo_url: string
           published_at: string
+          recommended_by_name: string
           social_page: string
           tried_activity: string
           website_url: string
