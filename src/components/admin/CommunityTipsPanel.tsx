@@ -3,15 +3,25 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
-import { Check, X, Archive, Loader2, Lightbulb } from "lucide-react";
+import { Check, X, Archive, Loader2, Lightbulb, Trash2, Paperclip } from "lucide-react";
+import { FlyerButton } from "@/components/tips/FlyerButton";
 
 type Tip = {
   id: string;
+  submitted_by_user_id: string;
   entity_provider_name: string;
   activity_opportunity_name: string;
   brief_description: string;
   personal_feedback: string;
+  contact_information: string | null;
   location: string | null;
   website_url: string | null;
   email: string | null;
@@ -22,6 +32,12 @@ type Tip = {
   period: string | null;
   approximate_age_range_suitable_level: string[] | null;
   would_recommend_again: boolean | null;
+  photo_logo_url: string | null;
+  tried_activity: string | null;
+  flyer_file_path: string | null;
+  flyer_file_name: string | null;
+  flyer_file_type: string | null;
+  flyer_file_size: number | null;
   status: string;
   admin_notes: string | null;
   rejection_reason: string | null;
@@ -30,18 +46,38 @@ type Tip = {
 
 const STATUSES = ["pending_review", "approved", "rejected", "archived"] as const;
 
+const REJECTION_REASONS = [
+  "Missing contact information",
+  "Missing personal feedback",
+  "Personal feedback too generic",
+  "Missing age range / suitable school level",
+  "Inappropriate or unrelated flyer",
+  "Flyer contains personal/private information",
+  "Flyer file is unreadable or unsafe",
+  "Misleading feedback",
+  "Not relevant for students/families",
+  "Inappropriate content",
+  "Commercial/spam content",
+  "Duplicate tip",
+  "Other",
+];
+
+const formatSize = (bytes?: number | null) =>
+  bytes ? `${(bytes / 1024 / 1024).toFixed(2)} MB` : "—";
+
 export const CommunityTipsPanel = () => {
   const [tips, setTips] = useState<Tip[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>("pending_review");
   const [notes, setNotes] = useState<Record<string, string>>({});
+  const [reasons, setReasons] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState<string | null>(null);
 
   const load = async () => {
     setLoading(true);
     const { data, error } = await supabase.rpc("admin_list_community_tips");
     if (error) toast.error(error.message);
-    setTips((data as Tip[]) ?? []);
+    setTips((data as unknown as Tip[]) ?? []);
     setLoading(false);
   };
 
@@ -52,13 +88,14 @@ export const CommunityTipsPanel = () => {
   const update = async (tip: Tip, status: string) => {
     setBusy(tip.id);
     const note = notes[tip.id]?.trim() || null;
+    const reason = reasons[tip.id] || null;
     const { data: auth } = await supabase.auth.getUser();
     const { error } = await supabase
       .from("parent_community_tips")
       .update({
         status: status as never,
         admin_notes: note,
-        rejection_reason: status === "rejected" ? note : null,
+        rejection_reason: status === "rejected" ? reason ?? note : null,
         admin_reviewed_by: auth.user?.id ?? null,
         admin_reviewed_at: new Date().toISOString(),
         published_at: status === "approved" ? new Date().toISOString() : null,
@@ -70,6 +107,46 @@ export const CommunityTipsPanel = () => {
       return;
     }
     toast.success(`Tip ${status}`);
+    load();
+  };
+
+  const setTried = async (tip: Tip, value: string) => {
+    const { error } = await supabase
+      .from("parent_community_tips")
+      .update({ tried_activity: value })
+      .eq("id", tip.id);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    setTips((prev) => prev.map((t) => (t.id === tip.id ? { ...t, tried_activity: value } : t)));
+  };
+
+  const removeFlyer = async (tip: Tip) => {
+    if (!tip.flyer_file_path) return;
+    setBusy(tip.id);
+    const { error: storageError } = await supabase.storage.from("tip-flyers").remove([tip.flyer_file_path]);
+    if (storageError) {
+      setBusy(null);
+      toast.error(storageError.message);
+      return;
+    }
+    const { error } = await supabase
+      .from("parent_community_tips")
+      .update({
+        flyer_file_path: null,
+        flyer_file_name: null,
+        flyer_file_type: null,
+        flyer_file_size: null,
+        flyer_uploaded_at: null,
+      })
+      .eq("id", tip.id);
+    setBusy(null);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success("Flyer removed");
     load();
   };
 
@@ -107,6 +184,10 @@ export const CommunityTipsPanel = () => {
                 <div>
                   <h3 className="font-semibold text-foreground">{tip.activity_opportunity_name}</h3>
                   <p className="text-sm text-muted-foreground">{tip.entity_provider_name}</p>
+                  <p className="text-[11px] text-muted-foreground mt-1">
+                    Submitted by {tip.submitted_by_user_id?.slice(0, 8)}… on{" "}
+                    {new Date(tip.created_at).toLocaleString()}
+                  </p>
                 </div>
                 <Badge variant="secondary">{tip.status.replace("_", " ")}</Badge>
               </div>
@@ -134,10 +215,72 @@ export const CommunityTipsPanel = () => {
                 )}
                 {tip.email && <span>{tip.email}</span>}
                 {tip.phone && <span>{tip.phone}</span>}
+                {tip.social_page && <span>{tip.social_page}</span>}
+                {tip.contact_information && <span>{tip.contact_information}</span>}
               </div>
 
+              {tip.photo_logo_url && (
+                <img
+                  src={tip.photo_logo_url}
+                  alt="Provider logo"
+                  className="h-16 w-16 rounded-lg object-cover border border-border"
+                />
+              )}
+
+              <div className="grid gap-2 sm:grid-cols-2">
+                <div className="space-y-1.5">
+                  <p className="text-xs font-medium text-muted-foreground">Have you tried this activity?</p>
+                  <Select value={tip.tried_activity ?? ""} onValueChange={(v) => setTried(tip, v)}>
+                    <SelectTrigger className="h-9">
+                      <SelectValue placeholder="Information not specified" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="tried_by_family">Tried by family</SelectItem>
+                      <SelectItem value="information_shared">Information shared</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <p className="text-xs font-medium text-muted-foreground">Rejection reason</p>
+                  <Select
+                    value={reasons[tip.id] ?? ""}
+                    onValueChange={(v) => setReasons((r) => ({ ...r, [tip.id]: v }))}
+                  >
+                    <SelectTrigger className="h-9">
+                      <SelectValue placeholder="Select a reason" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {REJECTION_REASONS.map((r) => (
+                        <SelectItem key={r} value={r}>{r}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {tip.flyer_file_path ? (
+                <div className="rounded-lg border border-border bg-muted/40 p-3 space-y-2">
+                  <div className="flex items-center gap-2 text-sm">
+                    <Paperclip className="h-4 w-4 text-muted-foreground" />
+                    <span className="truncate">{tip.flyer_file_name ?? tip.flyer_file_path}</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {tip.flyer_file_type ?? "unknown type"} · {formatSize(tip.flyer_file_size)}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    <FlyerButton path={tip.flyer_file_path} label="View / download flyer" />
+                    <Button size="sm" variant="destructive" disabled={busy === tip.id} onClick={() => removeFlyer(tip)}>
+                      <Trash2 className="h-3.5 w-3.5" /> Remove flyer
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-xs text-muted-foreground">No flyer uploaded.</p>
+              )}
+
               <Textarea
-                placeholder="Admin note / rejection reason"
+                placeholder="Internal admin note"
                 value={notes[tip.id] ?? tip.admin_notes ?? ""}
                 onChange={(e) => setNotes((n) => ({ ...n, [tip.id]: e.target.value }))}
                 rows={2}
