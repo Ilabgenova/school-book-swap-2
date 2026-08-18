@@ -11,24 +11,25 @@ type City = { name: string; x: number; y: number; minKm: number };
 
 // Milestone cities ordered from north to south (viewBox 0 0 200 300 coords)
 const CITIES: City[] = [
-  { name: "La Spezia", x: 70, y: 96, minKm: 1 },
-  { name: "Firenze", x: 88, y: 118, minKm: 101 },
-  { name: "Roma", x: 104, y: 152, minKm: 251 },
-  { name: "Napoli", x: 116, y: 180, minKm: 401 },
-  { name: "Bari", x: 166, y: 182, minKm: 601 },
-  { name: "Reggio Calabria", x: 152, y: 236, minKm: 801 },
-  { name: "Palermo", x: 104, y: 262, minKm: 1001 },
+  { name: "La Spezia", x: 62, y: 104, minKm: 1 },
+  { name: "Firenze", x: 86, y: 126, minKm: 101 },
+  { name: "Roma", x: 100, y: 160, minKm: 251 },
+  { name: "Napoli", x: 112, y: 188, minKm: 401 },
+  { name: "Bari", x: 178, y: 184, minKm: 601 },
+  { name: "Reggio Calabria", x: 150, y: 238, minKm: 801 },
+  { name: "Palermo", x: 100, y: 266, minKm: 1001 },
 ];
 
-const GENOVA = { name: "Genova", x: 56, y: 82 };
+const GENOVA = { name: "Genova", x: 48, y: 88 };
 
 const ITALY_MAINLAND =
-  "M 30 62 L 52 44 L 78 40 L 96 30 L 118 38 L 136 30 L 150 44 L 140 62 L 122 72 " +
-  "L 132 118 L 150 140 L 168 160 L 178 178 L 190 184 L 176 196 L 158 194 L 146 200 " +
-  "L 152 218 L 163 238 L 157 252 L 145 244 L 137 224 L 127 210 L 118 194 L 106 176 " +
-  "L 96 156 L 84 132 L 72 108 L 58 92 L 44 84 Z";
-const SICILY = "M 86 258 L 122 250 L 130 270 L 94 278 Z";
-const SARDINIA = "M 50 150 L 64 147 L 67 180 L 51 183 Z";
+  "M 28 58 L 44 40 L 70 32 L 92 38 L 112 28 L 130 34 L 148 52 L 144 68 L 152 86 " +
+  "L 160 104 L 170 126 L 176 146 L 182 164 L 188 160 L 192 168 L 180 176 L 186 186 " +
+  "L 192 196 L 186 206 L 176 206 L 166 196 L 152 196 L 146 206 L 152 220 L 158 234 " +
+  "L 152 246 L 142 244 L 134 228 L 126 212 L 118 198 L 108 186 L 100 172 L 96 158 " +
+  "L 88 142 L 78 124 L 68 110 L 58 96 L 46 86 L 34 78 Z";
+const SICILY = "M 78 262 L 118 254 L 130 274 L 92 282 Z";
+const SARDINIA = "M 46 152 L 60 148 L 64 186 L 48 190 Z";
 
 const cityForKm = (km: number): City | null => {
   if (km < 1) return null;
@@ -64,7 +65,7 @@ export const ItalyRouteMap = ({ carKm, compact }: { carKm: number; compact?: boo
     <div className="w-full rounded-xl border border-success/30 bg-background p-3">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <svg
-          viewBox="0 0 200 300"
+          viewBox="0 0 210 300"
           role="img"
           aria-label={T(
             `Mappa dell'Italia: percorso equivalente da Genova${arrival ? ` a ${arrival.name}` : ""}`,
