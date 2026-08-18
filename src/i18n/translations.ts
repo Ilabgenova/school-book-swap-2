@@ -119,19 +119,18 @@ export const translations = {
         loading: "Caricamento annunci...",
       },
       communityTips: {
-        badge: "In arrivo",
-        titlePart1: "In arrivo: ",
+        badge: "Community",
+        titlePart1: "Parent ",
         titleHighlight: "Community Tips",
         titlePart2: ".",
-        description: "Uno spazio futuro dove le famiglie potranno condividere consigli utili su attività extrascolastiche, corsi, summer camp e opportunità per gli studenti.",
-        soonBadge: "Presto",
-        disclaimer: "Community Tips sarà uno spazio condiviso dalle famiglie. Non è un elenco ufficiale né un'approvazione della Deledda International School.",
+        description: "Attività extrascolastiche consigliate dalle famiglie DISbook.",
+        soonBadge: "",
+        disclaimer: "Community Tips è uno spazio condiviso dalle famiglie. Non è un elenco ufficiale né un'approvazione della Deledda International School.",
         items: [
-          { title: "Corsi e ripetizioni", description: "Lingue, musica, sport e supporto scolastico condivisi da altre famiglie DIS." },
-          { title: "Summer camp", description: "Camp e programmi che altri studenti hanno effettivamente frequentato e apprezzato." },
-          { title: "Attività extrascolastiche", description: "Club pomeridiani, workshop e opportunità per studenti a Genova." },
+          { title: "Attività extrascolastiche", description: "Attività, club e opportunità per studenti consigliate da altre famiglie DIS." },
         ],
       },
+
       cta: {
         eyebrow: "Unisciti a DISbook",
         titlePart1: "Dai ai libri una ",
@@ -439,19 +438,18 @@ export const translations = {
         loading: "Loading listings...",
       },
       communityTips: {
-        badge: "Coming soon",
-        titlePart1: "Coming soon: ",
+        badge: "Community",
+        titlePart1: "Parent ",
         titleHighlight: "Community Tips",
         titlePart2: ".",
-        description: "A future space where families can share useful recommendations for extracurricular activities, courses, summer camps and student opportunities.",
-        soonBadge: "Soon",
-        disclaimer: "Community Tips will be a space shared by families. It is not an official listing or endorsement by Deledda International School.",
+        description: "Extracurricular Activities recommended by DISbook families.",
+        soonBadge: "",
+        disclaimer: "Community Tips is a space shared by families. It is not an official listing or endorsement by Deledda International School.",
         items: [
-          { title: "Courses & tutoring", description: "Languages, music, sports and academic support shared by other DIS families." },
-          { title: "Summer camps", description: "Camps and programmes that other students have actually attended and enjoyed." },
-          { title: "Extracurricular activities", description: "After-school clubs, workshops and student opportunities around Genova." },
+          { title: "Extracurricular activities", description: "Activities, clubs and student opportunities recommended by other DIS families." },
         ],
       },
+
       cta: {
         eyebrow: "Join DISbook",
         titlePart1: "Give books a ",
