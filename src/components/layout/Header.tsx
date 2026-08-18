@@ -111,15 +111,17 @@ export const Header = () => {
             </Button>
           </Link>
 
-          <Link to="/tips">
-            <Button
-              variant="ghost"
-              size="sm"
-              className={isActive("/tips") ? "text-accent bg-accent/10" : ""}
-            >
-              Tips
-            </Button>
-          </Link>
+          {user && (
+            <Link to="/tips">
+              <Button
+                variant="ghost"
+                size="sm"
+                className={isActive("/tips") ? "text-accent bg-accent/10" : ""}
+              >
+                Tips
+              </Button>
+            </Link>
+          )}
 
           <div className="mx-1 h-5 w-px bg-border" />
           <LanguageSwitcher />
