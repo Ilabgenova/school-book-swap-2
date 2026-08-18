@@ -1,38 +1,58 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 /**
- * Stylised Italy-in-Europe map with a dynamic southbound route from Genova.
- * The traced line length is driven purely by the calculated car-km equivalent.
- * Visual comparison only — not a real trip.
+ * Clean, simplified map of Italy with a dynamic route from Genova to an
+ * approximate arrival city based on the equivalent car km avoided.
+ * Visual comparison only — not a real journey.
  */
-const FULL_ROUTE_KM = 900;
 
-// Stylised path: Genova → La Spezia/Tuscany → Rome → Naples → Calabria/Sicily
-const ROUTE_D = "M 96 74 C 106 88, 116 100, 124 116 C 134 136, 142 152, 152 168 C 162 184, 172 196, 182 208";
-const GENOVA = { x: 96, y: 74 };
+type City = { name: string; x: number; y: number; minKm: number };
+
+// Milestone cities ordered from north to south (viewBox 0 0 200 300 coords)
+const CITIES: City[] = [
+  { name: "La Spezia", x: 53, y: 99, minKm: 1 },
+  { name: "Firenze", x: 77, y: 106, minKm: 101 },
+  { name: "Roma", x: 98, y: 149, minKm: 251 },
+  { name: "Napoli", x: 128, y: 173, minKm: 401 },
+  { name: "Bari", x: 173, y: 167, minKm: 601 },
+  { name: "Reggio Calabria", x: 152, y: 236, minKm: 801 },
+  { name: "Palermo", x: 113, y: 240, minKm: 1001 },
+];
+
+const GENOVA = { name: "Genova", x: 38, y: 92 };
+
+const ITALY_MAINLAND =
+  "M 95.9 37.6 L 120.3 43.5 L 118.5 54.8 L 122.5 64.6 L 109.0 61.2 L 95.1 69.4 L 96.1 80.8 L 94.0 87.3 L 99.6 99.0 L 115.5 110.5 L 124.1 129.5 L 143.1 148.0 L 156.5 147.9 L 160.6 152.9 L 155.8 157.5 L 183.6 172.7 L 198.2 184.7 L 200.0 189.0 L 196.8 197.2 L 187.4 186.5 L 172.5 182.7 L 165.4 197.5 L 177.7 206.0 L 175.7 218.0 L 168.5 219.4 L 159.4 239.1 L 152.3 240.8 L 152.4 233.8 L 155.9 221.5 L 159.6 216.6 L 147.7 191.7 L 140.6 188.9 L 135.6 179.0 L 124.6 174.8 L 117.3 165.6 L 104.7 164.1 L 75.7 138.8 L 64.1 125.6 L 58.8 102.9 L 50.3 100.2 L 36.5 92.7 L 28.6 95.8 L 18.8 106.4 L 11.7 108.1 L 13.6 98.1 L 4.4 95.2 L 0.0 77.5 L 5.9 70.5 L 0.9 61.9 L 1.6 55.4 L 8.9 60.3 L 17.2 59.2 L 26.7 51.4 L 29.7 55.1 L 37.8 54.3 L 41.5 45.1 L 54.1 48.0 L 61.6 44.1 L 63.0 34.7 L 73.3 38.0 L 75.3 33.6 L 92.1 29.6 L 95.9 37.6 Z";
+const SICILY = "M 149.5 233.4 L 143.4 251.5 L 145.9 258.6 L 142.4 270.4 L 129.3 261.8 L 120.7 259.3 L 96.9 247.6 L 99.2 235.8 L 119.2 237.9 L 149.5 233.4 Z";
+const SARDINIA = "M 41.9 165.1 L 52.2 181.4 L 49.8 211.7 L 42.0 210.3 L 35.1 217.9 L 28.6 211.9 L 27.9 184.2 L 24.0 171.1 L 33.4 172.2 L 41.9 165.1 Z";
+
+const cityForKm = (km: number): City | null => {
+  if (km < 1) return null;
+  let match: City = CITIES[0];
+  for (const c of CITIES) if (km >= c.minKm) match = c;
+  return match;
+};
+
+/** Smooth-ish polyline through the milestone chain up to the arrival city. */
+const routePoints = (arrival: City | null) => {
+  if (!arrival) return [] as { x: number; y: number }[];
+  const idx = CITIES.findIndex((c) => c.name === arrival.name);
+  return [GENOVA, ...CITIES.slice(0, idx + 1)].map((c) => ({ x: c.x, y: c.y }));
+};
+
+const toPathD = (pts: { x: number; y: number }[]) =>
+  pts.length < 2
+    ? ""
+    : pts.reduce((d, p, i) => (i === 0 ? `M ${p.x} ${p.y}` : `${d} L ${p.x} ${p.y}`), "");
 
 export const ItalyRouteMap = ({ carKm, compact }: { carKm: number; compact?: boolean }) => {
   const { language } = useLanguage();
   const T = (it: string, en: string) => (language === "it" ? it : en);
-  const pathRef = useRef<SVGPathElement | null>(null);
-  const [length, setLength] = useState(0);
 
-  useEffect(() => {
-    if (pathRef.current) setLength(pathRef.current.getTotalLength());
-  }, []);
-
-  const progress = useMemo(
-    () => Math.max(0, Math.min(carKm / FULL_ROUTE_KM, 1)),
-    [carKm],
-  );
-
-  const drawn = length * progress;
-  const head = useMemo(() => {
-    if (!pathRef.current || drawn <= 0) return null;
-    const p = pathRef.current.getPointAtLength(drawn);
-    return { x: p.x, y: p.y };
-  }, [drawn]);
+  const arrival = useMemo(() => cityForKm(carKm), [carKm]);
+  const pts = useMemo(() => routePoints(arrival), [arrival]);
+  const d = useMemo(() => toPathD(pts), [pts]);
 
   const fmt = (n: number) =>
     n.toLocaleString(language === "it" ? "it-IT" : "en-GB", { maximumFractionDigits: 0 });
@@ -41,87 +61,94 @@ export const ItalyRouteMap = ({ carKm, compact }: { carKm: number; compact?: boo
     <div className="w-full rounded-xl border border-success/30 bg-background p-3">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <svg
-          viewBox="0 0 260 240"
+          viewBox="-26 18 250 282"
           role="img"
           aria-label={T(
-            "Mappa stilizzata: percorso equivalente da Genova verso sud",
-            "Stylised map: equivalent route from Genova heading south",
+            `Mappa dell'Italia: percorso equivalente da Genova${arrival ? ` a ${arrival.name}` : ""}`,
+            `Map of Italy: equivalent route from Genova${arrival ? ` to ${arrival.name}` : ""}`,
           )}
-          className={`w-full max-w-full ${compact ? "h-40" : "h-48 sm:h-56"} sm:w-1/2`}
+          className={`mx-auto w-auto ${compact ? "h-52" : "h-52 sm:h-64"} sm:mx-0`}
         >
-          {/* Europe context */}
-          <path
-            d="M10 40 L70 20 L120 28 L170 14 L230 34 L248 84 L220 120 L232 168 L196 208 L150 232 L96 220 L54 186 L20 140 Z"
-            className="fill-muted stroke-border"
-            strokeWidth="1"
-          />
-          {/* Italy (stylised boot) */}
-          <path
-            d="M84 60 L112 56 L132 70 L150 96 L166 130 L186 164 L198 194 L184 206 L166 186 L150 158 L134 132 L112 104 L92 88 Z"
-            className="fill-success/20 stroke-success/60"
-            strokeWidth="1.5"
-          />
-          <path
-            d="M196 210 L222 202 L226 220 L204 226 Z"
-            className="fill-success/20 stroke-success/60"
-            strokeWidth="1.5"
-          />
+          <path d={ITALY_MAINLAND} className="fill-success/15 stroke-success/50" strokeWidth="1.5" strokeLinejoin="round" />
+          <path d={SICILY} className="fill-success/15 stroke-success/50" strokeWidth="1.5" strokeLinejoin="round" />
+          <path d={SARDINIA} className="fill-success/10 stroke-success/40" strokeWidth="1.5" strokeLinejoin="round" />
 
-          {/* Route base */}
-          <path
-            ref={pathRef}
-            d={ROUTE_D}
-            fill="none"
-            className="stroke-border"
-            strokeWidth="3"
-            strokeLinecap="round"
-            strokeDasharray="4 5"
-          />
-          {/* Route progress */}
-          {length > 0 && drawn > 0 && (
-            <path
-              d={ROUTE_D}
-              fill="none"
-              className="stroke-accent"
-              strokeWidth="4"
-              strokeLinecap="round"
-              strokeDasharray={`${drawn} ${length}`}
-              style={{ transition: "stroke-dasharray 700ms ease-out" }}
-            />
+          {d && (
+            <>
+              <path
+                d={d}
+                fill="none"
+                className="stroke-accent/25"
+                strokeWidth="6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d={d}
+                fill="none"
+                className="stroke-accent"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </>
           )}
 
-          {/* Genova marker */}
-          <circle cx={GENOVA.x} cy={GENOVA.y} r="5" className="fill-accent" />
-          <circle cx={GENOVA.x} cy={GENOVA.y} r="9" className="fill-accent/25" />
-          <text x={GENOVA.x + 12} y={GENOVA.y - 4} className="fill-foreground" fontSize="11" fontWeight="600">
+          {/* Genova (departure) */}
+          <circle cx={GENOVA.x} cy={GENOVA.y} r="8" className="fill-accent/20" />
+          <circle cx={GENOVA.x} cy={GENOVA.y} r="4" className="fill-accent stroke-background" strokeWidth="1.5" />
+          <text
+            x={GENOVA.x - 10}
+            y={GENOVA.y - 8}
+            textAnchor="end"
+            className="fill-foreground"
+            fontSize="11"
+            fontWeight="600"
+          >
             Genova
           </text>
 
-          {head && (
-            <circle cx={head.x} cy={head.y} r="4.5" className="fill-success stroke-background" strokeWidth="1.5" />
+          {/* Arrival */}
+          {arrival && (
+            <>
+              <circle cx={arrival.x} cy={arrival.y} r="9" className="fill-success/25" />
+              <circle cx={arrival.x} cy={arrival.y} r="4.5" className="fill-success stroke-background" strokeWidth="1.5" />
+              <text
+                x={arrival.x + 9}
+                y={arrival.y + 4}
+                className="fill-foreground"
+                fontSize="11"
+                fontWeight="600"
+              >
+                {arrival.name}
+              </text>
+            </>
           )}
-
-          <text x="150" y="132" className="fill-muted-foreground" fontSize="9">
-            {T("Centro Italia", "Central Italy")}
-          </text>
-          <text x="176" y="222" className="fill-muted-foreground" fontSize="9">
-            {T("Sud Italia", "South Italy")}
-          </text>
         </svg>
 
-        <div className="sm:w-1/2 space-y-1.5">
+        <div className="space-y-1.5 sm:flex-1">
           <p className="text-sm font-semibold text-foreground">
-            {T("Partenza da Genova", "Starting from Genova")}
+            {T("Partenza: Genova", "Departure: Genova")}
+          </p>
+          <p className="text-sm font-semibold text-foreground">
+            {T("Confronto visivo:", "Visual comparison:")}{" "}
+            <span className="text-success">Genova → {arrival ? arrival.name : "—"}</span>
           </p>
           <p className="text-sm text-muted-foreground">
-            {T("Distanza equivalente evitata:", "Equivalent distance avoided:")}{" "}
-            <span className="font-bold text-foreground tabular-nums">{fmt(carKm)} km</span>{" "}
-            {T("in auto", "by car")}
+            {arrival
+              ? T(
+                  `Con questo impatto, le emissioni evitate sono paragonabili a percorrere circa ${fmt(carKm)} km in auto — più o meno la distanza da Genova a ${arrival.name}.`,
+                  `With this impact, the avoided emissions are comparable to driving approximately ${fmt(carKm)} km by car — around the distance from Genova to ${arrival.name}.`,
+                )
+              : T(
+                  "Nessun percorso ancora: appena i libri iniziano a essere riutilizzati, il percorso parte da Genova.",
+                  "No route yet: as soon as books start being reused, the route sets off from Genova.",
+                )}
           </p>
           <p className="text-[11px] leading-snug text-muted-foreground">
             {T(
-              "Questa mappa è un confronto visivo dei km in auto equivalenti evitati grazie al riuso dei libri.",
-              "This map is a visual comparison of the equivalent km by car avoided through book reuse.",
+              "Questa mappa è un confronto visivo dei km in auto equivalenti evitati grazie al riuso dei libri. Non rappresenta un viaggio reale.",
+              "This map is a visual comparison of the equivalent km by car avoided through book reuse. It does not show a real journey.",
             )}
           </p>
         </div>
