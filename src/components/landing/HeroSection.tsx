@@ -53,7 +53,7 @@ export const HeroSection = () => {
               </p>
               <p className="text-base md:text-lg text-muted-foreground max-w-xl leading-relaxed">
                 {h.longDescription}
-              </div>
+              </p>
               <p className="text-xs text-muted-foreground/80 max-w-xl leading-relaxed italic border-l-2 border-accent/40 pl-3">
                 {h.disclaimer}
               </p>
