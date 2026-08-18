@@ -24,6 +24,7 @@ import {
   UserRound,
 } from "lucide-react";
 import { FlyerButton } from "@/components/tips/FlyerButton";
+import { TipReactions } from "@/components/tips/TipReactions";
 
 export const LEVELS = ["PYP", "MYP", "DP", "All ages"] as const;
 
@@ -52,6 +53,10 @@ type Tip = {
   flyer_file_size: number | null;
   published_at: string | null;
   recommended_by_name: string | null;
+  reactions_enabled: boolean | null;
+  thumbs_up_count: number | null;
+  heart_count: number | null;
+  my_reactions: string[] | null;
 };
 
 const TipCard = ({ tip, it }: { tip: Tip; it: boolean }) => (
@@ -191,6 +196,15 @@ const TipCard = ({ tip, it }: { tip: Tip; it: boolean }) => (
       )}
     </div>
 
+    <TipReactions
+      tipId={tip.id}
+      it={it}
+      enabled={tip.reactions_enabled !== false}
+      initialThumbs={tip.thumbs_up_count ?? 0}
+      initialHearts={tip.heart_count ?? 0}
+      initialMine={tip.my_reactions ?? []}
+    />
+
     {tip.flyer_file_path && (
       <div>
         <FlyerButton
@@ -270,11 +284,18 @@ const Tips = () => {
               maxLength={100}
             />
           </div>
-          <Button asChild className="shrink-0">
-            <Link to="/tips/share">
-              <Plus className="h-4 w-4" /> {it ? "Condividi un consiglio" : "Share a tip"}
-            </Link>
-          </Button>
+          <div className="flex flex-wrap gap-2 shrink-0">
+            <Button asChild className="flex-1 sm:flex-none">
+              <Link to="/tips/share">
+                <Plus className="h-4 w-4" /> {it ? "Condividi un consiglio" : "Share a Tip"}
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="flex-1 sm:flex-none">
+              <Link to="/tips/mine">
+                <UserRound className="h-4 w-4" /> {it ? "I miei consigli" : "My Tips"}
+              </Link>
+            </Button>
+          </div>
         </div>
 
         <div className="flex flex-wrap gap-2 mb-6">

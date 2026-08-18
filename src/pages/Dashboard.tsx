@@ -46,6 +46,7 @@ const Dashboard = () => {
     { to: "/sell?intent=sell&mode=sell", icon: Tag, label: it ? "Metti in vendita" : "List a book" },
     { to: "/my-books", icon: BookMarked, label: it ? "I miei libri" : "My books" },
     { to: "/messages", icon: MessageCircle, label: it ? "Messaggi" : "Messages" },
+    { to: "/tips/mine", icon: Lightbulb, label: it ? "I miei consigli" : "My Tips" },
   ];
 
   return (

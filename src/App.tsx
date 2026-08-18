@@ -22,6 +22,7 @@ import ListingActionResult from "./pages/ListingActionResult";
 import Dashboard from "./pages/Dashboard";
 import Tips from "./pages/Tips";
 import ShareTip from "./pages/ShareTip";
+import MyTips from "./pages/MyTips";
 
 const queryClient = new QueryClient();
 
@@ -39,6 +40,8 @@ const App = () => (
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/tips" element={<Tips />} />
             <Route path="/tips/share" element={<ShareTip />} />
+            <Route path="/tips/mine" element={<MyTips />} />
+            <Route path="/tips/:tipId/edit" element={<ShareTip />} />
             <Route path="/browse" element={<Browse />} />
             <Route path="/buy" element={<Browse />} />
             <Route path="/listings/:listingId" element={<ListingDetail />} />

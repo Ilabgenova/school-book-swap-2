@@ -294,6 +294,10 @@ export const Header = () => {
                 <BookOpen className="h-4 w-4 mr-2" />
                 {t.nav.wanted}
               </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/tips/mine")}>
+                <Lightbulb className="h-4 w-4 mr-2" />
+                My Tips
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => navigate("/tips")}>
                 <Lightbulb className="h-4 w-4 mr-2" />
                 Tips

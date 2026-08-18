@@ -11,7 +11,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Check, X, Archive, Loader2, Lightbulb, Trash2, Paperclip } from "lucide-react";
+import { Check, X, Archive, Loader2, Lightbulb, Trash2, Paperclip, ThumbsUp, Heart } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { FlyerButton } from "@/components/tips/FlyerButton";
 
 type Tip = {
@@ -39,6 +40,7 @@ type Tip = {
   flyer_file_type: string | null;
   flyer_file_size: number | null;
   status: string;
+  reactions_enabled: boolean | null;
   admin_notes: string | null;
   rejection_reason: string | null;
   created_at: string;
@@ -81,6 +83,7 @@ export const CommunityTipsPanel = () => {
   const [reasons, setReasons] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState<string | null>(null);
   const [submitters, setSubmitters] = useState<Record<string, Submitter>>({});
+  const [counts, setCounts] = useState<Record<string, { thumbs_up_count: number; heart_count: number }>>({});
 
   const load = async () => {
     setLoading(true);
@@ -96,6 +99,15 @@ export const CommunityTipsPanel = () => {
         map[s.user_id] = s;
       });
       setSubmitters(map);
+    }
+    const tipIds = rows.map((t) => t.id);
+    if (tipIds.length) {
+      const { data: rc } = await supabase.rpc("admin_get_tip_reaction_counts", { _tip_ids: tipIds });
+      const cmap: Record<string, { thumbs_up_count: number; heart_count: number }> = {};
+      ((rc as { tip_id: string; thumbs_up_count: number; heart_count: number }[]) ?? []).forEach((r) => {
+        cmap[r.tip_id] = { thumbs_up_count: r.thumbs_up_count, heart_count: r.heart_count };
+      });
+      setCounts(cmap);
     }
     setLoading(false);
   };
@@ -139,6 +151,18 @@ export const CommunityTipsPanel = () => {
       return;
     }
     setTips((prev) => prev.map((t) => (t.id === tip.id ? { ...t, tried_activity: value } : t)));
+  };
+
+  const setReactionsEnabled = async (tip: Tip, value: boolean) => {
+    const { error } = await supabase
+      .from("parent_community_tips")
+      .update({ reactions_enabled: value })
+      .eq("id", tip.id);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    setTips((prev) => prev.map((t) => (t.id === tip.id ? { ...t, reactions_enabled: value } : t)));
   };
 
   const removeFlyer = async (tip: Tip) => {
@@ -307,6 +331,27 @@ export const CommunityTipsPanel = () => {
               ) : (
                 <p className="text-xs text-muted-foreground">No flyer uploaded.</p>
               )}
+
+              <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border p-3">
+                <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                  <span className="inline-flex items-center gap-1.5">
+                    <ThumbsUp className="h-4 w-4" /> {counts[tip.id]?.thumbs_up_count ?? 0}
+                  </span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <Heart className="h-4 w-4" /> {counts[tip.id]?.heart_count ?? 0}
+                  </span>
+                  <span className="text-xs">
+                    total {(counts[tip.id]?.thumbs_up_count ?? 0) + (counts[tip.id]?.heart_count ?? 0)}
+                  </span>
+                </div>
+                <label className="flex items-center gap-2 text-xs text-muted-foreground">
+                  Reactions enabled
+                  <Switch
+                    checked={tip.reactions_enabled !== false}
+                    onCheckedChange={(v) => setReactionsEnabled(tip, v)}
+                  />
+                </label>
+              </div>
 
               <Textarea
                 placeholder="Internal admin note"

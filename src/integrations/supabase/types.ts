@@ -966,6 +966,7 @@ export type Database = {
           phone: string | null
           photo_logo_url: string | null
           published_at: string | null
+          reactions_enabled: boolean
           rejection_reason: string | null
           social_page: string | null
           status: Database["public"]["Enums"]["tip_status"]
@@ -1000,6 +1001,7 @@ export type Database = {
           phone?: string | null
           photo_logo_url?: string | null
           published_at?: string | null
+          reactions_enabled?: boolean
           rejection_reason?: string | null
           social_page?: string | null
           status?: Database["public"]["Enums"]["tip_status"]
@@ -1034,6 +1036,7 @@ export type Database = {
           phone?: string | null
           photo_logo_url?: string | null
           published_at?: string | null
+          reactions_enabled?: boolean
           rejection_reason?: string | null
           social_page?: string | null
           status?: Database["public"]["Enums"]["tip_status"]
@@ -1044,6 +1047,38 @@ export type Database = {
           would_recommend_again?: boolean | null
         }
         Relationships: []
+      }
+      parent_tip_reactions: {
+        Row: {
+          created_at: string
+          id: string
+          reaction_type: string
+          tip_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          reaction_type: string
+          tip_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          reaction_type?: string
+          tip_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "parent_tip_reactions_tip_id_fkey"
+            columns: ["tip_id"]
+            isOneToOne: false
+            referencedRelation: "parent_community_tips"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -1405,6 +1440,14 @@ export type Database = {
         Returns: undefined
       }
       admin_get_impact_stats: { Args: never; Returns: Json }
+      admin_get_tip_reaction_counts: {
+        Args: { _tip_ids: string[] }
+        Returns: {
+          heart_count: number
+          thumbs_up_count: number
+          tip_id: string
+        }[]
+      }
       admin_get_tip_submitters: {
         Args: { _user_ids: string[] }
         Returns: {
@@ -1442,6 +1485,7 @@ export type Database = {
           phone: string | null
           photo_logo_url: string | null
           published_at: string | null
+          reactions_enabled: boolean
           rejection_reason: string | null
           social_page: string | null
           status: Database["public"]["Enums"]["tip_status"]
@@ -1493,6 +1537,10 @@ export type Database = {
       }
       admin_request_listing_correction: {
         Args: { _listing_id: string; _note: string }
+        Returns: undefined
+      }
+      author_update_tip: {
+        Args: { _payload: Json; _tip_id: string }
         Returns: undefined
       }
       consume_listing_action_token: {
@@ -1559,6 +1607,25 @@ export type Database = {
         }
         Returns: number
       }
+      my_community_tips: {
+        Args: never
+        Returns: {
+          activity_opportunity_name: string
+          admin_notes: string
+          brief_description: string
+          created_at: string
+          entity_provider_name: string
+          heart_count: number
+          id: string
+          personal_feedback: string
+          published_at: string
+          reactions_enabled: boolean
+          rejection_reason: string
+          status: string
+          thumbs_up_count: number
+          updated_at: string
+        }[]
+      }
       public_get_co2_impact: { Args: never; Returns: Json }
       public_get_community_tips: {
         Args: { _limit?: number; _search?: string }
@@ -1574,16 +1641,20 @@ export type Database = {
           flyer_file_path: string
           flyer_file_size: number
           flyer_file_type: string
+          heart_count: number
           id: string
           language: string
           location: string
+          my_reactions: string[]
           period: string
           personal_feedback: string
           phone: string
           photo_logo_url: string
           published_at: string
+          reactions_enabled: boolean
           recommended_by_name: string
           social_page: string
+          thumbs_up_count: number
           tried_activity: string
           website_url: string
           would_recommend_again: boolean
@@ -1650,6 +1721,10 @@ export type Database = {
       seller_resubmit_listing: {
         Args: { _listing_id: string }
         Returns: undefined
+      }
+      toggle_tip_reaction: {
+        Args: { _reaction_type: string; _tip_id: string }
+        Returns: Json
       }
     }
     Enums: {
