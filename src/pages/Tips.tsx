@@ -18,7 +18,11 @@ import {
   Euro,
   ThumbsUp,
   Plus,
+  ShieldCheck,
+  Users,
+  Info,
 } from "lucide-react";
+import { FlyerButton } from "@/components/tips/FlyerButton";
 
 export const LEVELS = ["PYP", "MYP", "DP", "All ages"] as const;
 
@@ -40,6 +44,11 @@ type Tip = {
   personal_feedback: string;
   would_recommend_again: boolean | null;
   photo_logo_url: string | null;
+  tried_activity: string | null;
+  flyer_file_path: string | null;
+  flyer_file_name: string | null;
+  flyer_file_type: string | null;
+  flyer_file_size: number | null;
   published_at: string | null;
 };
 
@@ -78,6 +87,32 @@ const TipCard = ({ tip, it }: { tip: Tip; it: boolean }) => (
         <Badge variant="outline" className="text-[11px]">
           {tip.language}
         </Badge>
+      )}
+    </div>
+
+    <div className="flex flex-wrap items-center gap-2">
+      <Badge variant="outline" className="text-[11px] gap-1 font-normal">
+        {tip.tried_activity === "tried_by_family" ? (
+          <>
+            <Users className="h-3 w-3" /> {it ? "Provato dalla famiglia" : "Tried by family"}
+          </>
+        ) : tip.tried_activity === "information_shared" ? (
+          <>
+            <Info className="h-3 w-3" /> {it ? "Informazione condivisa" : "Information shared"}
+          </>
+        ) : (
+          <>
+            <Info className="h-3 w-3" /> {it ? "Informazione non specificata" : "Information not specified"}
+          </>
+        )}
+      </Badge>
+      <Badge variant="outline" className="text-[11px] gap-1 font-normal text-accent border-accent/30">
+        <ShieldCheck className="h-3 w-3" /> {it ? "Verificato dagli admin DISbook" : "Reviewed by DISbook admins"}
+      </Badge>
+      {tip.published_at && (
+        <span className="text-[11px] text-muted-foreground">
+          {new Date(tip.published_at).toLocaleDateString(it ? "it-IT" : "en-GB")}
+        </span>
       )}
     </div>
 
@@ -140,9 +175,22 @@ const TipCard = ({ tip, it }: { tip: Tip; it: boolean }) => (
           {it ? "Pagina social" : "Social page"}
         </a>
       )}
+      {tip.contact_information && (
+        <span className="text-muted-foreground">{tip.contact_information}</span>
+      )}
     </div>
+
+    {tip.flyer_file_path && (
+      <div>
+        <FlyerButton
+          path={tip.flyer_file_path}
+          label={it ? "Scarica il volantino" : "Download flyer"}
+        />
+      </div>
+    )}
   </article>
 );
+
 
 const Tips = () => {
   const { language } = useLanguage();
