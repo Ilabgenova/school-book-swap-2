@@ -953,6 +953,11 @@ export type Database = {
           created_at: string
           email: string | null
           entity_provider_name: string
+          flyer_file_name: string | null
+          flyer_file_path: string | null
+          flyer_file_size: number | null
+          flyer_file_type: string | null
+          flyer_uploaded_at: string | null
           id: string
           language: string | null
           location: string | null
@@ -965,6 +970,7 @@ export type Database = {
           social_page: string | null
           status: Database["public"]["Enums"]["tip_status"]
           submitted_by_user_id: string
+          tried_activity: string | null
           updated_at: string
           website_url: string | null
           would_recommend_again: boolean | null
@@ -981,6 +987,11 @@ export type Database = {
           created_at?: string
           email?: string | null
           entity_provider_name: string
+          flyer_file_name?: string | null
+          flyer_file_path?: string | null
+          flyer_file_size?: number | null
+          flyer_file_type?: string | null
+          flyer_uploaded_at?: string | null
           id?: string
           language?: string | null
           location?: string | null
@@ -993,6 +1004,7 @@ export type Database = {
           social_page?: string | null
           status?: Database["public"]["Enums"]["tip_status"]
           submitted_by_user_id: string
+          tried_activity?: string | null
           updated_at?: string
           website_url?: string | null
           would_recommend_again?: boolean | null
@@ -1009,6 +1021,11 @@ export type Database = {
           created_at?: string
           email?: string | null
           entity_provider_name?: string
+          flyer_file_name?: string | null
+          flyer_file_path?: string | null
+          flyer_file_size?: number | null
+          flyer_file_type?: string | null
+          flyer_uploaded_at?: string | null
           id?: string
           language?: string | null
           location?: string | null
@@ -1021,6 +1038,7 @@ export type Database = {
           social_page?: string | null
           status?: Database["public"]["Enums"]["tip_status"]
           submitted_by_user_id?: string
+          tried_activity?: string | null
           updated_at?: string
           website_url?: string | null
           would_recommend_again?: boolean | null
@@ -1401,6 +1419,11 @@ export type Database = {
           created_at: string
           email: string | null
           entity_provider_name: string
+          flyer_file_name: string | null
+          flyer_file_path: string | null
+          flyer_file_size: number | null
+          flyer_file_type: string | null
+          flyer_uploaded_at: string | null
           id: string
           language: string | null
           location: string | null
@@ -1413,6 +1436,7 @@ export type Database = {
           social_page: string | null
           status: Database["public"]["Enums"]["tip_status"]
           submitted_by_user_id: string
+          tried_activity: string | null
           updated_at: string
           website_url: string | null
           would_recommend_again: boolean | null
@@ -1536,6 +1560,10 @@ export type Database = {
           contact_information: string
           email: string
           entity_provider_name: string
+          flyer_file_name: string
+          flyer_file_path: string
+          flyer_file_size: number
+          flyer_file_type: string
           id: string
           language: string
           location: string
@@ -1545,6 +1573,7 @@ export type Database = {
           photo_logo_url: string
           published_at: string
           social_page: string
+          tried_activity: string
           website_url: string
           would_recommend_again: boolean
         }[]
