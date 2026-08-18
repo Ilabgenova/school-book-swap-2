@@ -87,18 +87,43 @@ const Dashboard = () => {
           ))}
         </div>
 
-        <div className="mt-8 flex flex-wrap gap-2">
-          {quick.map((q) => (
-            <Link
-              key={q.to}
-              to={q.to}
-              className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm text-foreground hover:border-accent/50 hover:text-accent transition-colors"
-            >
-              <q.icon className="h-4 w-4" />
-              {q.label}
-            </Link>
-          ))}
+        <div className="mt-8">
+          <h2 className="font-display text-lg font-semibold text-foreground mb-3">
+            {it ? "La tua attività" : "Your activity"}
+          </h2>
+          <div className="flex flex-wrap gap-2">
+            {quick.map((q) => (
+              <Link
+                key={q.to}
+                to={q.to}
+                className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm text-foreground hover:border-accent/50 hover:text-accent transition-colors"
+              >
+                <q.icon className="h-4 w-4" />
+                {q.label}
+              </Link>
+            ))}
+          </div>
         </div>
+
+        <div className="mt-10">
+          <PersonalImpactCard />
+        </div>
+      </div>
+
+      <PreviewSection />
+      <SustainabilitySection />
+      <div className="container max-w-5xl pb-10">
+        <p className="text-xs text-muted-foreground">
+          {it
+            ? "Le stime di impatto sono indicative e calcolate su dati reali di DISbook."
+            : "Impact figures are estimates calculated from real DISbook data."}
+        </p>
+      </div>
+    </MainLayout>
+  );
+};
+
+export default Dashboard;
       </div>
     </MainLayout>
   );
