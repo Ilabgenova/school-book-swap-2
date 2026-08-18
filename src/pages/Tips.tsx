@@ -249,12 +249,18 @@ const TipCard = ({ tip, it }: { tip: Tip; it: boolean }) => {
 const Tips = () => {
   const { language } = useLanguage();
   const it = language === "it";
+  const { user, loading: authLoading } = useAuth();
   const [tips, setTips] = useState<Tip[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [level, setLevel] = useState<string>("all");
 
   useEffect(() => {
+    if (!user) {
+      setTips([]);
+      setLoading(false);
+      return;
+    }
     let cancelled = false;
     const load = async () => {
       setLoading(true);
