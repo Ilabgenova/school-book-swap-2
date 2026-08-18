@@ -1,13 +1,41 @@
-import { Lightbulb, Sparkles, Calendar, GraduationCap, Tent } from "lucide-react";
+import { Lightbulb, Sparkles, Calendar, GraduationCap, Tent, Lock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useAuth } from "@/hooks/useAuth";
 
 const icons = [GraduationCap, Tent, Calendar];
 
 export const CommunityTipsSection = () => {
   const { t, language } = useLanguage();
+  const { user } = useAuth();
   const c = t.landing.communityTips;
+  const it = language === "it";
+
+  if (!user) {
+    return (
+      <section className="py-16 md:py-24 bg-background">
+        <div className="container">
+          <div className="mx-auto max-w-xl rounded-2xl border border-border bg-card p-8 text-center">
+            <div className="mx-auto mb-4 h-12 w-12 rounded-xl bg-accent/10 text-accent flex items-center justify-center">
+              <Lock className="h-5 w-5" />
+            </div>
+            <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground mb-2">
+              {it ? "Consigli della community" : "Parent Community Tips"}
+            </h2>
+            <p className="text-sm text-muted-foreground mb-6">
+              {it ? "Disponibili dopo l'accesso." : "Available after login."}
+            </p>
+            <Button asChild>
+              <Link to="/login?next=/tips">
+                {it ? "Accedi per vedere i consigli" : "Log in to view tips"}
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-20 md:py-28 bg-background relative">
