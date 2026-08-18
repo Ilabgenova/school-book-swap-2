@@ -93,6 +93,8 @@ export const PersonalImpactCard = () => {
 
           <TreeComparison co2Kg={total.co2} compact />
 
+          <ItalyRouteMap carKm={total.carKm} compact />
+
           <p className="text-[11px] leading-snug text-muted-foreground">
             {T(
               "Stima di calcolo: 1 libro riutilizzato = 3 kg di CO₂ evitati. Equivalente auto basato su 0,12 kg CO₂/km. Confronto alberi basato su 22 kg di CO₂, simile a un albero maturo che assorbe CO₂ in un anno. Tastiere e Sphero non sono inclusi.",
