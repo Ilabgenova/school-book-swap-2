@@ -1,10 +1,12 @@
 import { Lightbulb, Sparkles, Calendar, GraduationCap, Tent } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 const icons = [GraduationCap, Tent, Calendar];
 
 export const CommunityTipsSection = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const c = t.landing.communityTips;
 
   return (
@@ -33,9 +35,6 @@ export const CommunityTipsSection = () => {
                 key={item.title}
                 className="relative rounded-xl border border-border bg-card p-6 overflow-hidden group hover:border-accent/40 transition-colors"
               >
-                <div className="absolute top-4 right-4 text-[9px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full bg-muted text-muted-foreground border border-border">
-                  {c.soonBadge}
-                </div>
                 <div className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-accent/10 text-accent mb-4">
                   <Icon className="h-5 w-5" strokeWidth={2} />
                 </div>
@@ -50,7 +49,16 @@ export const CommunityTipsSection = () => {
           })}
         </div>
 
-        <p className="mt-8 text-xs text-muted-foreground/80 italic flex items-start gap-2 max-w-2xl">
+        <div className="mt-8 flex flex-wrap gap-3">
+          <Link to="/tips">
+            <Button variant="default">{language === "it" ? "Vedi i consigli" : "View Tips"}</Button>
+          </Link>
+          <Link to="/tips/share">
+            <Button variant="outline">{language === "it" ? "Condividi un consiglio" : "Share a Tip"}</Button>
+          </Link>
+        </div>
+
+        <p className="mt-6 text-xs text-muted-foreground/80 italic flex items-start gap-2 max-w-2xl">
           <Lightbulb className="h-3.5 w-3.5 text-accent shrink-0 mt-0.5" />
           {c.disclaimer}
         </p>
