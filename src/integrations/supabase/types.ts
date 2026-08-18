@@ -940,6 +940,93 @@ export type Database = {
         }
         Relationships: []
       }
+      parent_community_tips: {
+        Row: {
+          activity_opportunity_name: string
+          admin_notes: string | null
+          admin_reviewed_at: string | null
+          admin_reviewed_by: string | null
+          approximate_age_range_suitable_level: string[]
+          approximate_cost: string | null
+          brief_description: string
+          contact_information: string | null
+          created_at: string
+          email: string | null
+          entity_provider_name: string
+          id: string
+          language: string | null
+          location: string | null
+          period: string | null
+          personal_feedback: string
+          phone: string | null
+          photo_logo_url: string | null
+          published_at: string | null
+          rejection_reason: string | null
+          social_page: string | null
+          status: Database["public"]["Enums"]["tip_status"]
+          submitted_by_user_id: string
+          updated_at: string
+          website_url: string | null
+          would_recommend_again: boolean | null
+        }
+        Insert: {
+          activity_opportunity_name: string
+          admin_notes?: string | null
+          admin_reviewed_at?: string | null
+          admin_reviewed_by?: string | null
+          approximate_age_range_suitable_level?: string[]
+          approximate_cost?: string | null
+          brief_description: string
+          contact_information?: string | null
+          created_at?: string
+          email?: string | null
+          entity_provider_name: string
+          id?: string
+          language?: string | null
+          location?: string | null
+          period?: string | null
+          personal_feedback: string
+          phone?: string | null
+          photo_logo_url?: string | null
+          published_at?: string | null
+          rejection_reason?: string | null
+          social_page?: string | null
+          status?: Database["public"]["Enums"]["tip_status"]
+          submitted_by_user_id: string
+          updated_at?: string
+          website_url?: string | null
+          would_recommend_again?: boolean | null
+        }
+        Update: {
+          activity_opportunity_name?: string
+          admin_notes?: string | null
+          admin_reviewed_at?: string | null
+          admin_reviewed_by?: string | null
+          approximate_age_range_suitable_level?: string[]
+          approximate_cost?: string | null
+          brief_description?: string
+          contact_information?: string | null
+          created_at?: string
+          email?: string | null
+          entity_provider_name?: string
+          id?: string
+          language?: string | null
+          location?: string | null
+          period?: string | null
+          personal_feedback?: string
+          phone?: string | null
+          photo_logo_url?: string | null
+          published_at?: string | null
+          rejection_reason?: string | null
+          social_page?: string | null
+          status?: Database["public"]["Enums"]["tip_status"]
+          submitted_by_user_id?: string
+          updated_at?: string
+          website_url?: string | null
+          would_recommend_again?: boolean | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           account_status: string
@@ -1300,6 +1387,43 @@ export type Database = {
         Returns: undefined
       }
       admin_get_impact_stats: { Args: never; Returns: Json }
+      admin_list_community_tips: {
+        Args: never
+        Returns: {
+          activity_opportunity_name: string
+          admin_notes: string | null
+          admin_reviewed_at: string | null
+          admin_reviewed_by: string | null
+          approximate_age_range_suitable_level: string[]
+          approximate_cost: string | null
+          brief_description: string
+          contact_information: string | null
+          created_at: string
+          email: string | null
+          entity_provider_name: string
+          id: string
+          language: string | null
+          location: string | null
+          period: string | null
+          personal_feedback: string
+          phone: string | null
+          photo_logo_url: string | null
+          published_at: string | null
+          rejection_reason: string | null
+          social_page: string | null
+          status: Database["public"]["Enums"]["tip_status"]
+          submitted_by_user_id: string
+          updated_at: string
+          website_url: string | null
+          would_recommend_again: boolean | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "parent_community_tips"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       admin_list_users_with_auth: {
         Args: never
         Returns: {
@@ -1402,6 +1526,29 @@ export type Database = {
         Returns: number
       }
       public_get_co2_impact: { Args: never; Returns: Json }
+      public_get_community_tips: {
+        Args: { _limit?: number; _search?: string }
+        Returns: {
+          activity_opportunity_name: string
+          approximate_age_range_suitable_level: string[]
+          approximate_cost: string
+          brief_description: string
+          contact_information: string
+          email: string
+          entity_provider_name: string
+          id: string
+          language: string
+          location: string
+          period: string
+          personal_feedback: string
+          phone: string
+          photo_logo_url: string
+          published_at: string
+          social_page: string
+          website_url: string
+          would_recommend_again: boolean
+        }[]
+      }
       public_get_listing_group: {
         Args: { _listing_id: string }
         Returns: {
@@ -1478,6 +1625,12 @@ export type Database = {
         | "pending_review"
         | "needs_correction"
       listing_type: "sale" | "exchange" | "donation"
+      tip_status:
+        | "draft"
+        | "pending_review"
+        | "approved"
+        | "rejected"
+        | "archived"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1618,6 +1771,13 @@ export const Constants = {
         "needs_correction",
       ],
       listing_type: ["sale", "exchange", "donation"],
+      tip_status: [
+        "draft",
+        "pending_review",
+        "approved",
+        "rejected",
+        "archived",
+      ],
     },
   },
 } as const

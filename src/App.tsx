@@ -19,6 +19,9 @@ import Messages from "./pages/Messages";
 import HelpFeedback from "./pages/HelpFeedback";
 import ListingDetail from "./pages/ListingDetail";
 import ListingActionResult from "./pages/ListingActionResult";
+import Dashboard from "./pages/Dashboard";
+import Tips from "./pages/Tips";
+import ShareTip from "./pages/ShareTip";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +36,9 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/tips" element={<Tips />} />
+            <Route path="/tips/share" element={<ShareTip />} />
             <Route path="/browse" element={<Browse />} />
             <Route path="/buy" element={<Browse />} />
             <Route path="/listings/:listingId" element={<ListingDetail />} />

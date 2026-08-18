@@ -24,7 +24,7 @@ const LoginContent = () => {
   const nextPath = new URLSearchParams(window.location.search).get("next");
   const isSafeRedirect = (u: string | null): u is string =>
     typeof u === "string" && u.startsWith("/") && !u.startsWith("//") && !u.startsWith("/\\");
-  const redirectTo = isSafeRedirect(nextPath) ? nextPath : "/browse";
+  const redirectTo = isSafeRedirect(nextPath) ? nextPath : "/dashboard";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
