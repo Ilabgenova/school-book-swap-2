@@ -342,20 +342,20 @@ export const CommunityTipsPanel = () => {
                       <Textarea
                         rows={1}
                         placeholder="Activity name"
-                        value={draftValue(tip, `activity_name_${lang}`}
-                        onChange={(e) => setDraft(tip.id, `activity_name_${lang}` as keyof Tip, e.target.value)}
+                        value={draftValue(tip, `activity_name_${lang}`)}
+                        onChange={(e) => setDraft(tip.id, `activity_name_${lang}`, e.target.value)}
                       />
                       <Textarea
                         rows={3}
                         placeholder="Brief description"
-                        value={draftValue(tip, `brief_description_${lang}`}
-                        onChange={(e) => setDraft(tip.id, `brief_description_${lang}` as keyof Tip, e.target.value)}
+                        value={draftValue(tip, `brief_description_${lang}`)}
+                        onChange={(e) => setDraft(tip.id, `brief_description_${lang}`, e.target.value)}
                       />
                       <Textarea
                         rows={3}
                         placeholder="Personal feedback"
-                        value={draftValue(tip, `personal_feedback_${lang}`}
-                        onChange={(e) => setDraft(tip.id, `personal_feedback_${lang}` as keyof Tip, e.target.value)}
+                        value={draftValue(tip, `personal_feedback_${lang}`)}
+                        onChange={(e) => setDraft(tip.id, `personal_feedback_${lang}`, e.target.value)}
                       />
                     </div>
                   ))}
