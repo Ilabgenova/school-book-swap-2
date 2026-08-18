@@ -1607,6 +1607,7 @@ export type Database = {
         }
         Returns: number
       }
+      my_circular_impact: { Args: never; Returns: Json }
       my_community_tips: {
         Args: never
         Returns: {

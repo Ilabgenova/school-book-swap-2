@@ -1,9 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { ArrowRight, Recycle, Coins, Trees, BookOpen } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 
-const icons = [BookOpen, Coins, Trees, Recycle];
 
 export const CTASection = () => {
   const { t } = useLanguage();
@@ -28,29 +27,7 @@ export const CTASection = () => {
       />
 
       <div className="container relative">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-px mb-16 rounded-xl overflow-hidden border border-primary-foreground/10 bg-primary-foreground/5">
-          {c.stats.map((s, i) => {
-            const Icon = icons[i] ?? BookOpen;
-            return (
-              <div
-                key={i}
-                className="bg-primary p-6 md:p-8 flex flex-col gap-3 hover:bg-primary/80 transition-colors"
-              >
-                <div className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[hsl(var(--teal))]/15 text-[hsl(var(--teal-glow))]">
-                  <Icon className="h-4.5 w-4.5" strokeWidth={2} />
-                </div>
-                <div>
-                  <p className="font-display text-3xl md:text-4xl font-bold text-primary-foreground tracking-tighter leading-none">
-                    {s.value}
-                  </p>
-                  <p className="text-xs text-primary-foreground/60 uppercase tracking-wider mt-2 font-medium">
-                    {s.label}
-                  </p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        
 
         <div className="text-center max-w-2xl mx-auto">
           <p className="font-mono text-xs uppercase tracking-[0.18em] text-[hsl(var(--teal-glow))] mb-4">

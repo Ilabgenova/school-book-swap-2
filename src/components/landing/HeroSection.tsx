@@ -9,8 +9,6 @@ import {
   Users,
   BookOpen,
   Sparkles,
-  CheckCircle2,
-  TrendingUp,
 } from "lucide-react";
 import lanternaAsset from "@/assets/lanterna.webp.asset.json";
 
@@ -142,7 +140,7 @@ export const HeroSection = () => {
 
 
           {/* Right — Lanterna of Genova with floating dashboard cards */}
-          <div className="relative animate-fade-in" style={{ animationDelay: "0.15s" }}>
+          <div className="relative hidden lg:block animate-fade-in" style={{ animationDelay: "0.15s" }}>
             {/* Glow */}
             <div className="absolute -inset-6 bg-accent/20 blur-3xl rounded-full pointer-events-none" />
 
@@ -212,24 +210,7 @@ export const HeroSection = () => {
                   </div>
                 </div>
 
-                {/* Sustainability stat strip */}
-                <div className="grid grid-cols-3 gap-2">
-                  {[
-                    { label: h.statReused, value: "1,284", icon: Recycle },
-                    { label: h.statSaved, value: "€18k", icon: TrendingUp },
-                    { label: h.statVerified, value: "100%", icon: CheckCircle2 },
-                  ].map((s) => (
-                    <div key={s.label} className="glass-dark rounded-md px-2.5 py-2 backdrop-blur-xl">
-                      <s.icon className="h-3 w-3 text-[hsl(var(--teal-glow))] mb-1" />
-                      <p className="text-sm font-bold text-primary-foreground leading-none">
-                        {s.value}
-                      </p>
-                      <p className="text-[9px] text-primary-foreground/60 uppercase tracking-wider mt-1">
-                        {s.label}
-                      </p>
-                    </div>
-                  ))}
-                </div>
+              
               </div>
             </div>
 

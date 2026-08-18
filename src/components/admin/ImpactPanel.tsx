@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Loader2, Leaf, Save } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { carKmFromCo2, treeCountFromCo2 } from "@/lib/impact";
 
 type Stats = {
   total_listed: number;
@@ -140,10 +141,28 @@ export const ImpactPanel = () => {
           <Leaf className="h-6 w-6 text-success" />
           {stats.estimated_co2_avoided_kg.toFixed(1)} kg CO₂e
         </p>
-        <p className="text-xs text-muted-foreground mt-2">
+        <div className="mt-3 grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+          <div>
+            <p className="text-muted-foreground text-xs">{T("Annunci venduti (libri)", "Sold listings (books)")}</p>
+            <p className="font-semibold">{stats.books_sold}</p>
+          </div>
+          <div>
+            <p className="text-muted-foreground text-xs">{T("Km auto equivalenti", "Car km equivalent")}</p>
+            <p className="font-semibold">{carKmFromCo2(stats.estimated_co2_avoided_kg)} km</p>
+          </div>
+          <div>
+            <p className="text-muted-foreground text-xs">{T("Icone albero", "Tree icons")}</p>
+            <p className="font-semibold">{treeCountFromCo2(stats.estimated_co2_avoided_kg)}</p>
+          </div>
+          <div>
+            <p className="text-muted-foreground text-xs">{T("Ultimo aggiornamento", "Last updated")}</p>
+            <p className="font-semibold">{new Date().toLocaleString(language === "it" ? "it-IT" : "en-GB")}</p>
+          </div>
+        </div>
+        <p className="text-xs text-muted-foreground mt-3">
           {T(
-            `Calcolo: ${stats.books_sold} libri × ${stats.co2_kg_per_book} kg CO₂e per libro`,
-            `Calculation: ${stats.books_sold} books × ${stats.co2_kg_per_book} kg CO₂e per book`
+            `Regola di calcolo: 1 libro riutilizzato = ${stats.co2_kg_per_book} kg CO₂e · equivalente auto 0,12 kg CO₂/km · 1 icona albero = 22 kg CO₂ (albero maturo in un anno).`,
+            `Calculation rule: 1 reused book = ${stats.co2_kg_per_book} kg CO₂e · car equivalent 0.12 kg CO₂/km · 1 tree icon = 22 kg CO₂ (mature tree over one year).`
           )}
         </p>
       </Card>

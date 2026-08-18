@@ -3,6 +3,9 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
 import { Link, Navigate } from "react-router-dom";
 import { BookOpen, Lightbulb, ArrowRight, Tag, MessageCircle, BookMarked, Loader2 } from "lucide-react";
+import { PreviewSection } from "@/components/landing/PreviewSection";
+import { SustainabilitySection } from "@/components/landing/SustainabilitySection";
+import { PersonalImpactCard } from "@/components/impact/PersonalImpactCard";
 
 const Dashboard = () => {
   const { language } = useLanguage();
@@ -87,18 +90,37 @@ const Dashboard = () => {
           ))}
         </div>
 
-        <div className="mt-8 flex flex-wrap gap-2">
-          {quick.map((q) => (
-            <Link
-              key={q.to}
-              to={q.to}
-              className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm text-foreground hover:border-accent/50 hover:text-accent transition-colors"
-            >
-              <q.icon className="h-4 w-4" />
-              {q.label}
-            </Link>
-          ))}
+        <div className="mt-8">
+          <h2 className="font-display text-lg font-semibold text-foreground mb-3">
+            {it ? "La tua attività" : "Your activity"}
+          </h2>
+          <div className="flex flex-wrap gap-2">
+            {quick.map((q) => (
+              <Link
+                key={q.to}
+                to={q.to}
+                className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm text-foreground hover:border-accent/50 hover:text-accent transition-colors"
+              >
+                <q.icon className="h-4 w-4" />
+                {q.label}
+              </Link>
+            ))}
+          </div>
         </div>
+
+        <div className="mt-10">
+          <PersonalImpactCard />
+        </div>
+      </div>
+
+      <PreviewSection />
+      <SustainabilitySection />
+      <div className="container max-w-5xl pb-10">
+        <p className="text-xs text-muted-foreground">
+          {it
+            ? "Le stime di impatto sono indicative e calcolate su dati reali di DISbook."
+            : "Impact figures are estimates calculated from real DISbook data."}
+        </p>
       </div>
     </MainLayout>
   );
