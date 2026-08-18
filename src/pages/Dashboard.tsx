@@ -3,6 +3,9 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
 import { Link, Navigate } from "react-router-dom";
 import { BookOpen, Lightbulb, ArrowRight, Tag, MessageCircle, BookMarked, Loader2 } from "lucide-react";
+import { PreviewSection } from "@/components/landing/PreviewSection";
+import { SustainabilitySection } from "@/components/landing/SustainabilitySection";
+import { PersonalImpactCard } from "@/components/impact/PersonalImpactCard";
 
 const Dashboard = () => {
   const { language } = useLanguage();
@@ -118,12 +121,6 @@ const Dashboard = () => {
             ? "Le stime di impatto sono indicative e calcolate su dati reali di DISbook."
             : "Impact figures are estimates calculated from real DISbook data."}
         </p>
-      </div>
-    </MainLayout>
-  );
-};
-
-export default Dashboard;
       </div>
     </MainLayout>
   );
