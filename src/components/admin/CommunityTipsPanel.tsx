@@ -44,6 +44,14 @@ type Tip = {
   created_at: string;
 };
 
+type Submitter = {
+  user_id: string;
+  email: string | null;
+  first_name: string | null;
+  last_name: string | null;
+  recommended_by_name: string | null;
+};
+
 const STATUSES = ["pending_review", "approved", "rejected", "archived"] as const;
 
 const REJECTION_REASONS = [
@@ -72,12 +80,23 @@ export const CommunityTipsPanel = () => {
   const [notes, setNotes] = useState<Record<string, string>>({});
   const [reasons, setReasons] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState<string | null>(null);
+  const [submitters, setSubmitters] = useState<Record<string, Submitter>>({});
 
   const load = async () => {
     setLoading(true);
     const { data, error } = await supabase.rpc("admin_list_community_tips");
     if (error) toast.error(error.message);
-    setTips((data as unknown as Tip[]) ?? []);
+    const rows = (data as unknown as Tip[]) ?? [];
+    setTips(rows);
+    const ids = Array.from(new Set(rows.map((t) => t.submitted_by_user_id).filter(Boolean)));
+    if (ids.length) {
+      const { data: subs } = await supabase.rpc("admin_get_tip_submitters", { _user_ids: ids });
+      const map: Record<string, Submitter> = {};
+      ((subs as Submitter[]) ?? []).forEach((s) => {
+        map[s.user_id] = s;
+      });
+      setSubmitters(map);
+    }
     setLoading(false);
   };
 
