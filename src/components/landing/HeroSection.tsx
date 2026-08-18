@@ -53,10 +53,6 @@ export const HeroSection = () => {
               </p>
               <p className="text-base md:text-lg text-muted-foreground max-w-xl leading-relaxed">
                 {h.longDescription}
-              </p>
-              <div className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-3 py-1.5 text-xs font-medium text-foreground">
-                <BookOpen className="h-3.5 w-3.5 text-accent" />
-                {h.mypDpBadge}
               </div>
               <p className="text-xs text-muted-foreground/80 max-w-xl leading-relaxed italic border-l-2 border-accent/40 pl-3">
                 {h.disclaimer}
