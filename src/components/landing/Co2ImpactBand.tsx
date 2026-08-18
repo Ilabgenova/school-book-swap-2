@@ -87,6 +87,10 @@ export const Co2ImpactBand = () => {
           <TreeComparison co2Kg={co2} compact />
         </div>
 
+        <div className="mt-3">
+          <ItalyRouteMap carKm={carKm} compact />
+        </div>
+
         <Button
           type="button"
           variant="outline"
