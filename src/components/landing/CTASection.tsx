@@ -1,9 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { ArrowRight, Recycle, Coins, Trees, BookOpen } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 
-const icons = [BookOpen, Coins, Trees, Recycle];
 
 export const CTASection = () => {
   const { t } = useLanguage();

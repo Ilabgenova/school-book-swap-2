@@ -9,8 +9,6 @@ import {
   Users,
   BookOpen,
   Sparkles,
-  CheckCircle2,
-  TrendingUp,
 } from "lucide-react";
 import lanternaAsset from "@/assets/lanterna.webp.asset.json";
 
