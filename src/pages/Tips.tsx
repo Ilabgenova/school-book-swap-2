@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
