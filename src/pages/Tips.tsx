@@ -57,9 +57,31 @@ type Tip = {
   thumbs_up_count: number | null;
   heart_count: number | null;
   my_reactions: string[] | null;
+  original_language: string | null;
+  activity_name_it: string | null;
+  activity_name_en: string | null;
+  brief_description_it: string | null;
+  brief_description_en: string | null;
+  personal_feedback_it: string | null;
+  personal_feedback_en: string | null;
+  translation_status: string | null;
 };
 
-const TipCard = ({ tip, it }: { tip: Tip; it: boolean }) => (
+// Pick the version matching the reader's language, falling back to the original.
+export const localizedTip = (tip: Tip, it: boolean) => {
+  const name = (it ? tip.activity_name_it : tip.activity_name_en) || tip.activity_opportunity_name;
+  const description = (it ? tip.brief_description_it : tip.brief_description_en) || tip.brief_description;
+  const feedback = (it ? tip.personal_feedback_it : tip.personal_feedback_en) || tip.personal_feedback;
+  const wanted = it ? "it" : "en";
+  const missing =
+    (tip.original_language ?? "it") !== wanted &&
+    !(it ? tip.activity_name_it : tip.activity_name_en);
+  return { name, description, feedback, missing };
+};
+
+const TipCard = ({ tip, it }: { tip: Tip; it: boolean }) => {
+  const loc = localizedTip(tip, it);
+  return (
   <article className="rounded-2xl border border-border bg-card p-5 flex flex-col gap-3">
     <div className="flex items-start gap-3">
       {tip.photo_logo_url ? (
@@ -76,13 +98,19 @@ const TipCard = ({ tip, it }: { tip: Tip; it: boolean }) => (
       )}
       <div className="min-w-0">
         <h3 className="font-display text-lg font-semibold text-foreground leading-tight">
-          {tip.activity_opportunity_name}
+          {loc.name}
         </h3>
         <p className="text-sm text-muted-foreground">{tip.entity_provider_name}</p>
       </div>
     </div>
 
-    <p className="text-sm text-foreground/90 leading-relaxed">{tip.brief_description}</p>
+    {loc.missing && (
+      <p className="text-[11px] text-muted-foreground italic">
+        {it ? "Traduzione non ancora disponibile" : "Translation not yet available"}
+      </p>
+    )}
+
+    <p className="text-sm text-foreground/90 leading-relaxed">{loc.description}</p>
 
     <div className="flex flex-wrap gap-1.5">
       {(tip.approximate_age_range_suitable_level ?? []).map((l) => (
@@ -151,7 +179,7 @@ const TipCard = ({ tip, it }: { tip: Tip; it: boolean }) => (
     </div>
 
     <blockquote className="rounded-lg border-l-2 border-accent/50 bg-muted/50 px-3 py-2 text-sm text-foreground/90 italic">
-      {tip.personal_feedback}
+      {loc.feedback}
       {tip.would_recommend_again && (
         <span className="mt-1.5 flex items-center gap-1.5 not-italic text-xs font-medium text-accent">
           <ThumbsUp className="h-3.5 w-3.5" />
@@ -214,7 +242,8 @@ const TipCard = ({ tip, it }: { tip: Tip; it: boolean }) => (
       </div>
     )}
   </article>
-);
+  );
+};
 
 
 const Tips = () => {

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { TreeComparison } from "@/components/impact/TreeComparison";
+import { ItalyRouteMap } from "@/components/impact/ItalyRouteMap";
 import { impactFromBooks } from "@/lib/impact";
 import { Leaf, Loader2, ShoppingBag, Tag } from "lucide-react";
 
@@ -92,6 +93,8 @@ export const PersonalImpactCard = () => {
           </div>
 
           <TreeComparison co2Kg={total.co2} compact />
+
+          <ItalyRouteMap carKm={total.carKm} compact />
 
           <p className="text-[11px] leading-snug text-muted-foreground">
             {T(

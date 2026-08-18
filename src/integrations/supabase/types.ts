@@ -942,6 +942,8 @@ export type Database = {
       }
       parent_community_tips: {
         Row: {
+          activity_name_en: string | null
+          activity_name_it: string | null
           activity_opportunity_name: string
           admin_notes: string | null
           admin_reviewed_at: string | null
@@ -949,6 +951,8 @@ export type Database = {
           approximate_age_range_suitable_level: string[]
           approximate_cost: string | null
           brief_description: string
+          brief_description_en: string | null
+          brief_description_it: string | null
           contact_information: string | null
           created_at: string
           email: string | null
@@ -961,8 +965,11 @@ export type Database = {
           id: string
           language: string | null
           location: string | null
+          original_language: string
           period: string | null
           personal_feedback: string
+          personal_feedback_en: string | null
+          personal_feedback_it: string | null
           phone: string | null
           photo_logo_url: string | null
           published_at: string | null
@@ -971,12 +978,16 @@ export type Database = {
           social_page: string | null
           status: Database["public"]["Enums"]["tip_status"]
           submitted_by_user_id: string
+          translated_at: string | null
+          translation_status: string
           tried_activity: string | null
           updated_at: string
           website_url: string | null
           would_recommend_again: boolean | null
         }
         Insert: {
+          activity_name_en?: string | null
+          activity_name_it?: string | null
           activity_opportunity_name: string
           admin_notes?: string | null
           admin_reviewed_at?: string | null
@@ -984,6 +995,8 @@ export type Database = {
           approximate_age_range_suitable_level?: string[]
           approximate_cost?: string | null
           brief_description: string
+          brief_description_en?: string | null
+          brief_description_it?: string | null
           contact_information?: string | null
           created_at?: string
           email?: string | null
@@ -996,8 +1009,11 @@ export type Database = {
           id?: string
           language?: string | null
           location?: string | null
+          original_language?: string
           period?: string | null
           personal_feedback: string
+          personal_feedback_en?: string | null
+          personal_feedback_it?: string | null
           phone?: string | null
           photo_logo_url?: string | null
           published_at?: string | null
@@ -1006,12 +1022,16 @@ export type Database = {
           social_page?: string | null
           status?: Database["public"]["Enums"]["tip_status"]
           submitted_by_user_id: string
+          translated_at?: string | null
+          translation_status?: string
           tried_activity?: string | null
           updated_at?: string
           website_url?: string | null
           would_recommend_again?: boolean | null
         }
         Update: {
+          activity_name_en?: string | null
+          activity_name_it?: string | null
           activity_opportunity_name?: string
           admin_notes?: string | null
           admin_reviewed_at?: string | null
@@ -1019,6 +1039,8 @@ export type Database = {
           approximate_age_range_suitable_level?: string[]
           approximate_cost?: string | null
           brief_description?: string
+          brief_description_en?: string | null
+          brief_description_it?: string | null
           contact_information?: string | null
           created_at?: string
           email?: string | null
@@ -1031,8 +1053,11 @@ export type Database = {
           id?: string
           language?: string | null
           location?: string | null
+          original_language?: string
           period?: string | null
           personal_feedback?: string
+          personal_feedback_en?: string | null
+          personal_feedback_it?: string | null
           phone?: string | null
           photo_logo_url?: string | null
           published_at?: string | null
@@ -1041,6 +1066,8 @@ export type Database = {
           social_page?: string | null
           status?: Database["public"]["Enums"]["tip_status"]
           submitted_by_user_id?: string
+          translated_at?: string | null
+          translation_status?: string
           tried_activity?: string | null
           updated_at?: string
           website_url?: string | null
@@ -1461,6 +1488,8 @@ export type Database = {
       admin_list_community_tips: {
         Args: never
         Returns: {
+          activity_name_en: string | null
+          activity_name_it: string | null
           activity_opportunity_name: string
           admin_notes: string | null
           admin_reviewed_at: string | null
@@ -1468,6 +1497,8 @@ export type Database = {
           approximate_age_range_suitable_level: string[]
           approximate_cost: string | null
           brief_description: string
+          brief_description_en: string | null
+          brief_description_it: string | null
           contact_information: string | null
           created_at: string
           email: string | null
@@ -1480,8 +1511,11 @@ export type Database = {
           id: string
           language: string | null
           location: string | null
+          original_language: string
           period: string | null
           personal_feedback: string
+          personal_feedback_en: string | null
+          personal_feedback_it: string | null
           phone: string | null
           photo_logo_url: string | null
           published_at: string | null
@@ -1490,6 +1524,8 @@ export type Database = {
           social_page: string | null
           status: Database["public"]["Enums"]["tip_status"]
           submitted_by_user_id: string
+          translated_at: string | null
+          translation_status: string
           tried_activity: string | null
           updated_at: string
           website_url: string | null
@@ -1638,10 +1674,14 @@ export type Database = {
       public_get_community_tips: {
         Args: { _limit?: number; _search?: string }
         Returns: {
+          activity_name_en: string
+          activity_name_it: string
           activity_opportunity_name: string
           approximate_age_range_suitable_level: string[]
           approximate_cost: string
           brief_description: string
+          brief_description_en: string
+          brief_description_it: string
           contact_information: string
           email: string
           entity_provider_name: string
@@ -1654,8 +1694,11 @@ export type Database = {
           language: string
           location: string
           my_reactions: string[]
+          original_language: string
           period: string
           personal_feedback: string
+          personal_feedback_en: string
+          personal_feedback_it: string
           phone: string
           photo_logo_url: string
           published_at: string
@@ -1663,6 +1706,7 @@ export type Database = {
           recommended_by_name: string
           social_page: string
           thumbs_up_count: number
+          translation_status: string
           tried_activity: string
           website_url: string
           would_recommend_again: boolean
