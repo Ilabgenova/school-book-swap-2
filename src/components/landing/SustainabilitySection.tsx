@@ -37,9 +37,11 @@ export const SustainabilitySection = () => {
 
   return (
     <section
+      id="impact-details"
       aria-label={T("Impatto ambientale", "Environmental impact")}
-      className="relative overflow-hidden bg-gradient-to-b from-success/5 via-background to-background py-14 sm:py-20"
+      className="relative overflow-hidden bg-gradient-to-b from-success/5 via-background to-background py-14 sm:py-20 scroll-mt-20"
     >
+
       <div className="container mx-auto px-4">
         <div className="text-center max-w-2xl mx-auto">
           <div className="inline-flex items-center justify-center h-14 w-14 rounded-full bg-success/15 text-success mb-4">
