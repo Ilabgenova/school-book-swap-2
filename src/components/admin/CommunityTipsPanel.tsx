@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Check, X, Archive, Loader2, Lightbulb, Trash2, Paperclip, ThumbsUp, Heart } from "lucide-react";
+import { Check, X, Archive, Loader2, Lightbulb, Trash2, Paperclip, ThumbsUp, Heart, Languages } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { FlyerButton } from "@/components/tips/FlyerButton";
 
@@ -41,6 +41,14 @@ type Tip = {
   flyer_file_size: number | null;
   status: string;
   reactions_enabled: boolean | null;
+  original_language: string | null;
+  activity_name_it: string | null;
+  activity_name_en: string | null;
+  brief_description_it: string | null;
+  brief_description_en: string | null;
+  personal_feedback_it: string | null;
+  personal_feedback_en: string | null;
+  translation_status: string | null;
   admin_notes: string | null;
   rejection_reason: string | null;
   created_at: string;
@@ -84,6 +92,44 @@ export const CommunityTipsPanel = () => {
   const [busy, setBusy] = useState<string | null>(null);
   const [submitters, setSubmitters] = useState<Record<string, Submitter>>({});
   const [counts, setCounts] = useState<Record<string, { thumbs_up_count: number; heart_count: number }>>({});
+  const [translating, setTranslating] = useState<string | null>(null);
+  const [drafts, setDrafts] = useState<Record<string, Partial<Tip>>>({});
+
+  const draftValue = (tip: Tip, key: keyof Tip) =>
+    (drafts[tip.id]?.[key] as string | null | undefined) ?? ((tip[key] as string | null) ?? "");
+
+  const setDraft = (tipId: string, key: keyof Tip, value: string) =>
+    setDrafts((prev) => ({ ...prev, [tipId]: { ...prev[tipId], [key]: value } }));
+
+  const saveTranslation = async (tip: Tip) => {
+    const patch = drafts[tip.id];
+    if (!patch) return;
+    setBusy(tip.id);
+    const { error } = await supabase
+      .from("parent_community_tips")
+      .update({ ...patch, translation_status: "ready", translated_at: new Date().toISOString() })
+      .eq("id", tip.id);
+    setBusy(null);
+    if (error) return toast.error(error.message);
+    setDrafts((prev) => {
+      const next = { ...prev };
+      delete next[tip.id];
+      return next;
+    });
+    toast.success("Translation saved");
+    load();
+  };
+
+  const generateTranslation = async (tipId?: string) => {
+    setTranslating(tipId ?? "backfill");
+    const { data, error } = await supabase.functions.invoke("translate-tip", {
+      body: tipId ? { tip_id: tipId } : { backfill: true },
+    });
+    setTranslating(null);
+    if (error) return toast.error(error.message);
+    toast.success(`Translation generated (${(data as { processed?: number })?.processed ?? 0} tip(s))`);
+    load();
+  };
 
   const load = async () => {
     setLoading(true);
@@ -197,7 +243,20 @@ export const CommunityTipsPanel = () => {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap items-center gap-2">
+        <Button
+          size="sm"
+          variant="secondary"
+          onClick={() => generateTranslation()}
+          disabled={translating !== null}
+        >
+          {translating === "backfill" ? (
+            <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+          ) : (
+            <Languages className="h-4 w-4 mr-1" />
+          )}
+          Backfill missing translations
+        </Button>
         {STATUSES.map((s) => (
           <Button
             key={s}
@@ -249,6 +308,67 @@ export const CommunityTipsPanel = () => {
               <p className="text-sm italic text-muted-foreground border-l-2 border-accent/40 pl-3">
                 {tip.personal_feedback}
               </p>
+
+              <div className="rounded-lg border border-border bg-muted/30 p-3 space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <p className="text-xs font-semibold text-foreground">
+                    Bilingual content · original: {(tip.original_language ?? "it") === "en" ? "English" : "Italian"} ·{" "}
+                    <span className={tip.translation_status === "ready" ? "text-accent" : "text-destructive"}>
+                      {tip.translation_status === "ready" ? "translation ready" : "translation missing"}
+                    </span>
+                  </p>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => generateTranslation(tip.id)}
+                    disabled={translating !== null}
+                  >
+                    {translating === tip.id ? (
+                      <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                    ) : (
+                      <Languages className="h-4 w-4 mr-1" />
+                    )}
+                    Generate translation
+                  </Button>
+                </div>
+
+                <div className="grid gap-3 md:grid-cols-2">
+                  {(["it", "en"] as const).map((lang) => (
+                    <div key={lang} className="space-y-1.5">
+                      <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                        {lang === "it" ? "Italiano" : "English"}
+                        {(tip.original_language ?? "it") === lang ? " (original)" : " (translated)"}
+                      </p>
+                      <Textarea
+                        rows={1}
+                        placeholder="Activity name"
+                        value={draftValue(tip, `activity_name_${lang}` as keyof Tip)}
+                        onChange={(e) => setDraft(tip.id, `activity_name_${lang}` as keyof Tip, e.target.value)}
+                      />
+                      <Textarea
+                        rows={3}
+                        placeholder="Brief description"
+                        value={draftValue(tip, `brief_description_${lang}` as keyof Tip)}
+                        onChange={(e) => setDraft(tip.id, `brief_description_${lang}` as keyof Tip, e.target.value)}
+                      />
+                      <Textarea
+                        rows={3}
+                        placeholder="Personal feedback"
+                        value={draftValue(tip, `personal_feedback_${lang}` as keyof Tip)}
+                        onChange={(e) => setDraft(tip.id, `personal_feedback_${lang}` as keyof Tip, e.target.value)}
+                      />
+                    </div>
+                  ))}
+                </div>
+
+                <Button
+                  size="sm"
+                  onClick={() => saveTranslation(tip)}
+                  disabled={!drafts[tip.id] || busy === tip.id}
+                >
+                  Save translations
+                </Button>
+              </div>
 
               <div className="flex flex-wrap gap-1.5">
                 {(tip.approximate_age_range_suitable_level ?? []).map((l) => (
