@@ -62,6 +62,7 @@ const ShareTip = () => {
   const [levels, setLevels] = useState<string[]>([]);
   const [recommend, setRecommend] = useState(true);
   const [tried, setTried] = useState<string>("");
+  const [origLang, setOrigLang] = useState<"it" | "en">("it");
   const [flyer, setFlyer] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
   const { tipId } = useParams();
@@ -118,6 +119,7 @@ const ShareTip = () => {
       setLevels(data.approximate_age_range_suitable_level ?? []);
       setRecommend(data.would_recommend_again ?? true);
       setTried(data.tried_activity ?? "");
+      setOrigLang((data.original_language as "it" | "en") === "en" ? "en" : "it");
       setLoadingTip(false);
     })();
     return () => {
@@ -244,6 +246,7 @@ const ShareTip = () => {
           approximate_age_range_suitable_level: levels,
           would_recommend_again: recommend,
           tried_activity: tried,
+          original_language: origLang,
         },
       });
       setSaving(false);
@@ -264,7 +267,7 @@ const ShareTip = () => {
       return;
     }
 
-    const { error } = await supabase.from("parent_community_tips").insert({
+    const { data: inserted, error } = await supabase.from("parent_community_tips").insert({
       submitted_by_user_id: user.id,
       entity_provider_name: v.entity_provider_name,
       activity_opportunity_name: v.activity_opportunity_name,
@@ -283,13 +286,24 @@ const ShareTip = () => {
       approximate_age_range_suitable_level: levels,
       would_recommend_again: recommend,
       tried_activity: tried,
+      original_language: origLang,
+      activity_name_it: origLang === "it" ? v.activity_opportunity_name : null,
+      brief_description_it: origLang === "it" ? v.brief_description : null,
+      personal_feedback_it: origLang === "it" ? v.personal_feedback : null,
+      activity_name_en: origLang === "en" ? v.activity_opportunity_name : null,
+      brief_description_en: origLang === "en" ? v.brief_description : null,
+      personal_feedback_en: origLang === "en" ? v.personal_feedback : null,
       ...(flyerMeta ?? {}),
       status: "pending_review",
-    });
+    }).select("id").maybeSingle();
     setSaving(false);
     if (error) {
       toast.error(error.message);
       return;
+    }
+    if (inserted?.id) {
+      // Generate the other-language version in the background; failures never block submission.
+      supabase.functions.invoke("translate-tip", { body: { tip_id: inserted.id } }).catch(() => undefined);
     }
     toast.success(
       it
@@ -357,6 +371,34 @@ const ShareTip = () => {
         <form onSubmit={handleSubmit} className="space-y-5 rounded-2xl border border-border bg-card p-5 md:p-6">
           {field("entity_provider_name", "Ente / organizzatore", "Entity / provider name", { required: true })}
           {field("activity_opportunity_name", "Attività / opportunità", "Activity / opportunity name", { required: true })}
+
+          <div className="space-y-2">
+            <Label>
+              {it ? "Lingua originale del testo" : "Original language of your text"}
+              <span className="text-destructive"> *</span>
+            </Label>
+            <div className="grid gap-2 sm:grid-cols-2">
+              {(["it", "en"] as const).map((l) => (
+                <label
+                  key={l}
+                  className="flex items-center gap-2.5 rounded-lg border border-border p-3 text-sm cursor-pointer"
+                >
+                  <input
+                    type="radio"
+                    name="original_language"
+                    checked={origLang === l}
+                    onChange={() => setOrigLang(l)}
+                  />
+                  {l === "it" ? (it ? "Italiano" : "Italian") : it ? "Inglese" : "English"}
+                </label>
+              ))}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {it
+                ? "Nome attività, descrizione e feedback saranno tradotti automaticamente nell'altra lingua."
+                : "Activity name, description and feedback will be translated automatically into the other language."}
+            </p>
+          </div>
           {field("brief_description", "Breve descrizione", "Brief description", { required: true, textarea: true })}
 
           <div className="space-y-2">
