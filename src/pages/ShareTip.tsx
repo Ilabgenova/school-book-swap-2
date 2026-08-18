@@ -1,9 +1,9 @@
-import { useState, FormEvent, ChangeEvent } from "react";
+import { useState, useEffect, FormEvent, ChangeEvent } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Navigate, useNavigate, Link } from "react-router-dom";
+import { Navigate, useNavigate, useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -64,8 +64,68 @@ const ShareTip = () => {
   const [tried, setTried] = useState<string>("");
   const [flyer, setFlyer] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
+  const { tipId } = useParams();
+  const isEdit = Boolean(tipId);
+  const [loadingTip, setLoadingTip] = useState(Boolean(tipId));
+  const [editStatus, setEditStatus] = useState<string | null>(null);
 
-  if (authLoading) {
+  useEffect(() => {
+    if (!tipId || !user) return;
+    let cancelled = false;
+    (async () => {
+      const { data, error } = await supabase
+        .from("parent_community_tips")
+        .select("*")
+        .eq("id", tipId)
+        .maybeSingle();
+      if (cancelled) return;
+      if (error || !data) {
+        toast.error(it ? "Consiglio non trovato." : "Tip not found.");
+        navigate("/tips/mine");
+        return;
+      }
+      if (data.submitted_by_user_id !== user.id) {
+        toast.error(it ? "Puoi modificare solo i tuoi consigli." : "You can only edit your own tips.");
+        navigate("/tips/mine");
+        return;
+      }
+      if (data.status === "archived") {
+        toast.error(
+          it
+            ? "I consigli archiviati possono essere riattivati solo da un amministratore."
+            : "Archived tips can only be reactivated by an admin."
+        );
+        navigate("/tips/mine");
+        return;
+      }
+      setEditStatus(data.status);
+      setForm({
+        entity_provider_name: data.entity_provider_name ?? "",
+        activity_opportunity_name: data.activity_opportunity_name ?? "",
+        brief_description: data.brief_description ?? "",
+        personal_feedback: data.personal_feedback ?? "",
+        website_url: data.website_url ?? "",
+        email: data.email ?? "",
+        phone: data.phone ?? "",
+        social_page: data.social_page ?? "",
+        location: data.location ?? "",
+        language: data.language ?? "",
+        approximate_cost: data.approximate_cost ?? "",
+        period: data.period ?? "",
+        contact_information: data.contact_information ?? "",
+        photo_logo_url: data.photo_logo_url ?? "",
+      });
+      setLevels(data.approximate_age_range_suitable_level ?? []);
+      setRecommend(data.would_recommend_again ?? true);
+      setTried(data.tried_activity ?? "");
+      setLoadingTip(false);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [tipId, user, it, navigate]);
+
+  if (authLoading || loadingTip) {
     return (
       <MainLayout>
         <div className="container py-20 flex justify-center">
@@ -160,6 +220,50 @@ const ShareTip = () => {
       };
     }
 
+    if (isEdit && tipId) {
+      if (flyerMeta) {
+        await supabase.from("parent_community_tips").update(flyerMeta).eq("id", tipId);
+      }
+      const { error: rpcError } = await supabase.rpc("author_update_tip", {
+        _tip_id: tipId,
+        _payload: {
+          entity_provider_name: v.entity_provider_name,
+          activity_opportunity_name: v.activity_opportunity_name,
+          brief_description: v.brief_description,
+          personal_feedback: v.personal_feedback,
+          contact_information: v.contact_information || "",
+          website_url: v.website_url || "",
+          email: v.email || "",
+          phone: v.phone || "",
+          social_page: v.social_page || "",
+          location: v.location || "",
+          language: v.language || "",
+          approximate_cost: v.approximate_cost || "",
+          period: v.period || "",
+          photo_logo_url: v.photo_logo_url || "",
+          approximate_age_range_suitable_level: levels,
+          would_recommend_again: recommend,
+          tried_activity: tried,
+        },
+      });
+      setSaving(false);
+      if (rpcError) {
+        toast.error(rpcError.message);
+        return;
+      }
+      toast.success(
+        editStatus === "approved"
+          ? it
+            ? "La tua modifica è stata inviata per la revisione. La versione pubblicata resterà visibile finché l'aggiornamento non sarà approvato."
+            : "Your update has been submitted for review. The current published version will remain visible until the update is approved."
+          : it
+          ? "Il tuo consiglio è stato aggiornato ed è in attesa della revisione degli amministratori DISbook."
+          : "Your tip has been updated and is waiting for DISbook admin review."
+      );
+      navigate("/tips/mine");
+      return;
+    }
+
     const { error } = await supabase.from("parent_community_tips").insert({
       submitted_by_user_id: user.id,
       entity_provider_name: v.entity_provider_name,
@@ -226,7 +330,13 @@ const ShareTip = () => {
             <Lightbulb className="h-5 w-5" />
           </div>
           <h1 className="font-display text-2xl md:text-3xl font-bold text-foreground">
-            {it ? "Condividi un consiglio" : "Share a tip"}
+            {isEdit
+              ? it
+                ? "Modifica il consiglio"
+                : "Edit tip"
+              : it
+              ? "Condividi un consiglio"
+              : "Share a tip"}
           </h1>
           <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
             {it
@@ -382,7 +492,13 @@ const ShareTip = () => {
 
           <Button type="submit" size="lg" className="w-full" disabled={saving}>
             {saving && <Loader2 className="h-4 w-4 animate-spin" />}
-            {it ? "Invia per la revisione" : "Submit for review"}
+            {isEdit
+              ? it
+                ? "Salva e invia per la revisione"
+                : "Save and submit for review"
+              : it
+              ? "Invia per la revisione"
+              : "Submit for review"}
           </Button>
           <p className="text-xs text-muted-foreground text-center">
             {it
