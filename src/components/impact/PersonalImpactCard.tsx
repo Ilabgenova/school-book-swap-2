@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { TreeComparison } from "@/components/impact/TreeComparison";
+import { ItalyRouteMap } from "@/components/impact/ItalyRouteMap";
 import { impactFromBooks } from "@/lib/impact";
 import { Leaf, Loader2, ShoppingBag, Tag } from "lucide-react";
 
