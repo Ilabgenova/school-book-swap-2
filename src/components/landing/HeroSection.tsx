@@ -140,7 +140,7 @@ export const HeroSection = () => {
 
 
           {/* Right — Lanterna of Genova with floating dashboard cards */}
-          <div className="relative animate-fade-in" style={{ animationDelay: "0.15s" }}>
+          <div className="relative hidden lg:block animate-fade-in" style={{ animationDelay: "0.15s" }}>
             {/* Glow */}
             <div className="absolute -inset-6 bg-accent/20 blur-3xl rounded-full pointer-events-none" />
 
