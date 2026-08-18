@@ -20,6 +20,7 @@ import { ReuseReviewPanel } from "@/components/admin/ReuseReviewPanel";
 import { FeedbackPanel } from "@/components/admin/FeedbackPanel";
 import { ImpactPanel } from "@/components/admin/ImpactPanel";
 import { NotificationsTestPanel } from "@/components/admin/NotificationsTestPanel";
+import { CommunityTipsPanel } from "@/components/admin/CommunityTipsPanel";
 import {
   Dialog,
   DialogContent,
@@ -85,11 +86,12 @@ const Admin = () => {
           <p className="text-muted-foreground text-sm">Moderation & housekeeping for DISbook</p>
         </div>
         <Tabs defaultValue="listings">
-          <TabsList className="grid grid-cols-3 md:grid-cols-11 w-full md:w-auto">
+          <TabsList className="grid grid-cols-3 md:grid-cols-12 w-full md:w-auto">
             <TabsTrigger value="listings">Listings</TabsTrigger>
             <TabsTrigger value="notifications">Notifications</TabsTrigger>
             <TabsTrigger value="impact">Impact</TabsTrigger>
             <TabsTrigger value="feedback">Feedback</TabsTrigger>
+            <TabsTrigger value="tips">Tips</TabsTrigger>
             <TabsTrigger value="import">Book import</TabsTrigger>
             <TabsTrigger value="reuse">Reuse review</TabsTrigger>
             <TabsTrigger value="users">Users</TabsTrigger>
@@ -101,6 +103,7 @@ const Admin = () => {
           <TabsContent value="listings" className="mt-6"><ListingsPanel /></TabsContent>
           <TabsContent value="notifications" className="mt-6"><NotificationsTestPanel /></TabsContent>
           <TabsContent value="impact" className="mt-6"><ImpactPanel /></TabsContent>
+          <TabsContent value="tips" className="mt-6"><CommunityTipsPanel /></TabsContent>
           <TabsContent value="feedback" className="mt-6"><FeedbackPanel /></TabsContent>
           <TabsContent value="import" className="mt-6"><BookImportPanel /></TabsContent>
           <TabsContent value="reuse" className="mt-6"><ReuseReviewPanel /></TabsContent>
