@@ -279,7 +279,7 @@ const Tips = () => {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [search]);
+  }, [search, user]);
 
   const filtered = useMemo(
     () =>
@@ -288,6 +288,46 @@ const Tips = () => {
         : tips.filter((t) => (t.approximate_age_range_suitable_level ?? []).includes(level)),
     [tips, level]
   );
+
+  if (authLoading) {
+    return (
+      <MainLayout>
+        <div className="py-24 flex justify-center">
+          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+        </div>
+      </MainLayout>
+    );
+  }
+
+  if (!user) {
+    return (
+      <MainLayout>
+        <div className="container py-12 md:py-20 max-w-lg">
+          <div className="rounded-2xl border border-border bg-card p-8 text-center">
+            <div className="mx-auto mb-4 h-12 w-12 rounded-xl bg-accent/10 text-accent flex items-center justify-center">
+              <Lightbulb className="h-6 w-6" />
+            </div>
+            <h1 className="font-display text-2xl font-bold text-foreground mb-2">
+              {it ? "Consigli della community" : "Parent Community Tips"}
+            </h1>
+            <p className="text-sm text-muted-foreground mb-6">
+              {it
+                ? "Attività extrascolastiche utili consigliate dalle famiglie DISbook. Accedi per vedere e condividere i consigli."
+                : "Useful extracurricular activities recommended by DISbook families. Please log in to view and share Parent Community Tips."}
+            </p>
+            <div className="flex flex-col sm:flex-row gap-2 justify-center">
+              <Button asChild>
+                <Link to="/login?next=/tips">{it ? "Accedi" : "Log in"}</Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link to="/register">{it ? "Crea un account" : "Create account"}</Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout>
