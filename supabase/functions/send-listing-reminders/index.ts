@@ -28,6 +28,12 @@ async function sha256Hex(input: string): Promise<string> {
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders })
 
+  // Reminders are paused every year from 1 September to 31 December (Rome time).
+  const romeMonth = Number(new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Rome', month: 'numeric' }).format(new Date()))
+  if (romeMonth >= 9) {
+    return new Response(JSON.stringify({ ok: true, skipped: 'reminders_paused_sep_dec', sent: 0 }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
+  }
+
   const supabaseUrl = Deno.env.get('SUPABASE_URL')!
   const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
   const supabase = createClient(supabaseUrl, serviceKey)
